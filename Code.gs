@@ -1,13 +1,13 @@
 /**
  * ===================================================================
  * DREAM CART BD — GOOGLE APPS SCRIPT BACKEND (Code.gs)
- * Spreadsheet ID: 1W4k4HP1MBuHfdU7AkPHPf_P-huHATEpIbGhJQDRtpH4
+ * Spreadsheet ID: 1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g
  * Supports Cumilla (90 BDT), Dhaka (110 BDT), Outside (135 BDT),
  * Free delivery (>2000 BDT), 5% online discount & TrxID recording
  * ===================================================================
  */
 
-const SPREADSHEET_ID = "1W4k4HP1MBuHfdU7AkPHPf_P-huHATEpIbGhJQDRtpH4";
+const SPREADSHEET_ID = "1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g";
 const OWNER_EMAIL = "dubaiwholesalebd@gmail.com";
 
 function createJsonResponse(data) {
