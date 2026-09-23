@@ -72,6 +72,14 @@ const COMPONENTS = {
                 </ul>
               </div>
 
+              
+              <!-- Live Sheet Sync Button -->
+              <button class="btn btn-sm btn-outline-emerald d-flex align-items-center gap-1" id="btn-sync-live-sheet" 
+                      onclick="API.fetchLiveSheetData().then(s => { STORE.toast(s ? 'success' : 'info', s ? 'গুগল শিট সিঙ্ক সফল!' : 'ক্যাশ ডেটা আপডেট রয়েছে'); window.location.reload(); })" 
+                      title="গুগল শিট থেকে লাইভ প্রোডাক্ট সিঙ্ক করুন">
+                <i class="bi bi-arrow-repeat"></i> <span class="d-none d-xxl-inline">শিট সিঙ্ক</span>
+              </button>
+
               <!-- Products -->
               <a href="#/products" class="nav-link-custom">
                 <i class="bi bi-grid-fill"></i> প্রোডাক্টস
@@ -416,20 +424,20 @@ const COMPONENTS = {
                   <div class="d-flex align-items-center gap-2">
                     <img src="${CONFIG.logoUrl}" width="54" height="54" class="rounded-circle border" />
                     <div>
-                      <h4 class="mb-0 fw-bold text-dark">${CONFIG.appName}</h4>
+                      <h4 class="mb-0 fw-bold text-white">${CONFIG.appName}</h4>
                       <div class="text-xs text-muted">${CONFIG.slogan}</div>
                       <div class="text-xs text-muted">ফোন: ${CONFIG.phone1}, ${CONFIG.phone2} | ${CONFIG.address}</div>
                     </div>
                   </div>
                   <div class="text-end">
                     <span class="badge bg-success fs-6 px-3 py-1">অর্ডার নিশ্চিত</span>
-                    <div class="fw-bold mt-1 text-sm text-dark">ভাউচার নং: ${order.orderId}</div>
+                    <div class="fw-bold mt-1 text-sm text-white">ভাউচার নং: ${order.orderId}</div>
                     <div class="text-xs text-muted">তারিখ: ${order.date}</div>
                   </div>
                 </div>
 
                 <!-- Customer Details -->
-                <div class="row g-2 mb-3 bg-light text-dark p-2 rounded">
+                <div class="row g-2 mb-3 bg-light text-white p-2 rounded">
                   <div class="col-6">
                     <div class="text-xs text-muted">গ্রাহকের নাম:</div>
                     <div class="fw-bold">${order.customerName}</div>
@@ -445,15 +453,15 @@ const COMPONENTS = {
                 </div>
 
                 <!-- Payment Details Banner -->
-                <div class="p-2 mb-3 rounded bg-emerald/10 border border-emerald/30 text-xs text-dark d-flex justify-content-between">
+                <div class="p-2 mb-3 rounded bg-emerald/10 border border-emerald/30 text-xs text-white d-flex justify-content-between">
                   <div><strong>পেমেন্ট মাধ্যম:</strong> ${order.paymentMethod || 'ক্যাশ অন ডেলিভারি'}</div>
                   ${order.trxId ? `<div><strong>TrxID / প্রেরক:</strong> ${order.trxId}</div>` : ''}
                   ${order.onlineDiscount > 0 ? `<div class="text-success fw-bold">অনলাইন পেমেন্ট ৫% ছাড় সমন্বিত</div>` : ''}
                 </div>
 
                 <!-- Product Table -->
-                <table class="table table-bordered table-sm text-xs mb-3 text-dark">
-                  <thead class="table-secondary">
+                <table class="table table-bordered table-sm text-xs mb-3 text-white">
+                  <thead class="table-dark">
                     <tr>
                       <th>#</th>
                       <th>প্রোডাক্টের বিবরণ</th>
@@ -490,7 +498,7 @@ const COMPONENTS = {
                         ${isFreeDel ? `<span class="badge bg-success">ফ্রি (২০০০৳+)</span>` : `${CONFIG.currency}${order.deliveryCharge || 0}`}
                       </th>
                     </tr>
-                    <tr class="table-dark text-white">
+                    <tr class="table-dark">
                       <th colspan="4" class="text-end fs-6">সর্বমোট প্রদেয় টাকা:</th>
                       <th class="text-end fs-6 text-emerald">${CONFIG.currency}${order.totalAmount.toLocaleString()}</th>
                     </tr>

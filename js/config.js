@@ -1,6 +1,6 @@
 /**
- * DREAM CART BD — GLOBAL CONFIGURATION (UPDATED SPECIFICATION)
- * Slogan, Phone numbers, Delivery charges, 5% online discount, Free delivery > 2000 BDT
+ * DREAM CART BD — GLOBAL CONFIGURATION (FIXED & ENHANCED)
+ * New Sheet ID: 1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g
  */
 const CONFIG = {
   appName: 'Dream Cart BD',
@@ -9,7 +9,7 @@ const CONFIG = {
   logoUrl: 'https://pictures-bangladesh.jijistatic.com/2033199_MjAwLTIwMC03Nzk0Y2Y2Yzkx.jpg',
   logoText: 'DC',
   
-  // Contact & Support Numbers (Two Direct Phone & WhatsApp Channels)
+  // Contact & Support Numbers
   phone1: '01581703822',
   phone2: '01818273838',
   whatsapp1: '01581703822',
@@ -29,7 +29,7 @@ const CONFIG = {
   deliveryCumilla: 90,
   deliveryDhaka: 110,
   deliveryOutside: 135,
-  freeDeliveryThreshold: 2000, // ২০০০ টাকার বেশি শপিং করলে ডেলিভারি চার্জ সম্পূর্ণ ফ্রি!
+  freeDeliveryThreshold: 2000, // ২০০০৳ বেশি কেনাকাটায় ডেলিভারি সম্পূর্ণ ফ্রি
   
   // Online Payment Discount (5% Instant Discount)
   onlineDiscountPercent: 5,
@@ -48,12 +48,17 @@ const CONFIG = {
     }
   },
   
-  // Google Sheets ID
-  spreadsheetId: '1W4k4HP1MBuHfdU7AkPHPf_P-huHATEpIbGhJQDRtpH4',
+  // Updated Google Sheet ID from User Request
+  spreadsheetId: '1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g',
+  
+  // Direct Google Sheets Visualization API for Instant Live Browser Syncing
+  sheetGvizUrl: 'https://docs.google.com/spreadsheets/d/1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g/gviz/tq?tqx=out:json&sheet=Products',
+  
+  // Google Apps Script Web App Deployment URL
   apiBaseUrl: 'https://script.google.com/macros/s/AKfycbznjGoCkjC-4u-KUkm-yaxDKYpUnWvxjXUqjZDP6vZCvQnwfQlupl4_HODMv1oC7CJt/exec',
   
   currency: '৳',
-  defaultTheme: 'dark',
+  defaultTheme: 'dark', // Dark Mode by default
 
   // Columns A-R Mapping
   productColumns: {
