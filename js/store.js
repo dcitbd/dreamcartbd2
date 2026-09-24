@@ -3,12 +3,28 @@
  * Handles Cart, Wishlist, Authentication (Customer, Wholesaler, Admin Roles), Theme
  */
 const STORE = {
+  safeSet(key, value) {
+    try {
+      localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
+    } catch (e) {
+      console.warn(`[Storage Safe Notice] Could not write ${key} to localStorage:`, e);
+    }
+  },
+  safeGet(key, defaultVal = null) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw !== null ? raw : defaultVal;
+    } catch (e) {
+      return defaultVal;
+    }
+  },
+
   // Cart Management
   cart: {
     items: JSON.parse(localStorage.getItem('dcbd_cart') || '[]'),
     
     save() {
-      localStorage.setItem('dcbd_cart', JSON.stringify(this.items));
+      STORE.safeSet('dcbd_cart', this.items);
       STORE.emit('cart_updated', this.items);
     },
 
@@ -71,7 +87,7 @@ const STORE = {
     items: JSON.parse(localStorage.getItem('dcbd_wishlist') || '[]'),
 
     save() {
-      localStorage.setItem('dcbd_wishlist', JSON.stringify(this.items));
+      STORE.safeSet('dcbd_wishlist', this.items);
       STORE.emit('wishlist_updated', this.items);
     },
 
@@ -100,7 +116,7 @@ const STORE = {
 
     loginCustomer(data) {
       this.customer = data;
-      localStorage.setItem('dcbd_customer_session', JSON.stringify(data));
+      STORE.safeSet('dcbd_customer_session', data);
       STORE.emit('auth_changed', { type: 'customer', user: data });
     },
 
@@ -113,7 +129,7 @@ const STORE = {
 
     loginWholesaler(data) {
       this.wholesaler = data;
-      localStorage.setItem('dcbd_wholesaler_session', JSON.stringify(data));
+      STORE.safeSet('dcbd_wholesaler_session', data);
       STORE.emit('auth_changed', { type: 'wholesaler', user: data });
     },
 
@@ -126,7 +142,7 @@ const STORE = {
 
     loginAdmin(data) {
       this.admin = data;
-      localStorage.setItem('dcbd_admin_session', JSON.stringify(data));
+      STORE.safeSet('dcbd_admin_session', data);
       STORE.emit('auth_changed', { type: 'admin', user: data });
     },
 
@@ -153,7 +169,7 @@ const STORE = {
 
     toggle() {
       this.current = this.current === 'dark' ? 'light' : 'dark';
-      localStorage.setItem('dcbd_theme', this.current);
+      STORE.safeSet('dcbd_theme', this.current);
       this.init();
       STORE.emit('theme_changed', this.current);
     }
