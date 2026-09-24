@@ -8,7 +8,7 @@
  */
 
 const SPREADSHEET_ID = "1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g";
-const OWNER_EMAIL = "dubaiwholesalebd@gmail.com";
+const OWNER_EMAIL = "jainal.dcitbd@gmail.com";
 
 // Sheet Tab Names matching exact sheet structure
 const SHEETS = {
