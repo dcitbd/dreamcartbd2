@@ -1,12 +1,13 @@
 /**
- * DREAM CART BD — GLOBAL CONFIGURATION (FIXED & ENHANCED)
- * New Sheet ID: 1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g
+ * DREAM CART BD — GLOBAL CONFIGURATION
+ * Google Sheet ID: 1W4k4HP1MBuHfdU7AkPHPf_P-huHATEpIbGhJQDRtpH4
  */
 const CONFIG = {
   appName: 'Dream Cart BD',
   slogan: 'খাঁটি পণ্য, সাশ্রয়ী দাম, দ্রুততম ডেলিভারি ও বিশ্বস্ত হোলসেল প্ল্যাটফর্ম',
   tagline: 'সেরা দামে নির্ভরযোগ্য অনলাইন শপিং ও হোলসেল প্ল্যাটফর্ম',
   logoUrl: 'https://pictures-bangladesh.jijistatic.com/2033199_MjAwLTIwMC03Nzk0Y2Y2Yzkx.jpg',
+  fallbackLogoUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=80',
   logoText: 'DC',
   
   // Contact & Support Numbers
@@ -48,11 +49,12 @@ const CONFIG = {
     }
   },
   
-  // Updated Google Sheet ID from User Request
-  spreadsheetId: '1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g',
+  // Google Sheet ID from User Request
+  spreadsheetId: '1W4k4HP1MBuHfdU7AkPHPf_P-huHATEpIbGhJQDRtpH4',
+  altSpreadsheetId: '1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g',
   
   // Direct Google Sheets Visualization API for Instant Live Browser Syncing
-  sheetGvizUrl: 'https://docs.google.com/spreadsheets/d/1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g/gviz/tq?tqx=out:json&sheet=Products',
+  sheetGvizUrl: 'https://docs.google.com/spreadsheets/d/1W4k4HP1MBuHfdU7AkPHPf_P-huHATEpIbGhJQDRtpH4/gviz/tq?tqx=out:json&sheet=Products',
   
   // Google Apps Script Web App Deployment URL
   apiBaseUrl: 'https://script.google.com/macros/s/AKfycbznjGoCkjC-4u-KUkm-yaxDKYpUnWvxjXUqjZDP6vZCvQnwfQlupl4_HODMv1oC7CJt/exec',

@@ -127,14 +127,17 @@ const PAGES = {
           ${categoryGroups.map((group, idx) => `
             <div class="category-block mb-5">
               
-              <!-- Category Header with Line and See all Button -->
-              <div class="category-header-line d-flex align-items-center justify-content-between mb-3">
-                <div class="d-flex align-items-center gap-2 flex-grow-1 me-3">
+              <!-- Category Header with Line and See all Button (ক্যাটাগরি ১----------- See all) -->
+              <div class="category-header-line d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-slate-800">
+                <div class="d-flex align-items-center gap-3 flex-grow-1 me-3">
                   <span class="category-badge-number">${idx + 1}</span>
-                  <h3 class="category-heading mb-0 text-capitalize">${group.categoryName}</h3>
-                  <div class="cat-divider-line flex-grow-1 ms-3 d-none d-sm-block"></div>
+                  <div>
+                    <h3 class="category-heading mb-0 text-white fw-bold">ক্যাটাগরি ${idx + 1}: ${group.categoryName}</h3>
+                    <div class="text-xs text-emerald fw-semibold">${group.totalCount} টি প্রিমিয়াম প্রোডাক্ট</div>
+                  </div>
+                  <div class="cat-divider-line flex-grow-1 ms-3 d-none d-md-block" style="border-bottom: 2px dashed #334155; height: 1px;"></div>
                 </div>
-                <a href="#/products?category=${encodeURIComponent(group.categoryName)}" class="btn btn-sm btn-see-all text-nowrap">
+                <a href="#/products?category=${encodeURIComponent(group.categoryName)}" class="btn btn-sm btn-see-all text-nowrap shadow-sm">
                   See all (${group.totalCount}) <i class="bi bi-arrow-right ms-1"></i>
                 </a>
               </div>

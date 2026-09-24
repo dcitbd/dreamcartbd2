@@ -333,7 +333,7 @@ const COMPONENTS = {
         
         <!-- Image & Badges -->
         <div class="product-card-img-wrap">
-          <img src="${p.primaryImage}" alt="${p.name}" class="product-img" loading="lazy" />
+          <img src="${p.primaryImage}" alt="${p.name}" class="product-img" loading="lazy" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=80';" />
           
           ${p.discountPercent > 0 ? `
             <span class="product-discount-badge">-${p.discountPercent}%</span>

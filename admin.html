@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>এডমিন পোর্টাল — Dream Cart BD</title>
+  
+  <!-- Google Fonts: Hind Siliguri -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5.3 & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  
+  <!-- Custom High-Contrast Dark-First Production Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-primary text-white">
+
+  <!-- Page Loader with Shop Logo -->
+  <div id="page-loader" class="page-loader-screen">
+    <div class="loader-content-box">
+      <div class="loader-logo-ring">
+        <img src="https://pictures-bangladesh.jijistatic.com/2033199_MjAwLTIwMC03Nzk0Y2Y2Yzkx.jpg" 
+             alt="Dream Cart BD Logo" 
+             class="loader-logo-circle"
+             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500';" />
+      </div>
+      <div class="loader-shop-title">Dream Cart BD</div>
+      <div class="loader-shop-tagline text-muted">লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</div>
+      <div class="loader-progress-bar">
+        <div class="loader-progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Header Container -->
+  <div id="header-container"></div>
+
+  <!-- Main Content Body -->
+  <main id="main-content" class="container-fluid px-3 px-md-4 py-3" style="min-height: 80vh;">
+    <div id="page-content"></div>
+  </main>
+
+  <!-- Global Footer Container -->
+  <div id="footer-container"></div>
+
+  <!-- Quick Floating Contacts -->
+  <div id="floating-contacts-container"></div>
+
+  <!-- Mobile Offcanvas Drawer -->
+  <div id="mobile-drawer-container"></div>
+
+  <!-- Global Modals (Vouchers, Edit, Add) -->
+  <div id="modals-container"></div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 9999;"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/pages.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Standalone Page Initializer -->
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Ensure header, footer and loader are initialized
+      if (typeof COMPONENTS !== 'undefined') {
+        COMPONENTS.renderHeader();
+        COMPONENTS.renderFooter();
+        COMPONENTS.renderFloatingContacts();
+        COMPONENTS.renderMobileDrawer();
+        COMPONENTS.renderModals();
+      }
+      
+      const container = document.getElementById('page-content');
+      if (container) {
+        try {
+          container.innerHTML = await ADMIN.renderDashboard();
+        } catch(e) {
+          console.error(e);
+        }
+      }
+      
+      // Hide loader
+      setTimeout(() => {
+        const loader = document.getElementById('page-loader');
+        if (loader) loader.classList.add('fade-out');
+      }, 300);
+    });
+  </script>
+</body>
+</html>
