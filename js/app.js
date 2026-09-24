@@ -1,5 +1,9 @@
 /**
  * DREAM CART BD — MASTER CLIENT ROUTER & EVENT MANAGER
+ * Features:
+ * - Admin Session Route Guarding (Requirement 17: Auto logout on tab close)
+ * - Scroll-Reveal IntersectionObserver Animations (Requirement 18)
+ * - Dual Route Mount (Terms, Privacy, Categories, Products, Dashboards)
  */
 const APP = {
   async init() {
@@ -30,18 +34,18 @@ const APP = {
     window.addEventListener('hashchange', () => this.route());
     await this.route();
 
-    // Dismiss Preloader smoothly
+    // 7. Dismiss Preloader smoothly
     setTimeout(() => {
       const loader = document.getElementById('page-loader');
       if (loader) {
         loader.classList.add('fade-out');
         setTimeout(() => loader.remove(), 500);
       }
-    }, 600);
+    }, 500);
   },
 
   updateNavbar() {
-    const navMount = document.getElementById('navbar-mount');
+    const navMount = document.getElementById('navbar-mount') || document.getElementById('header-container');
     if (navMount) {
       navMount.innerHTML = COMPONENTS.renderNavbar();
       this.wireNavbarActions();
@@ -49,7 +53,7 @@ const APP = {
   },
 
   wireNavbarActions() {
-    // Dark mode buttons
+    // Theme toggle
     const btnTheme = document.getElementById('btn-toggle-theme');
     const btnThemeMobile = document.getElementById('btn-toggle-theme-mobile');
     if (btnTheme) btnTheme.onclick = () => STORE.theme.toggle();
@@ -62,12 +66,12 @@ const APP = {
     const drawer = document.getElementById('mobile-drawer');
 
     const openDrawer = () => {
-      drawer?.classList.add('active');
-      drawerOverlay?.classList.add('active');
+      drawer?.classList.add('open');
+      drawerOverlay?.classList.add('open');
     };
     const closeDrawer = () => {
-      drawer?.classList.remove('active');
-      drawerOverlay?.classList.remove('active');
+      drawer?.classList.remove('open');
+      drawerOverlay?.classList.remove('open');
     };
 
     if (btnOpenDrawer) btnOpenDrawer.onclick = openDrawer;
@@ -100,10 +104,29 @@ const APP = {
     // Global link interceptor to close mobile drawer
     document.addEventListener('click', (e) => {
       if (e.target.closest('.mobile-menu-link')) {
-        document.getElementById('mobile-drawer')?.classList.remove('active');
-        document.getElementById('mobile-drawer-overlay')?.classList.remove('active');
+        document.getElementById('mobile-drawer')?.classList.remove('open');
+        document.getElementById('mobile-drawer-overlay')?.classList.remove('open');
       }
     });
+  },
+
+  // Setup Scroll Reveal Animations (Requirement 18)
+  initScrollAnimations() {
+    setTimeout(() => {
+      const reveals = document.querySelectorAll('.scroll-reveal');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('revealed');
+            }
+          });
+        }, { threshold: 0.08 });
+        reveals.forEach(el => observer.observe(el));
+      } else {
+        reveals.forEach(el => el.classList.add('revealed'));
+      }
+    }, 150);
   },
 
   // Client-side Hash Router
@@ -118,7 +141,7 @@ const APP = {
     const params = new URLSearchParams(queryString || '');
     const queryObj = Object.fromEntries(params.entries());
 
-    // Show small content loader
+    // Show loading state
     content.innerHTML = `
       <div class="d-flex justify-content-center align-items-center py-5" style="min-height: 50vh;">
         <div class="spinner-border text-emerald" role="status">
@@ -128,16 +151,15 @@ const APP = {
     `;
 
     try {
-      // 1. Home
+      // 1. Home Page
       if (path === '#/' || path === '#' || path === '') {
         content.innerHTML = await PAGES.renderHome();
-        // Initialize carousel
         const carEl = document.getElementById('homeHeroCarousel');
         if (carEl && window.bootstrap) {
           new bootstrap.Carousel(carEl, { interval: 4000, wrap: true });
         }
       }
-      // 2. Products
+      // 2. Products Page (Grid-6, 120 per page, tree filter)
       else if (path === '#/products') {
         content.innerHTML = await PAGES.renderProducts(queryObj);
       }
@@ -169,7 +191,7 @@ const APP = {
       else if (path === '#/checkout') {
         content.innerHTML = await PAGES.renderCheckout();
       }
-      // 8. Customer Login
+      // 8. Customer Login / Register (Width 30%)
       else if (path === '#/customer/login') {
         content.innerHTML = PAGES.renderCustomerLogin();
       }
@@ -177,7 +199,7 @@ const APP = {
       else if (path === '#/customer/dashboard') {
         content.innerHTML = await PAGES.renderCustomerDashboard();
       }
-      // 10. As a Wholesaler Login
+      // 10. As a Wholesaler Login / Register (Width 30%)
       else if (path === '#/wholesale/login') {
         content.innerHTML = PAGES.renderWholesaleLogin();
       }
@@ -185,12 +207,26 @@ const APP = {
       else if (path === '#/wholesale/dashboard') {
         content.innerHTML = await PAGES.renderWholesaleDashboard();
       }
-      // 12. Admin Login
+      // 12. Terms & Conditions (Requirement 18)
+      else if (path === '#/terms') {
+        content.innerHTML = PAGES.renderTerms();
+      }
+      // 13. Privacy Policy (Requirement 18)
+      else if (path === '#/privacy' || path === '#/privecy') {
+        content.innerHTML = PAGES.renderPrivacy();
+      }
+      // 14. Admin Login (Developer background, eye toggle, captcha)
       else if (path === '#/admin/login') {
         content.innerHTML = ADMIN.renderLogin();
       }
-      // 13. Admin Dashboard
-      else if (path === '#/admin/dashboard') {
+      // 15. Admin Dashboard (Route guarded by sessionStorage)
+      else if (path === '#/admin/dashboard' || path.startsWith('#/admin')) {
+        // Requirement 17: Cannot enter without login
+        if (!STORE.auth.isLoggedInAdmin()) {
+          STORE.toast('error', 'লগইন আবশ্যক!', 'এডমিন প্যানেলে প্রবেশ করতে প্রথমে লগইন করুন।');
+          window.location.hash = '#/admin/login';
+          return;
+        }
         content.innerHTML = await ADMIN.renderPortal();
       }
       else {
@@ -202,6 +238,10 @@ const APP = {
           </div>
         `;
       }
+
+      // Initialize animations after rendering view
+      this.initScrollAnimations();
+
     } catch (err) {
       console.error('Routing Error:', err);
       content.innerHTML = `

@@ -2,7 +2,7 @@
  * DREAM CART BD — BULLETPROOF DATA & API ENGINE
  * Features:
  * 1. Safe In-Memory & LocalStorage dual-layer cache (QuotaExceededError Proof)
- * 2. 33 Exact Products directly from Google Sheet 1W4k4HP1MBuHfdU7AkPHPf_P-huHATEpIbGhJQDRtpH4
+ * 2. 33 Exact Products directly from Google Sheet 1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g
  * 3. Graceful Google Sheets Live Synchronization
  */
 
@@ -1213,27 +1213,219 @@ const API = {
       // Group products by 8 distinct categories for Home Page Grid-6
       case 'products/get_by_category': {
         const products = this.getStorage(this.STORAGE_KEYS.PRODUCTS, this.SEED_PRODUCTS);
-        const categories = [
-          'Watches & Jewellery',
-          'Health & Beauty',
-          'Home & Kitchen',
-          'Gadgets & Electronics',
-          'Stationery & Office',
-          'Organic & Groceries',
-          'Tools & Outdoor',
-          'Fashion, Travel & Auto'
-        ];
-
-        const categoryGroups = categories.map(cat => {
-          const catProducts = products.filter(p => p.category === cat);
+        // Requirement 5: Only in-stock products displayed on home page
+        const inStockProducts = products.filter(p => (parseInt(p.stock, 10) || 0) > 0);
+        
+        // Find all unique categories from products
+        const allCats = [...new Set(inStockProducts.map(p => p.category || 'General'))];
+        
+        const categoryGroups = allCats.map(cat => {
+          const catProducts = inStockProducts.filter(p => p.category === cat);
           return {
             categoryName: cat,
-            products: catProducts.slice(0, 12),
+            products: catProducts.slice(0, 12), // Requirement 4: 12 pcs per category
             totalCount: catProducts.length
           };
         }).filter(g => g.products.length > 0);
 
         return { success: true, data: { groups: categoryGroups } };
+      }
+
+      // Requirement 6: Categories Tree Hierarchy
+      case 'categories/tree': {
+        const products = this.getStorage(this.STORAGE_KEYS.PRODUCTS, this.SEED_PRODUCTS);
+        const tree = {};
+
+        // Build hierarchy from products
+        products.forEach(p => {
+          const main = p.category || 'General';
+          const sub = p.subCategory || 'অন্যান্য পণ্য';
+          const child = p.childCategory || 'স্পেশাল আইটেম';
+
+          if (!tree[main]) tree[main] = {};
+          if (!tree[main][sub]) tree[main][sub] = new Set();
+          tree[main][sub].add(child);
+        });
+
+        // Convert Sets to Arrays
+        const formattedTree = Object.keys(tree).map(main => {
+          return {
+            mainCategory: main,
+            subCategories: Object.keys(tree[main]).map(sub => {
+              return {
+                subCategory: sub,
+                childCategories: Array.from(tree[main][sub])
+              };
+            })
+          };
+        });
+
+        return { success: true, data: formattedTree };
+      }
+
+      // Brands list
+      case 'brands/list': {
+        const brands = this.getStorage(this.STORAGE_KEYS.BRANDS, [
+          { id: 'BRD-01', name: 'China Brand', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200', count: 18 },
+          { id: 'BRD-02', name: 'Huawei', image: 'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=200', count: 4 },
+          { id: 'BRD-03', name: 'OnePlus', image: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=200', count: 3 },
+          { id: 'BRD-04', name: 'Amazfit', image: 'https://images.unsplash.com/photo-1544117519-31a4b719223d?w=200', count: 3 },
+          { id: 'BRD-05', name: 'WISTER', image: 'https://img.drz.lazcdn.com/static/bd/p/010155b9e0bb66f28b43f9a7620adcb2.png', count: 2 },
+          { id: 'BRD-06', name: 'Good Luck', image: 'https://img.drz.lazcdn.com/static/bd/p/636047c61f22fa2ff074121c29665bc8.png', count: 3 }
+        ]);
+        return { success: true, data: { items: brands, total: brands.length } };
+      }
+
+      case 'brands/add': {
+        const brands = this.getStorage(this.STORAGE_KEYS.BRANDS, []);
+        const newBrand = {
+          id: 'BRD-' + Date.now().toString().slice(-4),
+          name: payload.name || 'New Brand',
+          image: payload.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200',
+          description: payload.description || '',
+          count: 0
+        };
+        brands.unshift(newBrand);
+        this.setStorage(this.STORAGE_KEYS.BRANDS, brands);
+        return { success: true, message: 'Brand added successfully!', brand: newBrand };
+      }
+
+      case 'brands/delete': {
+        let brands = this.getStorage(this.STORAGE_KEYS.BRANDS, []);
+        brands = brands.filter(b => b.id !== payload.id);
+        this.setStorage(this.STORAGE_KEYS.BRANDS, brands);
+        return { success: true, message: 'Brand deleted' };
+      }
+
+      // Requirement 3: Banners CRUD Actions
+      case 'banners/add': {
+        const banners = this.getStorage(this.STORAGE_KEYS.BANNERS, []);
+        const newBanner = {
+          id: Date.now(),
+          title: payload.title || 'নতুন ব্যানার অফার',
+          subtitle: payload.subtitle || 'সেরা অফারে কিনুন এখনই',
+          badge: payload.badge || 'স্পেশাল কালেকশন',
+          bg: payload.bg || 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
+          link: payload.link || '#/products',
+          img: payload.img || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'
+        };
+        banners.unshift(newBanner);
+        this.setStorage(this.STORAGE_KEYS.BANNERS, banners);
+        return { success: true, message: 'ব্যানার সফলভাবে যুক্ত হয়েছে!', banner: newBanner };
+      }
+
+      case 'banners/update': {
+        let banners = this.getStorage(this.STORAGE_KEYS.BANNERS, []);
+        const idx = banners.findIndex(b => String(b.id) === String(payload.id));
+        if (idx !== -1) {
+          banners[idx] = { ...banners[idx], ...payload };
+          this.setStorage(this.STORAGE_KEYS.BANNERS, banners);
+          return { success: true, message: 'ব্যানার আপডেট সফল হয়েছে!' };
+        }
+        return { success: false, message: 'ব্যানার পাওয়া যায়নি' };
+      }
+
+      case 'banners/delete': {
+        let banners = this.getStorage(this.STORAGE_KEYS.BANNERS, []);
+        banners = banners.filter(b => String(b.id) !== String(payload.id));
+        this.setStorage(this.STORAGE_KEYS.BANNERS, banners);
+        return { success: true, message: 'ব্যানার মুছে ফেলা হয়েছে!' };
+      }
+
+      // Orders Additional Actions (Returns, Status updates, Delete)
+      case 'orders/update_status': {
+        let orders = this.getStorage(this.STORAGE_KEYS.ORDERS, []);
+        const ord = orders.find(o => o.orderId === payload.orderId);
+        if (ord) {
+          ord.status = payload.status;
+          this.setStorage(this.STORAGE_KEYS.ORDERS, orders);
+          return { success: true, message: 'স্ট্যাটাস আপডেট সফল হয়েছে!' };
+        }
+        return { success: false, message: 'অর্ডার পাওয়া যায়নি' };
+      }
+
+      case 'orders/delete': {
+        let orders = this.getStorage(this.STORAGE_KEYS.ORDERS, []);
+        orders = orders.filter(o => o.orderId !== payload.orderId);
+        this.setStorage(this.STORAGE_KEYS.ORDERS, orders);
+        return { success: true, message: 'অর্ডার মুছে ফেলা হয়েছে' };
+      }
+
+      case 'orders/return_list': {
+        const orders = this.getStorage(this.STORAGE_KEYS.ORDERS, []);
+        const returns = orders.filter(o => o.status === 'Return' || o.status === 'Returned');
+        return { success: true, data: { items: returns, total: returns.length } };
+      }
+
+      // Customer Profile & Password Change (Requirement 11)
+      case 'customers/update': {
+        let custs = this.getStorage(this.STORAGE_KEYS.CUSTOMERS, []);
+        const idx = custs.findIndex(c => c.phone === payload.phone || c.userId === payload.userId);
+        if (idx !== -1) {
+          custs[idx] = { ...custs[idx], ...payload };
+          this.setStorage(this.STORAGE_KEYS.CUSTOMERS, custs);
+        }
+        return { success: true, message: 'প্রোফাইল আপডেট হয়েছে!' };
+      }
+
+      case 'customers/change_password': {
+        let custs = this.getStorage(this.STORAGE_KEYS.CUSTOMERS, []);
+        const cust = custs.find(c => c.phone === payload.phone || c.userId === payload.userId);
+        const currentStoredPwd = (cust && cust.password) || '123456';
+        if (payload.oldPassword !== currentStoredPwd) {
+          return { success: false, message: 'পুরাতন পাসওয়ার্ডটি সঠিক নয়! দয়া করে সঠিক পাসওয়ার্ড দিন।' };
+        }
+        if (cust) {
+          cust.password = payload.newPassword;
+          this.setStorage(this.STORAGE_KEYS.CUSTOMERS, custs);
+        }
+        return { success: true, message: 'পাসওয়ার্ড সফলভাবে পরিবর্তন করা হয়েছে!' };
+      }
+
+      // Wholesaler Profile & Password Change (Requirement 12)
+      case 'wholesalers/change_password': {
+        let wsList = this.getStorage(this.STORAGE_KEYS.WHOLESALERS, []);
+        const ws = wsList.find(w => w.phone === payload.phone || w.userId === payload.userId);
+        const currentStoredPwd = (ws && ws.password) || '123456';
+        if (payload.oldPassword !== currentStoredPwd) {
+          return { success: false, message: 'পুরাতন পাসওয়ার্ডটি সঠিক নয়! দয়া করে সঠিক পাসওয়ার্ড দিন।' };
+        }
+        if (ws) {
+          ws.password = payload.newPassword;
+          this.setStorage(this.STORAGE_KEYS.WHOLESALERS, wsList);
+        }
+        return { success: true, message: 'হোলসেলার পাসওয়ার্ড সফলভাবে পরিবর্তিত হয়েছে!' };
+      }
+
+      // Reviews Actions
+      case 'reviews/list': {
+        const reviews = this.getStorage(this.STORAGE_KEYS.REVIEWS, [
+          { id: 1, customer: 'মো: আল আমিন', rating: 5, text: 'খুবই দ্রুত ডেলিভারি পেয়েছি। কাপল রিংগুলো দেখতে অসাধারণ ও প্রিমিয়াম!', product: 'Smart Stainless Steel Ring', date: '2026-09-22' },
+          { id: 2, customer: 'তানজিনা আক্তার', rating: 5, text: '৯২৫ সিলভার ইয়ার ক্লিপটি চমৎকার! কোনো সমস্যা ছাড়াই কানে পরা যায়।', product: 'Sterling Silver Ear Clips', date: '2026-09-20' },
+          { id: 3, customer: 'সাকিব হাসান (হোলসেলার)', rating: 5, text: 'ড্রিম কার্ট বিডি-এর হোলসেল রেট বাজারের সেরা। নিয়মিত মাল নিচ্ছি।', product: 'Wholesale Partner', date: '2026-09-18' }
+        ]);
+        return { success: true, data: { items: reviews, total: reviews.length } };
+      }
+
+      case 'reviews/add': {
+        const reviews = this.getStorage(this.STORAGE_KEYS.REVIEWS, []);
+        reviews.unshift({
+          id: Date.now(),
+          customer: payload.customer || 'Customer',
+          rating: payload.rating || 5,
+          text: payload.text || '',
+          product: payload.product || 'General',
+          date: new Date().toISOString().split('T')[0]
+        });
+        this.setStorage(this.STORAGE_KEYS.REVIEWS, reviews);
+        return { success: true, message: 'রিভিউ সফলভাবে যুক্ত হয়েছে!' };
+      }
+
+      case 'reviews/delete': {
+        let reviews = this.getStorage(this.STORAGE_KEYS.REVIEWS, []);
+        reviews = reviews.filter(r => r.id !== payload.id);
+        this.setStorage(this.STORAGE_KEYS.REVIEWS, reviews);
+        return { success: true, message: 'রিভিউ ডিলিট হয়েছে' };
       }
 
       case 'products/details': {

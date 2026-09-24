@@ -1,7 +1,8 @@
 /**
  * ===================================================================
- * DREAM CART BD — ENTERPRISE GOOGLE APPS SCRIPT BACKEND
- * Multi-Sheet Sync, Order Processing, Brand & Product Management
+ * DREAM CART BD — ENTERPRISE GOOGLE APPS SCRIPT BACKEND (UPDATED)
+ * Multi-Sheet Sync, Google Drive Folder Uploads, Orders, Incomplete, Returns,
+ * Customers, Wholesalers, Banners, Brands, Categories, Buying, Costs, Invest, Roles
  * 
  * Google Spreadsheet ID: 1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g
  * ===================================================================
@@ -9,6 +10,16 @@
 
 const SPREADSHEET_ID = "1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g";
 const OWNER_EMAIL = "jainal.dcitbd@gmail.com";
+const SUPPORT_EMAIL = "saiful05333@gmail.com";
+
+// Google Drive Destination Folders (Requirement 15)
+const DRIVE_FOLDERS = {
+  products: "1q8rfxni24t6q17wX-82ozjpbVXXR_ntG",
+  brands: "1kBORS5_d-7O1F8dd6YFWW9P2wTk6KXJu",
+  categories: "1ZwTZs_ZeLuZYtvU4G6JkK2DMWHRgHyyA",
+  settings: "1gF0RhJFX-JD4e8vZw2yx2SJ6zD5mf2Vd",
+  customers: "1gF0RhJFX-JD4e8vZw2yx2SJ6zD5mf2Vd"
+};
 
 // Sheet Tab Names matching exact sheet structure
 const SHEETS = {
@@ -22,15 +33,18 @@ const SHEETS = {
   CUSTOMERS: "User/Customer",
   WHOLESALERS: "WholeSaller",
   WORKERS: "Admin/Worker",
-  INCOMPLETE: "Incomplete_Orders"
+  INCOMPLETE: "Incomplete_Orders",
+  RETURNS: "Return_Orders",
+  BANNERS: "Banners",
+  REVIEWS: "Reviews"
 };
 
 /**
  * Handle HTTP GET Requests
  */
 function doGet(e) {
-  const action = e.parameter.action || 'products/list';
-  const response = handleAction(action, e.parameter);
+  const action = (e && e.parameter && e.parameter.action) || 'products/list';
+  const response = handleAction(action, e ? e.parameter : {});
   return ContentService.createTextOutput(JSON.stringify(response))
     .setMimeType(ContentService.MimeType.JSON);
 }
@@ -64,18 +78,17 @@ function handleAction(action, payload) {
 
   switch (action) {
     // -------------------------------------------------------------
-    // PRODUCTS ACTIONS
+    // 1. PRODUCTS ACTIONS
     // -------------------------------------------------------------
     case 'products/list': {
       const sheet = getOrCreateSheet(ss, SHEETS.PRODUCTS);
       const data = sheet.getDataRange().getValues();
       if (data.length <= 1) return { success: true, data: { items: [], total: 0 } };
 
-      const headers = data[0];
       const items = [];
       for (let i = 1; i < data.length; i++) {
         const row = data[i];
-        if (!row[0] && !row[1]) continue; // Skip empty rows
+        if (!row[0] && !row[1]) continue;
 
         const sku = String(row[0] || '');
         const name = String(row[1] || '');
@@ -189,7 +202,7 @@ function handleAction(action, payload) {
     }
 
     // -------------------------------------------------------------
-    // ORDERS ACTIONS
+    // 2. ORDERS ACTIONS
     // -------------------------------------------------------------
     case 'orders/create': {
       const sheet = getOrCreateSheet(ss, SHEETS.ORDERS);
@@ -198,11 +211,10 @@ function handleAction(action, payload) {
       const productsStr = (payload.items || []).map(it => it.name + ' (' + (it.quantity || 1) + 'x)').join(', ');
       const totalQty = (payload.items || []).reduce((sum, it) => sum + (it.quantity || 1), 0);
 
-      // Columns: OrderID, Date, Customer_Name, Phone, Address, Products, Quantity, Total_Amount, Delivery_Type, Status
       const row = [
         orderId,
         dateStr,
-        payload.name || '',
+        payload.name || payload.customerName || '',
         payload.phone || '',
         payload.address || '',
         productsStr,
@@ -212,6 +224,32 @@ function handleAction(action, payload) {
         'Pending'
       ];
       sheet.appendRow(row);
+
+      // Also register or update customer automatically
+      try {
+        const custSheet = getOrCreateSheet(ss, SHEETS.CUSTOMERS);
+        const custData = custSheet.getDataRange().getValues();
+        let exists = false;
+        for (let c = 1; c < custData.length; c++) {
+          if (String(custData[c][3]) === String(payload.phone)) {
+            exists = true;
+            break;
+          }
+        }
+        if (!exists) {
+          custSheet.appendRow([
+            'CUST-' + Date.now().toString().slice(-4),
+            '',
+            payload.name || payload.customerName || 'Customer',
+            payload.phone,
+            payload.email || '',
+            payload.address || '',
+            payload.phone,
+            'Cust@' + Date.now().toString().slice(-4),
+            'Active'
+          ]);
+        }
+      } catch(e) {}
 
       // Send Instant Order Notification to Shop Owner
       try {
@@ -224,20 +262,16 @@ function handleAction(action, payload) {
               <p><strong>অর্ডার আইডি:</strong> ${orderId}</p>
               <p><strong>তারিখ:</strong> ${dateStr}</p>
               <hr />
-              <p><strong>গ্রাহকের নাম:</strong> ${payload.name}</p>
+              <p><strong>গ্রাহকের নাম:</strong> ${payload.name || payload.customerName}</p>
               <p><strong>মোবাইল নম্বর:</strong> ${payload.phone}</p>
               <p><strong>ডেলিভারি ঠিকানা:</strong> ${payload.address}</p>
               <p><strong>অর্ডারকৃত পণ্য:</strong> ${productsStr}</p>
               <p><strong>মোট মূল্য:</strong> ${payload.totalAmount} ৳</p>
               <p><strong>পেমেন্ট মাধ্যম:</strong> ${payload.paymentMethod || 'ক্যাশ অন ডেলিভারি'}</p>
-              <hr />
-              <p style="color: #64748b; font-size: 12px;">এই অর্ডারটি সরাসরি আপনার গুগল শিটে সংরক্ষিত হয়েছে।</p>
             </div>
           `
         });
-      } catch (mailErr) {
-        // Continue if mail quota exceeded
-      }
+      } catch (mailErr) {}
 
       return { success: true, message: "অর্ডার সফলভাবে গ্রহণ করা হয়েছে!", orderId: orderId };
     }
@@ -265,8 +299,55 @@ function handleAction(action, payload) {
       return { success: true, data: { items: orders.reverse(), total: orders.length } };
     }
 
+    case 'orders/save_incomplete': {
+      const sheet = getOrCreateSheet(ss, SHEETS.INCOMPLETE);
+      const dateStr = Utilities.formatDate(new Date(), "GMT+6", "yyyy-MM-dd HH:mm:ss");
+      const productsStr = (payload.items || []).map(it => it.name + ' (' + (it.quantity || 1) + 'x)').join(', ');
+      sheet.appendRow([
+        'INC-' + Date.now().toString().slice(-5),
+        dateStr,
+        payload.name || 'Visitor',
+        payload.phone || '',
+        payload.address || '',
+        productsStr,
+        payload.totalAmount || 0,
+        'Abandoned'
+      ]);
+      return { success: true, message: "Incomplete order tracked" };
+    }
+
     // -------------------------------------------------------------
-    // BRANDS ACTIONS
+    // 3. GOOGLE DRIVE UPLOAD ACTION (Requirement 15)
+    // -------------------------------------------------------------
+    case 'drive/upload': {
+      try {
+        const folderKey = payload.folderType || 'products';
+        const targetFolderId = DRIVE_FOLDERS[folderKey] || DRIVE_FOLDERS.products;
+        const folder = DriveApp.getFolderById(targetFolderId);
+
+        const contentType = payload.mimeType || 'image/jpeg';
+        const fileName = payload.fileName || ('upload_' + Date.now() + '.jpg');
+        const decodedBytes = Utilities.base64Decode(payload.base64Data);
+        const blob = Utilities.newBlob(decodedBytes, contentType, fileName);
+        
+        const file = folder.createFile(blob);
+        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        
+        const publicUrl = "https://lh3.googleusercontent.com/d/" + file.getId();
+        return {
+          success: true,
+          fileId: file.getId(),
+          url: publicUrl,
+          downloadUrl: file.getDownloadUrl(),
+          name: fileName
+        };
+      } catch (uploadErr) {
+        return { success: false, error: uploadErr.toString() };
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 4. BRANDS & CATEGORIES ACTIONS
     // -------------------------------------------------------------
     case 'brands/list': {
       const sheet = getOrCreateSheet(ss, SHEETS.BRANDS);
@@ -275,29 +356,32 @@ function handleAction(action, payload) {
       for (let i = 1; i < data.length; i++) {
         const r = data[i];
         if (!r[0] && !r[2]) continue;
-        brands.push({
-          id: r[0],
-          image: r[1],
-          name: r[2],
-          description: r[3]
-        });
+        brands.push({ id: r[0], image: r[1], name: r[2], description: r[3] });
       }
       return { success: true, data: { items: brands, total: brands.length } };
     }
 
-    case 'brands/add': {
-      const sheet = getOrCreateSheet(ss, SHEETS.BRANDS);
-      sheet.appendRow([
-        payload.brandId || ('BRD-' + Date.now().toString().slice(-4)),
-        payload.brandImage || '',
-        payload.brandName || '',
-        payload.brandDescription || ''
-      ]);
-      return { success: true, message: "Brand added successfully!" };
+    case 'categories/list': {
+      const sheet = getOrCreateSheet(ss, SHEETS.CATEGORIES);
+      const data = sheet.getDataRange().getValues();
+      const cats = [];
+      for (let i = 1; i < data.length; i++) {
+        const r = data[i];
+        if (!r[0] && !r[1]) continue;
+        cats.push({
+          catId: r[0],
+          name: r[1],
+          subCatId: r[2],
+          subCategory: r[3],
+          childCatId: r[4],
+          childCategory: r[5]
+        });
+      }
+      return { success: true, data: { items: cats, total: cats.length } };
     }
 
     // -------------------------------------------------------------
-    // STATS & DASHBOARD ACTIONS
+    // 5. STATS & DASHBOARD ACTIONS
     // -------------------------------------------------------------
     case 'admin/stats': {
       const ordersSheet = getOrCreateSheet(ss, SHEETS.ORDERS);
@@ -322,12 +406,14 @@ function handleAction(action, payload) {
       let totalProducts = Math.max(0, productsData.length - 1);
       let inStock = 0;
       let outStock = 0;
+      let lowStock = 0;
 
       for (let j = 1; j < productsData.length; j++) {
         const bp = parseFloat(productsData[j][6]) || 0;
         const st = parseInt(productsData[j][8], 10) || 0;
         totalBuying += (bp * st);
         if (st > 0) inStock++; else outStock++;
+        if (st > 0 && st <= 5) lowStock++;
       }
 
       return {
@@ -345,6 +431,7 @@ function handleAction(action, payload) {
           totalProducts: totalProducts,
           inStockProducts: inStock,
           outOfStockProducts: outStock,
+          lowStockProducts: lowStock,
           totalCustomers: 85,
           totalWholesalers: 14,
           totalWorkers: 6,
@@ -368,7 +455,6 @@ function getOrCreateSheet(ss, sheetName) {
   let sheet = ss.getSheetByName(sheetName);
   if (!sheet) {
     sheet = ss.insertSheet(sheetName);
-    // Initialize standard headers
     if (sheetName === SHEETS.PRODUCTS) {
       sheet.appendRow(["ID/SKU", "P_Name", "Category", "Sub_Category", "Child_Category", "Brand", "Buying_price", "Selling_Price", "Stock", "Original_Price", "WholeSale_price", "Min_order_Q", "Images", "Description", "Specification", "Others", "Color", "Size"]);
     } else if (sheetName === SHEETS.ORDERS) {
@@ -389,6 +475,12 @@ function getOrCreateSheet(ss, sheetName) {
       sheet.appendRow(["USER_ID", "Shop_logo", "Name", "Mobile", "Mail", "Address", "Shop_Name", "User_ID", "Password", "Status"]);
     } else if (sheetName === SHEETS.WORKERS) {
       sheet.appendRow(["USER_ID", "Profile Photo", "Name", "Mobile", "Mail", "Address", "Worker_Type", "Role", "User_ID", "Password"]);
+    } else if (sheetName === SHEETS.INCOMPLETE) {
+      sheet.appendRow(["ID", "Date", "Name", "Phone", "Address", "Products", "Total", "Status"]);
+    } else if (sheetName === SHEETS.BANNERS) {
+      sheet.appendRow(["ID", "Title", "Subtitle", "Badge", "Image_URL", "Category_Link", "BG_Gradient"]);
+    } else if (sheetName === SHEETS.REVIEWS) {
+      sheet.appendRow(["ID", "Date", "Customer_Name", "Rating", "Review_Text", "Status"]);
     }
   }
   return sheet;

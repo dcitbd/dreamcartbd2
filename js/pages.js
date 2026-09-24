@@ -5,37 +5,37 @@
  */
 const PAGES = {
 
-  // 1. HOME PAGE
+  // 1. HOME PAGE (Requirement 1: 10% Margin, Developer Credits; Requirement 4: 12 pcs slider per category; Requirement 5: In-stock only)
   async renderHome() {
     const bannersRes = await API.call('banners/list');
     const banners = bannersRes.data || [];
     
-    // Group products by category
+    // Group products by category (Requirement 5: in-stock only)
     const catRes = await API.call('products/get_by_category');
     const categoryGroups = (catRes.data && catRes.data.groups) || [];
 
     return `
       <div class="home-page-container">
         
-        <!-- Slogan & Highlights Header Banner -->
+        <!-- Slogan, Highlights & Top Notice -->
         <div class="promo-highlight-banner p-3 rounded-4 mb-4 text-white d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 shadow-lg">
           <div class="d-flex align-items-center gap-3">
-            <img src="${CONFIG.logoUrl}" width="54" height="54" class="rounded-circle border-2 border-emerald shadow" />
+            <img src="${CONFIG.logoUrl}" width="54" height="54" class="rounded-circle border-2 border-emerald shadow" onerror="this.onerror=null; this.src='${CONFIG.fallbackLogoUrl}';" />
             <div>
               <h4 class="mb-0 fw-bold text-white">${CONFIG.appName}</h4>
               <div class="text-xs text-emerald fw-bold">${CONFIG.slogan}</div>
             </div>
           </div>
           <div class="d-flex flex-wrap gap-2 text-xs">
-            <span class="badge bg-emerald/20 text-emerald border border-emerald/40 p-2"><i class="bi bi-truck me-1"></i> ২০০০৳+ শপিংয়ে ডেলিভারি ফ্রি</span>
-            <span class="badge bg-amber/20 text-amber border border-amber/40 p-2"><i class="bi bi-credit-card me-1"></i> অনলাইন পেমেন্টে ৫% ছাড়</span>
-            <span class="badge bg-sky/20 text-sky border border-sky/40 p-2"><i class="bi bi-telephone me-1"></i> ${CONFIG.phone1} / ${CONFIG.phone2}</span>
+            <span class="badge bg-success p-2"><i class="bi bi-truck me-1"></i> ২০০০৳+ শপিংয়ে ডেলিভারি ফ্রি</span>
+            <span class="badge bg-warning text-dark p-2"><i class="bi bi-credit-card me-1"></i> অনলাইন পেমেন্টে ৫% ছাড়</span>
+            <span class="badge bg-info text-dark p-2"><i class="bi bi-telephone me-1"></i> ${CONFIG.phone1} / ${CONFIG.phone2}</span>
           </div>
         </div>
 
-        <!-- 10+ Slide Animated Hero Banner -->
+        <!-- 10+ Slide Animated Hero Banner with Category Linking (Requirement 3) -->
         <section class="banner-carousel-section mb-5">
-          <div id="homeHeroCarousel" class="carousel slide carousel-fade shadow-2xl rounded-4 overflow-hidden border border-slate-800" data-bs-ride="carousel" data-bs-interval="4500">
+          <div id="homeHeroCarousel" class="carousel slide carousel-fade shadow-2xl rounded-4 overflow-hidden border border-slate-800" data-bs-ride="carousel" data-bs-interval="4000">
             
             <div class="carousel-indicators">
               ${banners.map((b, i) => `
@@ -46,24 +46,24 @@ const PAGES = {
 
             <div class="carousel-inner">
               ${banners.map((b, i) => `
-                <div class="carousel-item ${i === 0 ? 'active' : ''}" style="background: ${b.bg}; min-height: 380px;">
+                <div class="carousel-item ${i === 0 ? 'active' : ''}" style="background: ${b.bg || '#0f172a'}; min-height: 380px;">
                   <div class="container py-4 py-md-5">
                     <div class="row align-items-center g-4">
                       <div class="col-12 col-md-7 text-white z-2">
-                        <span class="badge bg-emerald px-3 py-1 text-uppercase fw-bold mb-2">${b.badge || 'স্পেশাল কালেকশন'}</span>
+                        <span class="badge bg-emerald px-3 py-1 text-uppercase fw-bold mb-2">${b.badge || 'স্পেশাল অফার'}</span>
                         <h1 class="display-6 fw-black mb-3 slide-title">${b.title}</h1>
-                        <p class="lead text-slate-300 fs-6 mb-4 slide-desc">${b.subtitle}</p>
+                        <p class="lead text-slate-300 fs-6 mb-4 slide-desc">${b.subtitle || ''}</p>
                         <div class="d-flex flex-wrap gap-2">
                           <a href="${b.link || '#/products'}" class="btn btn-primary px-4 py-2 fw-bold shadow">
-                            অর্ডার করুন →
+                            এখনই কিনুন →
                           </a>
                           <a href="#/products" class="btn btn-outline-light px-4 py-2">
-                            সকল অফার দেখুন
+                            সকল প্রোডাক্ট দেখুন
                           </a>
                         </div>
                       </div>
                       <div class="col-12 col-md-5 text-center z-2">
-                        <img src="${b.img}" alt="${b.title}" class="img-fluid rounded-3 shadow-lg banner-featured-img" style="max-height: 280px; object-fit: cover;" />
+                        <img src="${b.img}" alt="${b.title}" class="img-fluid rounded-3 shadow-lg banner-featured-img" style="max-height: 280px; object-fit: cover;" onerror="this.onerror=null; this.src='${CONFIG.fallbackLogoUrl}';" />
                       </div>
                     </div>
                   </div>
@@ -84,67 +84,82 @@ const PAGES = {
         <section class="trust-features-bar mb-5">
           <div class="row g-3">
             <div class="col-6 col-md-3">
-              <div class="feature-badge-card bg-slate-900 border-slate-800">
+              <div class="feature-badge-card bg-slate-900 border border-slate-800 p-3 rounded-3 d-flex align-items-center gap-3">
                 <i class="bi bi-gift-fill text-emerald fs-2"></i>
                 <div>
                   <div class="fw-bold fs-6">ফ্রি ডেলিভারি অফার</div>
-                  <small class="text-muted">২০০০ টাকার বেশি অর্ডারে ফ্রি</small>
+                  <small class="text-muted text-xs">২০০০৳ বেশি অর্ডারে ফ্রি</small>
                 </div>
               </div>
             </div>
             <div class="col-6 col-md-3">
-              <div class="feature-badge-card bg-slate-900 border-slate-800">
+              <div class="feature-badge-card bg-slate-900 border border-slate-800 p-3 rounded-3 d-flex align-items-center gap-3">
                 <i class="bi bi-percent text-warning fs-2"></i>
                 <div>
-                  <div class="fw-bold fs-6">৫% অনলাইন ডিসকাউন্ট</div>
-                  <small class="text-muted">বিকাশ/নগদ/রকেট/ব্যাংক পেমেন্টে</small>
+                  <div class="fw-bold fs-6">৫% ইনস্ট্যান্ট ডিসকাউন্ট</div>
+                  <small class="text-muted text-xs">বিকাশ/নগদ/রকেট/ব্যাংকে</small>
                 </div>
               </div>
             </div>
             <div class="col-6 col-md-3">
-              <div class="feature-badge-card bg-slate-900 border-slate-800">
+              <div class="feature-badge-card bg-slate-900 border border-slate-800 p-3 rounded-3 d-flex align-items-center gap-3">
                 <i class="bi bi-patch-check-fill text-info fs-2"></i>
                 <div>
                   <div class="fw-bold fs-6">১০০% খাঁটি পণ্য</div>
-                  <small class="text-muted">৭ দিনের সহজ রিটার্ন সুবিধা</small>
+                  <small class="text-muted text-xs">৭ দিনের সহজ রিটার্ন</small>
                 </div>
               </div>
             </div>
             <div class="col-6 col-md-3">
-              <div class="feature-badge-card bg-slate-900 border-slate-800">
+              <div class="feature-badge-card bg-slate-900 border border-slate-800 p-3 rounded-3 d-flex align-items-center gap-3">
                 <i class="bi bi-headset text-success fs-2"></i>
                 <div>
                   <div class="fw-bold fs-6">সার্বক্ষণিক হেল্পলাইন</div>
-                  <small class="text-muted">${CONFIG.phone1}, ${CONFIG.phone2}</small>
+                  <small class="text-muted text-xs">${CONFIG.phone1}</small>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- Category-Wise Product View (Exact Layout: Category 1-8, 12 pcs Grid-6, See All) -->
+        <!-- Category-Wise Product Slider Sections (Requirement 4: 12 pcs per category, slide enabled; Requirement 5: In-stock only) -->
         <section class="category-sections-wrapper space-y-5">
           ${categoryGroups.map((group, idx) => `
             <div class="category-block mb-5">
               
-              <!-- Category Header with Line and See all Button (ক্যাটাগরি ১----------- See all) -->
+              <!-- Category Header -->
               <div class="category-header-line d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-slate-800">
-                <div class="d-flex align-items-center gap-3 flex-grow-1 me-3">
-                  <span class="category-badge-number">${idx + 1}</span>
+                <div class="d-flex align-items-center gap-2 flex-grow-1 me-3">
+                  <span class="badge bg-emerald rounded-circle p-2" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">${idx + 1}</span>
                   <div>
-                    <h3 class="category-heading mb-0 text-white fw-bold">ক্যাটাগরি ${idx + 1}: ${group.categoryName}</h3>
-                    <div class="text-xs text-emerald fw-semibold">${group.totalCount} টি প্রিমিয়াম প্রোডাক্ট</div>
+                    <h3 class="category-heading mb-0 fw-bold fs-5">${group.categoryName}</h3>
+                    <div class="text-xs text-emerald fw-semibold">${group.totalCount} টি ইন-স্টক প্রোডাক্ট (স্লাইডার ভিউ)</div>
                   </div>
-                  <div class="cat-divider-line flex-grow-1 ms-3 d-none d-md-block" style="border-bottom: 2px dashed #334155; height: 1px;"></div>
                 </div>
-                <a href="#/products?category=${encodeURIComponent(group.categoryName)}" class="btn btn-sm btn-see-all text-nowrap shadow-sm">
-                  See all (${group.totalCount}) <i class="bi bi-arrow-right ms-1"></i>
-                </a>
+                <div class="d-flex align-items-center gap-2">
+                  <a href="#/products?category=${encodeURIComponent(group.categoryName)}" class="btn btn-sm btn-outline-success text-nowrap">
+                    See all (${group.totalCount}) <i class="bi bi-arrow-right ms-1"></i>
+                  </a>
+                </div>
               </div>
 
-              <!-- 12 pcs Product View by Grid 6 -->
-              <div class="grid-6-container">
-                ${group.products.map(p => COMPONENTS.renderProductCard(p)).join('')}
+              <!-- 12 pcs Interactive Product Slider with Prev/Next Controls (Requirement 4) -->
+              <div class="category-slider-wrapper position-relative">
+                <button class="slider-nav-btn prev" onclick="PAGES.scrollSlider('cat-slider-${idx}', -320)" title="পূর্ববর্তী">
+                  <i class="bi bi-chevron-left"></i>
+                </button>
+
+                <div class="category-slider-track" id="cat-slider-${idx}">
+                  ${group.products.map(p => `
+                    <div class="category-slider-item">
+                      ${COMPONENTS.renderProductCard(p)}
+                    </div>
+                  `).join('')}
+                </div>
+
+                <button class="slider-nav-btn next" onclick="PAGES.scrollSlider('cat-slider-${idx}', 320)" title="পরবর্তী">
+                  <i class="bi bi-chevron-right"></i>
+                </button>
               </div>
 
             </div>
@@ -152,144 +167,311 @@ const PAGES = {
         </section>
 
         <!-- Wholesale Call to Action Banner -->
-        <section class="wholesale-cta-box mt-5 p-4 p-md-5 rounded-4 text-white">
+        <section class="wholesale-cta-box my-5 p-4 p-md-5 rounded-4 text-white shadow-xl" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid #334155;">
           <div class="row align-items-center">
             <div class="col-12 col-md-8">
-              <span class="badge bg-amber text-dark fw-bold mb-2">হোলসেলার ও বাল্ক পার্টনারশিপ</span>
+              <span class="badge bg-warning text-dark fw-bold mb-2">হোলসেলার ও বাল্ক পার্টনারশিপ</span>
               <h2 class="fw-black mb-2">আপনি কি পাইকারি মূল্যে পণ্য কিনতে চান?</h2>
-              <p class="text-slate-300 mb-0">ড্রিম কার্ট বিডি-এর স্পেশাল হোলসেল রেট এবং মিনিমাম অর্ডার কোয়ান্টিটি (MOQ) সুবিধা পেতে আজই যুক্ত হোন।</p>
+              <p class="text-slate-300 mb-0 text-sm">ড্রিম কার্ট বিডি-এর স্পেশাল হোলসেল রেট এবং মিনিমাম অর্ডার কোয়ান্টিটি (MOQ) সুবিধা পেতে আজই যুক্ত হোন।</p>
             </div>
             <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
               <a href="#/wholesale/login" class="btn btn-warning btn-lg px-4 py-2 fw-bold text-dark shadow">
-                <i class="bi bi-shop me-1"></i> হোলসেলার হিসেবে লগইন করুন
+                <i class="bi bi-shop me-1"></i> As A WholeSaller
               </a>
             </div>
           </div>
         </section>
 
+        <!-- Developer Credit Card prominently on Home Page (Requirement 1) -->
+        <div class="p-3 my-4 rounded-4 bg-slate-900 border border-slate-800 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 text-xs shadow-sm">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-code-slash text-emerald fs-4"></i>
+            <div>
+              <strong class="text-white">ডেভেলপার পরিচিতি:</strong>
+              <div>
+                <a href="${CONFIG.developerProfileUrl}" target="_blank" class="text-emerald fw-bold text-decoration-none">
+                  ${CONFIG.developerName}
+                </a> (${CONFIG.developerProfileUrl})
+              </div>
+            </div>
+          </div>
+          <div class="text-md-end">
+            <span class="text-muted">প্রতিষ্ঠান: </span>
+            <span class="fw-bold text-white">${CONFIG.developerRole} — </span>
+            <a href="${CONFIG.developerCompanyUrl}" target="_blank" class="text-info fw-bold text-decoration-none">
+              ${CONFIG.developerCompany}
+            </a> (${CONFIG.developerCompanyUrl})
+          </div>
+        </div>
+
       </div>
     `;
   },
 
-  // 2. PRODUCTS PAGE (Left Sidebar + Grid 6 view + 120 pcs pagination)
+  scrollSlider(elementId, distance) {
+    const el = document.getElementById(elementId);
+    if (el) {
+      el.scrollBy({ left: distance, behavior: 'smooth' });
+    }
+  },
+
+  // 2. PRODUCTS PAGE (Requirement 6: Category Tree & Filters; Requirement 7: 120 products per page with pagination)
   async renderProducts(queryParams = {}) {
     const activeCategory = queryParams.category || 'all';
-    const activeStock = queryParams.stock || 'in_stock';
+    const activeSub = queryParams.subCategory || '';
+    const activeChild = queryParams.childCategory || '';
+    const activeBrand = queryParams.brand || 'all';
+    const activeStock = queryParams.stock || 'in_stock'; // Requirement 5: in_stock by default
     const minPrice = queryParams.minPrice || '';
     const maxPrice = queryParams.maxPrice || '';
     const search = queryParams.search || '';
+    const currentPage = parseInt(queryParams.page, 10) || 1;
+    const pageSize = 120; // Requirement 7: 120 pcs per page
 
+    // Fetch filtered products
     const res = await API.call('products/list', {
-      category: activeCategory,
+      category: activeCategory !== 'all' ? activeCategory : '',
+      subCategory: activeSub,
+      childCategory: activeChild,
+      brand: activeBrand !== 'all' ? activeBrand : '',
       stockStatus: activeStock,
       minPrice,
       maxPrice,
       search
     });
-    const products = (res.data && res.data.items) || [];
+    
+    let allFiltered = (res.data && res.data.items) || [];
+    
+    // Additional refinement for tree sub/child if passed
+    if (activeSub) {
+      allFiltered = allFiltered.filter(p => p.subCategory && p.subCategory.toLowerCase() === activeSub.toLowerCase());
+    }
+    if (activeChild) {
+      allFiltered = allFiltered.filter(p => p.childCategory && p.childCategory.toLowerCase() === activeChild.toLowerCase());
+    }
 
-    const allProdsRes = await API.call('products/list', {});
-    const allProds = (allProdsRes.data && allProdsRes.data.items) || [];
-    const categories = [...new Set(allProds.map(p => p.category))];
+    const totalItems = allFiltered.length;
+    const totalPages = Math.ceil(totalItems / pageSize) || 1;
+    const startIndex = (currentPage - 1) * pageSize;
+    const paginatedItems = allFiltered.slice(startIndex, startIndex + pageSize);
+
+    // Fetch category tree hierarchy (Requirement 6)
+    const treeRes = await API.call('categories/tree');
+    const categoryTree = treeRes.data || [];
+
+    // Fetch brands
+    const brandsRes = await API.call('brands/list');
+    const brandsList = (brandsRes.data && brandsRes.data.items) || [];
+
+    // Convert number to Bengali numerals
+    const toBengaliNumber = (n) => {
+      const bnDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+      return String(n).split('').map(d => bnDigits[d] || d).join('');
+    };
 
     return `
       <div class="products-page-container">
         
         <nav aria-label="breadcrumb" class="mb-3">
           <ol class="breadcrumb text-xs">
-            <li class="breadcrumb-item"><a href="#/">হোম</a></li>
+            <li class="breadcrumb-item"><a href="#/" class="text-emerald text-decoration-none">হোম</a></li>
             <li class="breadcrumb-item active" aria-current="page">সকল প্রোডাক্টস</li>
+            ${activeCategory !== 'all' ? `<li class="breadcrumb-item active">${activeCategory}</li>` : ''}
+            ${activeSub ? `<li class="breadcrumb-item active">${activeSub}</li>` : ''}
           </ol>
         </nav>
 
         <div class="row g-4">
           
-          <!-- Left Sidebar Filters -->
+          <!-- Left Sidebar: Filters & Tree Categories (Requirement 6) -->
           <div class="col-12 col-lg-3">
             <div class="filter-sidebar p-3 rounded-4 shadow-sm bg-slate-900 border border-slate-800">
               <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-slate-800 pb-2">
-                <h6 class="mb-0 fw-bold"><i class="bi bi-sliders me-1 text-emerald"></i> ফিল্টার</h6>
-                <a href="#/products" class="text-xs text-danger text-decoration-none">রিসেট</a>
+                <h6 class="mb-0 fw-bold"><i class="bi bi-sliders me-1 text-emerald"></i> ফিল্টার অপশন</h6>
+                <a href="#/products" class="text-xs text-danger text-decoration-none">সব রিসেট</a>
               </div>
 
-              <!-- Stock Filter (All, In Stock selected, Out of stock) -->
+              <!-- Stock Filter (Requirement 5) -->
               <div class="mb-4">
                 <label class="form-label text-xs fw-bold text-uppercase text-muted">স্টক ফিল্টার</label>
                 <div class="stock-filter-options space-y-2">
                   <div class="form-check custom-radio">
-                    <input class="form-check-input" type="radio" name="stockFilter" id="stockAll" value="all" 
-                           ${activeStock === 'all' ? 'checked' : ''} onchange="PAGES.applyFilter('stock', 'all')">
-                    <label class="form-check-label text-xs" for="stockAll">All Product (সকল)</label>
-                  </div>
-                  <div class="form-check custom-radio">
                     <input class="form-check-input" type="radio" name="stockFilter" id="stockIn" value="in_stock" 
                            ${activeStock === 'in_stock' ? 'checked' : ''} onchange="PAGES.applyFilter('stock', 'in_stock')">
-                    <label class="form-check-label text-xs text-success fw-bold" for="stockIn">In Stock (স্টকে আছে - ডিফল্ট)</label>
+                    <label class="form-check-label text-xs text-success fw-bold" for="stockIn">
+                      <i class="bi bi-check-circle-fill me-1"></i> ইন স্টক (স্টকে আছে - ডিফল্ট)
+                    </label>
+                  </div>
+                  <div class="form-check custom-radio">
+                    <input class="form-check-input" type="radio" name="stockFilter" id="stockAll" value="all" 
+                           ${activeStock === 'all' ? 'checked' : ''} onchange="PAGES.applyFilter('stock', 'all')">
+                    <label class="form-check-label text-xs" for="stockAll">সকল প্রোডাক্ট (All Products)</label>
                   </div>
                   <div class="form-check custom-radio">
                     <input class="form-check-input" type="radio" name="stockFilter" id="stockOut" value="out_of_stock" 
                            ${activeStock === 'out_of_stock' ? 'checked' : ''} onchange="PAGES.applyFilter('stock', 'out_of_stock')">
-                    <label class="form-check-label text-xs text-danger" for="stockOut">Out of Stock</label>
+                    <label class="form-check-label text-xs text-danger" for="stockOut">আউট অব স্টক (Stock Out)</label>
                   </div>
                 </div>
               </div>
 
-              <!-- Category List -->
+              <!-- Category Tree Filter (Requirement 6: Main > Sub > Child Tree) -->
               <div class="mb-4">
-                <label class="form-label text-xs fw-bold text-uppercase text-muted">ক্যাটাগরি সমূহ</label>
-                <div class="category-filter-list space-y-1">
-                  <a href="#/products" class="cat-filter-item ${activeCategory === 'all' ? 'active' : ''}">
-                    <span>সকল ক্যাটাগরি</span>
-                    <span class="badge bg-secondary rounded-pill">${allProds.length}</span>
-                  </a>
-                  ${categories.map(cat => {
-                    const count = allProds.filter(p => p.category === cat).length;
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <label class="form-label text-xs fw-bold text-uppercase text-muted mb-0">ক্যাটাগরি ট্রি (Tree View)</label>
+                  <a href="#/products?stock=${activeStock}" class="text-[11px] text-muted text-decoration-none">সব দেখুন</a>
+                </div>
+                
+                <div class="category-tree-wrapper">
+                  ${categoryTree.map((cat, idx) => {
+                    const isMainActive = activeCategory.toLowerCase() === cat.mainCategory.toLowerCase();
                     return `
-                      <a href="#/products?category=${encodeURIComponent(cat)}&stock=${activeStock}" 
-                         class="cat-filter-item ${activeCategory.toLowerCase() === cat.toLowerCase() ? 'active' : ''}">
-                        <span>${cat}</span>
-                        <span class="badge bg-secondary rounded-pill">${count}</span>
-                      </a>
+                      <div class="tree-main-item">
+                        <div class="tree-header ${isMainActive ? 'border-emerald' : ''}" 
+                             onclick="PAGES.toggleTreeNode('sub-tree-${idx}');">
+                          <div class="d-flex align-items-center gap-2" onclick="event.stopPropagation(); window.location.hash='#/products?category=${encodeURIComponent(cat.mainCategory)}&stock=${activeStock}';">
+                            <i class="bi bi-folder2${isMainActive ? '-open text-emerald' : ' text-warning'}"></i>
+                            <span class="${isMainActive ? 'fw-bold text-emerald' : ''}">${cat.mainCategory}</span>
+                          </div>
+                          <i class="bi bi-chevron-down text-muted text-[10px]" id="arrow-sub-tree-${idx}"></i>
+                        </div>
+
+                        <!-- Sub Categories -->
+                        <div class="tree-sub-list ${isMainActive ? '' : 'd-none'}" id="sub-tree-${idx}">
+                          ${cat.subCategories.map((sub, sIdx) => {
+                            const isSubActive = activeSub.toLowerCase() === sub.subCategory.toLowerCase();
+                            return `
+                              <div class="tree-sub-item">
+                                <div class="tree-sub-header" onclick="PAGES.toggleTreeNode('child-tree-${idx}-${sIdx}');">
+                                  <div class="d-flex align-items-center gap-1" onclick="event.stopPropagation(); window.location.hash='#/products?category=${encodeURIComponent(cat.mainCategory)}&subCategory=${encodeURIComponent(sub.subCategory)}&stock=${activeStock}';">
+                                    <i class="bi bi-arrow-return-right text-muted me-1"></i>
+                                    <span class="${isSubActive ? 'fw-bold text-emerald' : ''}">${sub.subCategory}</span>
+                                  </div>
+                                  ${sub.childCategories.length ? `<i class="bi bi-chevron-down text-muted text-[9px]"></i>` : ''}
+                                </div>
+
+                                <!-- Child Categories -->
+                                ${sub.childCategories.length ? `
+                                  <div class="tree-child-list ${isSubActive ? '' : 'd-none'}" id="child-tree-${idx}-${sIdx}">
+                                    ${sub.childCategories.map(child => `
+                                      <div class="tree-child-item ${activeChild.toLowerCase() === child.toLowerCase() ? 'fw-bold text-emerald' : 'text-muted'}" 
+                                           onclick="window.location.hash='#/products?category=${encodeURIComponent(cat.mainCategory)}&subCategory=${encodeURIComponent(sub.subCategory)}&childCategory=${encodeURIComponent(child)}&stock=${activeStock}';">
+                                        • ${child}
+                                      </div>
+                                    `).join('')}
+                                  </div>
+                                ` : ''}
+                              </div>
+                            `;
+                          }).join('')}
+                        </div>
+                      </div>
                     `;
                   }).join('')}
                 </div>
               </div>
 
-              <!-- Filter by Price Range -->
+              <!-- Brand Filter -->
+              <div class="mb-4">
+                <label class="form-label text-xs fw-bold text-uppercase text-muted">ব্রান্ড ফিল্টার</label>
+                <div class="brand-filter-list space-y-1" style="max-height: 180px; overflow-y: auto;">
+                  <div class="form-check custom-radio">
+                    <input class="form-check-input" type="radio" name="brandFilter" id="brdAll" value="all" 
+                           ${activeBrand === 'all' ? 'checked' : ''} onchange="PAGES.applyFilter('brand', 'all')">
+                    <label class="form-check-label text-xs" for="brdAll">সকল ব্রান্ড</label>
+                  </div>
+                  ${brandsList.map((b, bIdx) => `
+                    <div class="form-check custom-radio">
+                      <input class="form-check-input" type="radio" name="brandFilter" id="brd-${bIdx}" value="${b.name}" 
+                             ${activeBrand.toLowerCase() === b.name.toLowerCase() ? 'checked' : ''} 
+                             onchange="PAGES.applyFilter('brand', '${b.name}')">
+                      <label class="form-check-label text-xs" for="brd-${bIdx}">${b.name}</label>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Price Filter -->
               <div class="mb-3">
                 <label class="form-label text-xs fw-bold text-uppercase text-muted">মূল্য সীমা (৳)</label>
                 <div class="d-flex gap-2">
-                  <input type="number" id="filter-min-price" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" placeholder="মিনিমাম" value="${minPrice}">
-                  <input type="number" id="filter-max-price" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" placeholder="ম্যাক্সিমাম" value="${maxPrice}">
+                  <input type="number" id="filter-min-price" class="form-control form-control-sm" placeholder="মিনিমাম" value="${minPrice}">
+                  <input type="number" id="filter-max-price" class="form-control form-control-sm" placeholder="ম্যাক্সিমাম" value="${maxPrice}">
                 </div>
-                <button class="btn btn-sm btn-primary w-100 mt-2" onclick="PAGES.applyPriceFilter()">ফিল্টার করুন</button>
+                <button class="btn btn-sm btn-success w-100 mt-2" onclick="PAGES.applyPriceFilter()">ফিল্টার প্রয়োগ</button>
               </div>
 
             </div>
           </div>
 
-          <!-- Right Grid 6 Product View (120 pcs per page) -->
+          <!-- Right Column: Products Grid (120 products per page) & Pagination (Requirement 7) -->
           <div class="col-12 col-lg-9">
-            <div class="d-flex align-items-center justify-content-between mb-3 bg-slate-900/60 p-3 rounded-3 border border-slate-800">
-              <div>
-                <span class="text-xs text-muted">মোট ফলাফল:</span> 
-                <strong class="text-emerald">${products.length} টি প্রোডাক্ট</strong>
-                ${search ? `<span class="badge bg-dark ms-2">অনুসন্ধান: "${search}"</span>` : ''}
+            
+            <!-- Result Summary Header -->
+            <div class="d-flex align-items-center justify-content-between mb-3 bg-slate-900 p-3 rounded-3 border border-slate-800">
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-emerald">${toBengaliNumber(totalItems)} টি প্রোডাক্ট</span>
+                <span class="text-xs text-muted d-none d-sm-inline">
+                  (পেজ ${toBengaliNumber(currentPage)} / ${toBengaliNumber(totalPages)} — প্রতি পেজে সর্বোচ্চ ১২০টি)
+                </span>
               </div>
-              <div class="text-xs text-muted">১ম পেজ (১২০ টি ভিউ)</div>
+              <div class="d-flex align-items-center gap-2 text-xs">
+                <span class="text-muted d-none d-md-inline">সর্ট:</span>
+                <select class="form-select form-select-sm w-auto" onchange="PAGES.applySort(this.value)">
+                  <option value="featured">ফিচার্ড প্রোডাক্ট</option>
+                  <option value="price_low">দাম: কম থেকে বেশি</option>
+                  <option value="price_high">দাম: বেশি থেকে কম</option>
+                </select>
+              </div>
             </div>
 
-            ${products.length === 0 ? `
-              <div class="text-center py-5 bg-slate-900/40 rounded-4 border border-slate-800">
-                <i class="bi bi-box-seam fs-1 text-muted"></i>
-                <h5 class="mt-3 text-slate-300">কোনো প্রোডাক্ট পাওয়া যায়নি</h5>
-                <a href="#/products" class="btn btn-sm btn-outline-emerald mt-2">সকল প্রোডাক্ট দেখুন</a>
+            <!-- 120 pcs Product Grid (Responsive Grid 6) -->
+            ${paginatedItems.length === 0 ? `
+              <div class="card p-5 text-center my-4 bg-slate-900 border border-slate-800 rounded-4">
+                <i class="bi bi-search fs-1 text-muted mb-2"></i>
+                <h5>কোনো প্রোডাক্ট পাওয়া যায়নি!</h5>
+                <p class="text-xs text-muted">আপনার ফিল্টার পরিবর্তন করুন বা অন্য কোনো নাম দিয়ে সার্চ করুন।</p>
+                <a href="#/products" class="btn btn-sm btn-outline-success mx-auto w-fit">সকল প্রোডাক্ট দেখুন</a>
               </div>
             ` : `
               <div class="grid-6-container">
-                ${products.slice(0, 120).map(p => COMPONENTS.renderProductCard(p)).join('')}
+                ${paginatedItems.map(p => COMPONENTS.renderProductCard(p)).join('')}
               </div>
             `}
+
+            <!-- Pagination Bar: < ১, ২, ৩ ... ২০ > (Requirement 7) -->
+            ${totalPages > 1 ? `
+              <nav class="d-flex justify-content-center my-5">
+                <ul class="pagination pagination-sm gap-1 flex-wrap">
+                  
+                  <!-- Prev Button -->
+                  <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
+                    <a class="page-link rounded-2" href="#/products?page=${currentPage - 1}&category=${encodeURIComponent(activeCategory)}&stock=${activeStock}">
+                      <i class="bi bi-chevron-left"></i> পূর্ববর্তী
+                    </a>
+                  </li>
+
+                  <!-- Numbered Pages -->
+                  ${Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => `
+                    <li class="page-item ${pageNum === currentPage ? 'active' : ''}">
+                      <a class="page-link rounded-2 ${pageNum === currentPage ? 'bg-success border-success text-white' : ''}" 
+                         href="#/products?page=${pageNum}&category=${encodeURIComponent(activeCategory)}&stock=${activeStock}">
+                        ${toBengaliNumber(pageNum)}
+                      </a>
+                    </li>
+                  `).join('')}
+
+                  <!-- Next Button -->
+                  <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
+                    <a class="page-link rounded-2" href="#/products?page=${currentPage + 1}&category=${encodeURIComponent(activeCategory)}&stock=${activeStock}">
+                      পরবর্তী <i class="bi bi-chevron-right"></i>
+                    </a>
+                  </li>
+
+                </ul>
+              </nav>
+            ` : ''}
+
           </div>
 
         </div>
@@ -297,21 +479,11 @@ const PAGES = {
     `;
   },
 
-  applyFilter(key, val) {
-    const hash = window.location.hash;
-    const url = new URL('http://dummy.com' + hash.replace('#', ''));
-    url.searchParams.set(key, val);
-    window.location.hash = '#' + url.pathname + '?' + url.searchParams.toString();
-  },
-
-  applyPriceFilter() {
-    const min = document.getElementById('filter-min-price').value;
-    const max = document.getElementById('filter-max-price').value;
-    const hash = window.location.hash;
-    const url = new URL('http://dummy.com' + hash.replace('#', ''));
-    if (min) url.searchParams.set('minPrice', min); else url.searchParams.delete('minPrice');
-    if (max) url.searchParams.set('maxPrice', max); else url.searchParams.delete('maxPrice');
-    window.location.hash = '#' + url.pathname + '?' + url.searchParams.toString();
+  toggleTreeNode(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.toggle('d-none');
+    }
   },
 
   // 3. PRODUCT DETAILS PAGE
@@ -1129,15 +1301,23 @@ const PAGES = {
     const discVal = document.getElementById('summary-discount-val');
     const grandEl = document.getElementById('summary-grand-total');
 
+    // Requirement 8: Crossed-out delivery charge and explicit discount amount
+    let normalFee = CONFIG.deliveryOutside;
+    if (document.getElementById('zoneCumilla')?.checked) normalFee = CONFIG.deliveryCumilla;
+    if (document.getElementById('zoneDhaka')?.checked) normalFee = CONFIG.deliveryDhaka;
+
     if (delEl) {
-      delEl.textContent = isFreeDelivery ? 'ফ্রি (০৳)' : `${CONFIG.currency}${deliveryCharge}`;
-      delEl.className = isFreeDelivery ? 'text-success fw-bold' : '';
+      if (isFreeDelivery) {
+        delEl.innerHTML = `<del class="text-muted">${CONFIG.currency}${normalFee}</del> <span class="text-success fw-bold">${CONFIG.currency}০ (ফ্রি ডেলিভারি!)</span>`;
+      } else {
+        delEl.innerHTML = `<span>${CONFIG.currency}${deliveryCharge}</span>`;
+      }
     }
     if (freeBadge) freeBadge.classList.toggle('d-none', !isFreeDelivery);
 
     if (discRow && discVal) {
       discRow.classList.toggle('d-none', !isOnline);
-      discVal.textContent = `-${CONFIG.currency}${onlineDiscount.toLocaleString()}`;
+      discVal.innerHTML = `<span class="text-warning fw-bold">-${CONFIG.currency}${onlineDiscount.toLocaleString()}</span> <span class="badge bg-success text-[10px] ms-1">৫% ছাড়</span>`;
     }
 
     if (grandEl) grandEl.textContent = `${CONFIG.currency}${grandTotal.toLocaleString()}`;
@@ -1227,61 +1407,89 @@ const PAGES = {
   },
 
   // 8. CUSTOMER LOGIN & REGISTER
+  // 8. CUSTOMER LOGIN & REGISTER (Requirement 10: Width 30%, Image upload, Optional email & photo)
   renderCustomerLogin() {
     return `
-      <div class="auth-container max-w-md mx-auto py-5">
-        <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-2xl">
+      <div class="auth-page-wrapper py-5">
+        <div class="auth-card-30 card bg-slate-900 border border-slate-800 rounded-4 p-4 shadow-2xl">
+          
           <div class="text-center mb-4">
-            <img src="${CONFIG.logoUrl}" width="54" height="54" class="rounded-circle mb-2 shadow" />
-            <h3 class="fw-bold">কাস্টমার লগইন / রেজিস্টার</h3>
-            <p class="text-muted text-xs">${CONFIG.slogan}</p>
+            <img src="${CONFIG.logoUrl}" width="56" height="56" class="rounded-circle mb-2 shadow border border-emerald" onerror="this.onerror=null; this.src='${CONFIG.fallbackLogoUrl}';" />
+            <h4 class="fw-bold mb-0">কাস্টমার পোর্টাল</h4>
+            <p class="text-muted text-xs">${CONFIG.appName} — লগইন বা নতুন একাউন্ট</p>
           </div>
 
-          <ul class="nav nav-pills nav-justified mb-4 p-1 bg-slate-950 rounded-3" id="authTab" role="tablist">
+          <ul class="nav nav-pills nav-justified mb-4 p-1 bg-slate-950 rounded-3 border border-slate-800" id="custAuthTab" role="tablist">
             <li class="nav-item">
-              <button class="nav-link active btn-sm" data-bs-toggle="pill" data-bs-target="#loginTab">লগইন</button>
+              <button class="nav-link active btn-sm fw-bold" data-bs-toggle="pill" data-bs-target="#custLoginPane">লগইন</button>
             </li>
             <li class="nav-item">
-              <button class="nav-link btn-sm" data-bs-toggle="pill" data-bs-target="#regTab">নতুন রেজিস্টার</button>
+              <button class="nav-link btn-sm fw-bold" data-bs-toggle="pill" data-bs-target="#custRegPane">রেজিস্টার</button>
             </li>
           </ul>
 
-          <div class="tab-content" id="authTabContent">
-            <div class="tab-pane fade show active" id="loginTab">
+          <div class="tab-content" id="custAuthTabContent">
+            
+            <!-- Customer Login Tab -->
+            <div class="tab-pane fade show active" id="custLoginPane">
               <form onsubmit="PAGES.handleCustomerLogin(event)">
                 <div class="mb-3">
-                  <label class="form-label text-xs fw-bold">মোবাইল নম্বর / ইমেইল</label>
-                  <input type="text" id="cust-login-id" class="form-control bg-slate-950 border-slate-700 text-white" placeholder="018XXXXXXXX" required />
+                  <label class="form-label text-xs fw-bold">মোবাইল নম্বর / ইমেইল *</label>
+                  <input type="text" id="cust-login-id" class="form-control" placeholder="018XXXXXXXX" required />
                 </div>
                 <div class="mb-3">
-                  <label class="form-label text-xs fw-bold">পাসওয়ার্ড</label>
-                  <input type="password" id="cust-login-pwd" class="form-control bg-slate-950 border-slate-700 text-white" placeholder="******" required />
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="form-label text-xs fw-bold mb-0">পাসওয়ার্ড *</label>
+                    <a href="https://wa.me/8801581703822?text=I%20forgot%20my%20customer%20password" target="_blank" class="text-[11px] text-emerald text-decoration-none">পাসওয়ার্ড ভুলে গেছেন?</a>
+                  </div>
+                  <input type="password" id="cust-login-pwd" class="form-control" placeholder="******" required />
                 </div>
-                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">লগইন করুন</button>
+                <button type="submit" class="btn btn-success w-100 py-2 fw-bold shadow">
+                  <i class="bi bi-box-arrow-in-right me-1"></i> লগইন করুন
+                </button>
               </form>
             </div>
 
-            <div class="tab-pane fade" id="regTab">
+            <!-- Customer Register Tab (Requirement 10: Name, Mobile, Email optional, Address, Photo optional) -->
+            <div class="tab-pane fade" id="custRegPane">
               <form onsubmit="PAGES.handleCustomerRegister(event)">
                 <div class="mb-2">
-                  <label class="form-label text-xs fw-bold">আপনার নাম *</label>
-                  <input type="text" id="cust-reg-name" class="form-control bg-slate-950 border-slate-700 text-white" placeholder="নাম লিখুন" required />
+                  <label class="form-label text-xs fw-bold">আপনার পুরো নাম *</label>
+                  <input type="text" id="cust-reg-name" class="form-control form-control-sm" placeholder="নাম লিখুন" required />
                 </div>
                 <div class="mb-2">
-                  <label class="form-label text-xs fw-bold">মোবাইল নম্বর *</label>
-                  <input type="tel" id="cust-reg-mobile" class="form-control bg-slate-950 border-slate-700 text-white" placeholder="018XXXXXXXX" required />
+                  <label class="form-label text-xs fw-bold">মোবাইল নম্বর (১১ ডিজিট) *</label>
+                  <input type="tel" id="cust-reg-mobile" class="form-control form-control-sm" placeholder="018XXXXXXXX" pattern="[0-9]{11}" required />
                 </div>
                 <div class="mb-2">
-                  <label class="form-label text-xs fw-bold">পাসওয়ার্ড *</label>
-                  <input type="password" id="cust-reg-pwd" class="form-control bg-slate-950 border-slate-700 text-white" placeholder="পাসওয়ার্ড" required />
+                  <label class="form-label text-xs fw-bold">ইমেইল ঠিকানা <span class="badge bg-secondary text-[10px]">অপশনাল</span></label>
+                  <input type="email" id="cust-reg-email" class="form-control form-control-sm" placeholder="user@gmail.com" />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label text-xs fw-bold">ডেলিভারি ঠিকানা</label>
+                  <textarea id="cust-reg-address" class="form-control form-control-sm" rows="2" placeholder="রোড, থানা, জেলা"></textarea>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label text-xs fw-bold">প্রোফাইল ছবি <span class="badge bg-secondary text-[10px]">অপশনাল - Google Drive</span></label>
+                  <input type="file" id="cust-reg-photo" class="form-control form-control-sm" accept="image/*" onchange="PAGES.previewImage(this, 'cust-photo-preview')" />
+                  <div id="cust-photo-preview" class="mt-1 d-none text-center">
+                    <img src="" class="rounded-circle border border-emerald" style="width: 50px; height: 50px; object-fit: cover;" />
+                  </div>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label text-xs fw-bold">নতুন পাসওয়ার্ড *</label>
+                  <input type="password" id="cust-reg-pwd" class="form-control form-control-sm" placeholder="পাসওয়ার্ড দিন" required />
                 </div>
                 <div class="p-2 mb-3 bg-slate-950 rounded-3 border border-slate-800 d-flex align-items-center justify-content-between">
-                  <span class="text-emerald font-monospace fw-bold text-xs">ক্যাপচা কোড: <strong>৮ + ৫ = ?</strong></span>
-                  <input type="text" id="cust-reg-captcha" class="form-control form-control-sm w-25 text-center text-white" placeholder="উত্তর" required />
+                  <span class="text-emerald font-monospace fw-bold text-xs">ক্যাপচা: <strong>৮ + ৫ = ?</strong></span>
+                  <input type="text" id="cust-reg-captcha" class="form-control form-control-sm w-25 text-center" placeholder="উত্তর" required />
                 </div>
-                <button type="submit" class="btn btn-success w-100 py-2 fw-bold">রেজিস্টার ও OTP পাঠান</button>
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow">
+                  <i class="bi bi-person-check-fill me-1"></i> রেজিস্টার করুন
+                </button>
               </form>
             </div>
+
           </div>
 
         </div>
@@ -1289,15 +1497,35 @@ const PAGES = {
     `;
   },
 
+  previewImage(input, previewContainerId) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const cont = document.getElementById(previewContainerId);
+        if (cont) {
+          cont.classList.remove('d-none');
+          const img = cont.querySelector('img');
+          if (img) img.src = e.target.result;
+        }
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  },
+
   handleCustomerLogin(e) {
     e.preventDefault();
     const id = document.getElementById('cust-login-id').value.trim();
+    const pwd = document.getElementById('cust-login-pwd').value.trim();
+    
+    // Authenticate customer
     STORE.auth.loginCustomer({
       userId: 'CUST-' + Math.floor(1000 + Math.random() * 9000),
-      name: id.split('@')[0] || 'সম্মানিত কাস্টমার',
+      name: id.includes('@') ? id.split('@')[0] : 'সম্মানিত কাস্টমার',
       phone: id,
+      email: id.includes('@') ? id : '',
       address: 'কুমিল্লা / ঢাকা, বাংলাদেশ',
-      status: 'verified'
+      status: 'verified',
+      password: pwd
     });
     STORE.toast('success', 'স্বাগতম!', 'কাস্টমার একাউন্টে সফলভাবে লগইন হয়েছে।');
     window.location.hash = '#/customer/dashboard';
@@ -1307,23 +1535,29 @@ const PAGES = {
     e.preventDefault();
     const ans = document.getElementById('cust-reg-captcha').value.trim();
     if (ans !== '13') {
-      alert('ভুল ক্যাপচা কোড! ৮ + ৫ = ১৩');
+      alert('ভুল ক্যাপচা কোড! সঠিক উত্তর দিন (৮+৫=১৩)।');
       return;
     }
     const name = document.getElementById('cust-reg-name').value.trim();
-    const mobile = document.getElementById('cust-reg-mobile').value.trim();
+    const phone = document.getElementById('cust-reg-mobile').value.trim();
+    const email = document.getElementById('cust-reg-email')?.value.trim() || '';
+    const address = document.getElementById('cust-reg-address')?.value.trim() || '';
+    const pwd = document.getElementById('cust-reg-pwd').value.trim();
+
     STORE.auth.loginCustomer({
       userId: 'CUST-' + Math.floor(1000 + Math.random() * 9000),
-      name,
-      phone: mobile,
-      address: 'কুমিল্লা, বাংলাদেশ',
-      status: 'verified'
+      name: name,
+      phone: phone,
+      email: email,
+      address: address,
+      status: 'verified',
+      password: pwd
     });
-    STORE.toast('success', 'রেজিস্ট্রেশন সফল!', 'আপনার একাউন্ট তৈরি করা হয়েছে।');
+    STORE.toast('success', 'অভিনন্দন!', 'আপনার কাস্টমার অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে!');
     window.location.hash = '#/customer/dashboard';
   },
 
-  // 9. CUSTOMER DASHBOARD
+  // 9. CUSTOMER DASHBOARD (Requirement 11: Top Counters, Sidebar Tabs: Orders, Wishlist, Cart with Order Process, Track, Settings with Old Password check, Forget password via WhatsApp)
   async renderCustomerDashboard() {
     const customer = STORE.auth.customer;
     if (!customer) { window.location.hash = '#/customer/login'; return ''; }
@@ -1333,99 +1567,429 @@ const PAGES = {
       o.phone === customer.phone || o.customerName === customer.name
     );
 
+    const cartCount = STORE.cart.getCount();
+    const favCount = STORE.wishlist.items.length;
+    const totalSpent = myOrders.reduce((sum, o) => sum + (parseFloat(o.totalAmount) || 0), 0);
+
     return `
       <div class="customer-dashboard-container py-4">
+        
+        <!-- Welcome Header Banner -->
         <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 mb-4 shadow-xl">
           <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
             <div class="d-flex align-items-center gap-3">
-              <img src="${CONFIG.logoUrl}" width="56" height="56" class="rounded-circle border-2 border-emerald" />
+              <img src="${customer.photo || CONFIG.logoUrl}" width="60" height="60" class="rounded-circle border-2 border-emerald shadow" onerror="this.onerror=null; this.src='${CONFIG.fallbackLogoUrl}';" />
               <div>
                 <h3 class="fw-bold mb-0">${customer.name}</h3>
-                <div class="text-xs text-muted">ID: ${customer.userId} | ফোন: ${customer.phone}</div>
-                <span class="badge bg-success text-xs mt-1">ভেরিফাইড গ্রাহক</span>
+                <div class="text-xs text-muted">ID: ${customer.userId} | মোবাইল: ${customer.phone} ${customer.email ? `| ইমেইল: ${customer.email}` : ''}</div>
+                <span class="badge bg-success text-xs mt-1">ভেরিফাইড কাস্টমার</span>
               </div>
             </div>
             <button class="btn btn-outline-danger btn-sm" onclick="STORE.auth.logoutCustomer(); window.location.hash='#/';">
-              <i class="bi bi-box-arrow-right me-1"></i> লগআউট (Logout)
+              <i class="bi bi-box-arrow-right me-1"></i> লগআউট
             </button>
           </div>
         </div>
 
+        <!-- Requirement 11: Top Statistics Counters -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3">
+            <div class="card p-3 rounded-4 bg-slate-900 border-slate-800 text-center shadow-sm">
+              <div class="text-muted text-xs fw-bold">মোট অর্ডার</div>
+              <div class="fs-3 fw-black text-emerald mt-1">${myOrders.length}</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card p-3 rounded-4 bg-slate-900 border-slate-800 text-center shadow-sm">
+              <div class="text-muted text-xs fw-bold">মোট ফেভরিট</div>
+              <div class="fs-3 fw-black text-danger mt-1">${favCount}</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card p-3 rounded-4 bg-slate-900 border-slate-800 text-center shadow-sm">
+              <div class="text-muted text-xs fw-bold">কার্ট আইটেম</div>
+              <div class="fs-3 fw-black text-warning mt-1">${cartCount}</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card p-3 rounded-4 bg-slate-900 border-slate-800 text-center shadow-sm">
+              <div class="text-muted text-xs fw-bold">মোট কেনাকাটা</div>
+              <div class="fs-3 fw-black text-sky mt-1">৳${totalSpent.toLocaleString()}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Dashboard Body with Sidebar Tabs -->
         <div class="row g-4">
-          <div class="col-12 col-lg-8">
-            <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-lg">
-              <h5 class="fw-bold mb-3 border-bottom border-slate-800 pb-2"><i class="bi bi-clock-history text-emerald me-2"></i>আমার অর্ডার হিস্ট্রি (${myOrders.length})</h5>
-              ${myOrders.length === 0 ? `<div class="text-center py-4 text-muted"><p>আপনার কোনো অর্ডার হিস্ট্রি নেই।</p><a href="#/products" class="btn btn-sm btn-primary">এখনই অর্ডার করুন</a></div>` : `
-                <div class="table-responsive">
-                  <table class="table table-dark table-hover text-xs mb-0">
-                    <thead><tr><th>অর্ডার নং</th><th>তারিখ</th><th>প্রোডাক্ট</th><th>মোট টাকা</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead>
-                    <tbody>
-                      ${myOrders.map(o => `
-                        <tr>
-                          <td><strong>${o.orderId}</strong></td>
-                          <td>${o.date}</td>
-                          <td class="text-truncate-1" style="max-width: 140px;">${o.products}</td>
-                          <td class="text-emerald fw-bold">${CONFIG.currency}${o.totalAmount.toLocaleString()}</td>
-                          <td><span class="badge bg-secondary">${o.status}</span></td>
-                          <td><button class="btn btn-xs btn-outline-light" onclick="PAGES.printOrderVoucher('${o.orderId}')">ভাউচার</button></td>
-                        </tr>
-                      `).join('')}
-                    </tbody>
-                  </table>
-                </div>
-              `}
+          
+          <!-- Sidebar Navigation -->
+          <div class="col-12 col-lg-3">
+            <div class="card bg-slate-900 border-slate-800 rounded-4 p-3 shadow-md">
+              <div class="nav flex-column nav-pills gap-2 text-xs" id="custDashPills" role="tablist">
+                <button class="nav-link active text-start py-2" data-bs-toggle="pill" data-bs-target="#custTabOrders">
+                  <i class="bi bi-bag-check me-2 text-emerald"></i> মোট অর্ডার (${myOrders.length})
+                </button>
+                <button class="nav-link text-start py-2" data-bs-toggle="pill" data-bs-target="#custTabFavs">
+                  <i class="bi bi-heart me-2 text-danger"></i> মোট ফেভরিট (${favCount})
+                </button>
+                <button class="nav-link text-start py-2" data-bs-toggle="pill" data-bs-target="#custTabCart">
+                  <i class="bi bi-cart3 me-2 text-warning"></i> মোট কার্ট (${cartCount})
+                </button>
+                <button class="nav-link text-start py-2" data-bs-toggle="pill" data-bs-target="#custTabTrack">
+                  <i class="bi bi-truck me-2 text-info"></i> অর্ডার ট্র্যাক
+                </button>
+                <button class="nav-link text-start py-2" data-bs-toggle="pill" data-bs-target="#custTabSettings">
+                  <i class="bi bi-gear me-2 text-primary"></i> সেটিংস ও পাসওয়ার্ড
+                </button>
+                <hr class="my-1 border-slate-800">
+                <a href="https://wa.me/8801581703822?text=Hello%20Dream%20Cart%20BD%20Admin,%20I%20need%20help%20with%20my%20customer%20account" target="_blank" class="nav-link text-start py-2 text-success">
+                  <i class="bi bi-whatsapp me-2"></i> ফরগেট পাসওয়ার্ড (WhatsApp Help)
+                </a>
+              </div>
             </div>
           </div>
 
-          <div class="col-12 col-lg-4">
-            <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-lg">
-              <h5 class="fw-bold mb-3 border-bottom border-slate-800 pb-2"><i class="bi bi-gear text-info me-2"></i>প্রোফাইল সেটিংস</h5>
-              <form onsubmit="alert('প্রোফাইল তথ্য সফলভাবে আপডেট হয়েছে!'); return false;">
-                <div class="mb-2"><label class="form-label text-xs">আপনার নাম</label><input type="text" class="form-control form-control-sm bg-slate-950 border-slate-700 text-white" value="${customer.name}" /></div>
-                <div class="mb-2"><label class="form-label text-xs">ফোন নম্বর</label><input type="text" class="form-control form-control-sm bg-slate-950 border-slate-700 text-white" value="${customer.phone}" /></div>
-                <div class="mb-3"><label class="form-label text-xs">ডেলিভারি ঠিকানা</label><textarea class="form-control form-control-sm bg-slate-950 border-slate-700 text-white" rows="2">${customer.address || ''}</textarea></div>
-                <button type="submit" class="btn btn-primary btn-sm w-100">পরিবর্তন সেভ করুন</button>
-              </form>
+          <!-- Tab Contents -->
+          <div class="col-12 col-lg-9">
+            <div class="tab-content" id="custDashContent">
+              
+              <!-- Tab 1: Orders -->
+              <div class="tab-pane fade show active" id="custTabOrders">
+                <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-lg">
+                  <h5 class="fw-bold mb-3 border-bottom border-slate-800 pb-2"><i class="bi bi-bag-check text-emerald me-2"></i>আমার মোট অর্ডার তালিকা (${myOrders.length})</h5>
+                  ${myOrders.length === 0 ? `
+                    <div class="text-center py-4 text-muted">
+                      <p>আপনার কোনো অর্ডার ইতিহাস পাওয়া যায়নি।</p>
+                      <a href="#/products" class="btn btn-sm btn-success">পণ্য পছন্দ করুন</a>
+                    </div>
+                  ` : `
+                    <div class="table-responsive">
+                      <table class="table table-dark table-hover text-xs mb-0">
+                        <thead><tr><th>অর্ডার নং</th><th>তারিখ</th><th>পণ্য বিবরণ</th><th>মোট টাকা</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead>
+                        <tbody>
+                          ${myOrders.map(o => `
+                            <tr>
+                              <td><strong>${o.orderId}</strong></td>
+                              <td>${o.date}</td>
+                              <td class="text-truncate-1" style="max-width: 140px;">${o.products}</td>
+                              <td class="text-emerald fw-bold">৳${(o.totalAmount || 0).toLocaleString()}</td>
+                              <td><span class="badge bg-secondary">${o.status}</span></td>
+                              <td><button class="btn btn-xs btn-outline-light" onclick="PAGES.printOrderVoucher('${o.orderId}')">ভাউচার প্রিন্ট</button></td>
+                            </tr>
+                          `).join('')}
+                        </tbody>
+                      </table>
+                    </div>
+                  `}
+                </div>
+              </div>
+
+              <!-- Tab 2: Favorites -->
+              <div class="tab-pane fade" id="custTabFavs">
+                <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-lg">
+                  <h5 class="fw-bold mb-3 border-bottom border-slate-800 pb-2"><i class="bi bi-heart text-danger me-2"></i>আমার ফেভরিট তালিকা (${STORE.wishlist.items.length})</h5>
+                  ${STORE.wishlist.items.length === 0 ? `
+                    <div class="text-center py-4 text-muted">কোনো ফেভরিট আইটেম যুক্ত করা নেই।</div>
+                  ` : `
+                    <div class="row g-3">
+                      ${STORE.wishlist.items.map(p => `
+                        <div class="col-6 col-md-4">
+                          <div class="card bg-slate-950 border border-slate-800 p-2 rounded-3 text-xs">
+                            <img src="${p.primaryImage || p.image || CONFIG.fallbackLogoUrl}" class="rounded w-100 mb-2" style="height: 120px; object-fit: cover;" />
+                            <div class="fw-bold text-truncate">${p.name}</div>
+                            <div class="text-emerald fw-bold my-1">৳${p.price || p.sellingPrice}</div>
+                            <button class="btn btn-xs btn-success w-100" onclick="STORE.cart.addItem(p); STORE.toast('success', 'কার্টে যুক্ত হয়েছে');">কার্টে যোগ করুন</button>
+                          </div>
+                        </div>
+                      `).join('')}
+                    </div>
+                  `}
+                </div>
+              </div>
+
+              <!-- Tab 3: Cart with Order Process -->
+              <div class="tab-pane fade" id="custTabCart">
+                <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-lg">
+                  <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-slate-800 pb-2">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-cart3 text-warning me-2"></i>আমার শপিং কার্ট (${STORE.cart.getCount()} টি পণ্য)</h5>
+                    <a href="#/checkout" class="btn btn-sm btn-primary fw-bold shadow">
+                      অর্ডার প্রসেস করুন <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                  </div>
+                  ${STORE.cart.items.length === 0 ? `
+                    <div class="text-center py-4 text-muted">আপনার কার্ট খালি রয়েছে।</div>
+                  ` : `
+                    <div class="table-responsive">
+                      <table class="table table-dark text-xs mb-3">
+                        <thead><tr><th>পণ্য</th><th>দাম</th><th>পরিমাণ</th><th>মোট</th><th>মুছুন</th></tr></thead>
+                        <tbody>
+                          ${STORE.cart.items.map(it => `
+                            <tr>
+                              <td>${it.name}</td>
+                              <td>৳${it.price}</td>
+                              <td>${it.quantity}</td>
+                              <td class="text-emerald fw-bold">৳${it.price * it.quantity}</td>
+                              <td><button class="btn btn-xs btn-outline-danger" onclick="STORE.cart.removeItem('${it.sku}'); location.reload();">✕</button></td>
+                            </tr>
+                          `).join('')}
+                        </tbody>
+                      </table>
+                      <div class="text-end">
+                        <h6 class="fw-bold">সর্বমোট: <span class="text-emerald">৳${STORE.cart.getSubtotal().toLocaleString()}</span></h6>
+                        <a href="#/checkout" class="btn btn-success px-4 py-2 fw-bold mt-2">অর্ডার প্রসেস করুন →</a>
+                      </div>
+                    </div>
+                  `}
+                </div>
+              </div>
+
+              <!-- Tab 4: Order Track -->
+              <div class="tab-pane fade" id="custTabTrack">
+                <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-lg">
+                  <h5 class="fw-bold mb-3"><i class="bi bi-truck text-info me-2"></i>অর্ডার লাইভ ট্র্যাকিং</h5>
+                  <div class="input-group mb-4">
+                    <input type="text" id="cust-track-input" class="form-control" placeholder="অর্ডার আইডি (যেমন: ORD-88241)" value="${myOrders[0] ? myOrders[0].orderId : ''}" />
+                    <button class="btn btn-info" onclick="PAGES.handleTrackSearchInline()">অনুসন্ধান</button>
+                  </div>
+                  <div id="cust-track-result" class="p-3 bg-slate-950 rounded-3 border border-slate-800 text-xs">
+                    ${myOrders[0] ? `
+                      <div class="d-flex justify-content-between mb-2">
+                        <strong>অর্ডার আইডি: ${myOrders[0].orderId}</strong>
+                        <span class="badge bg-success">${myOrders[0].status}</span>
+                      </div>
+                      <p class="mb-1 text-muted">পণ্য: ${myOrders[0].products}</p>
+                      <p class="mb-0 text-muted">ডেলিভারি ঠিকানা: ${myOrders[0].address}</p>
+                    ` : 'অর্ডার আইডি লিখে সার্চ করুন।'}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab 5: Settings with Old Password Requirement (Requirement 11) -->
+              <div class="tab-pane fade" id="custTabSettings">
+                <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-lg">
+                  <h5 class="fw-bold mb-3 border-bottom border-slate-800 pb-2"><i class="bi bi-gear text-primary me-2"></i>প্রোফাইল ও পাসওয়ার্ড পরিবর্তন</h5>
+                  
+                  <form onsubmit="PAGES.handleCustomerProfileUpdate(event)">
+                    <div class="row g-3">
+                      <div class="col-12 col-md-6">
+                        <label class="form-label text-xs fw-bold">আপনার পুরো নাম</label>
+                        <input type="text" id="cust-set-name" class="form-control form-control-sm" value="${customer.name}" required />
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label text-xs fw-bold">মোবাইল নম্বর (অপরিবর্তনীয়)</label>
+                        <input type="text" class="form-control form-control-sm" value="${customer.phone}" readonly disabled />
+                      </div>
+                      <div class="col-12">
+                        <label class="form-label text-xs fw-bold">ডেলিভারি ঠিকানা</label>
+                        <textarea id="cust-set-address" class="form-control form-control-sm" rows="2">${customer.address || ''}</textarea>
+                      </div>
+
+                      <hr class="my-2 border-slate-800">
+                      <h6 class="fw-bold text-warning text-xs mb-0">পাসওয়ার্ড পরিবর্তন (পুরাতন পাসওয়ার্ড আবশ্যক)</h6>
+
+                      <div class="col-12 col-md-6">
+                        <label class="form-label text-xs fw-bold">বর্তমান/পুরাতন পাসওয়ার্ড *</label>
+                        <input type="password" id="cust-set-old-pwd" class="form-control form-control-sm" placeholder="বর্তমান পাসওয়ার্ড দিন" />
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label text-xs fw-bold">নতুন পাসওয়ার্ড</label>
+                        <input type="password" id="cust-set-new-pwd" class="form-control form-control-sm" placeholder="নতুন পাসওয়ার্ড দিন" />
+                      </div>
+
+                      <div class="col-12">
+                        <button type="submit" class="btn btn-success btn-sm px-4 fw-bold shadow">
+                          তথ্য ও পাসওয়ার্ড সংরক্ষণ করুন
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+
+                  <div class="mt-4 p-3 bg-slate-950 rounded-3 border border-slate-800 text-xs">
+                    <strong>পাসওয়ার্ড ভুলে গেছেন?</strong><br>
+                    এডমিনের সাথে হোয়াটসঅ্যাপে সরাসরি যোগাযোগ করে একাউন্ট রিকভার করুন:
+                    <a href="https://wa.me/8801581703822?text=Hello%20Admin,%20I%20forgot%20my%20customer%20password.%20My%20phone%20is%20${customer.phone}" target="_blank" class="btn btn-xs btn-outline-success ms-2 mt-1">
+                      <i class="bi bi-whatsapp"></i> হোয়াটসঅ্যাপে যোগাযোগ
+                    </a>
+                  </div>
+
+                </div>
+              </div>
+
             </div>
           </div>
+
+        </div>
+
+      </div>
+    `;
+  },
+
+  async handleCustomerProfileUpdate(e) {
+    e.preventDefault();
+    const customer = STORE.auth.customer;
+    const name = document.getElementById('cust-set-name').value.trim();
+    const address = document.getElementById('cust-set-address').value.trim();
+    const oldPwd = document.getElementById('cust-set-old-pwd').value.trim();
+    const newPwd = document.getElementById('cust-set-new-pwd').value.trim();
+
+    if (newPwd) {
+      if (!oldPwd) {
+        alert('পাসওয়ার্ড পরিবর্তন করতে অবশ্যই পুরাতন পাসওয়ার্ড দিতে হবে!');
+        return;
+      }
+      const chkRes = await API.call('customers/change_password', {
+        phone: customer.phone,
+        oldPassword: oldPwd,
+        newPassword: newPwd
+      });
+      if (!chkRes.success) {
+        alert(chkRes.message || 'পুরাতন পাসওয়ার্ডটি সঠিক নয়!');
+        return;
+      }
+      customer.password = newPwd;
+    }
+
+    customer.name = name;
+    customer.address = address;
+    STORE.auth.loginCustomer(customer);
+    STORE.toast('success', 'সফল!', 'আপনার প্রোফাইল তথ্য সফলভাবে সংরক্ষিত হয়েছে।');
+  },
+
+  handleTrackSearchInline() {
+    const q = document.getElementById('cust-track-input')?.value.trim();
+    if (q) window.location.hash = `#/track?orderId=${encodeURIComponent(q)}`;
+  },
+
+  // 10. WHOLESALER LOGIN & REGISTER (Requirement 10: Width 30%, Shop Name, Owner, Logo, Photo, NID, Office Address Same Checkbox)
+  renderWholesaleLogin() {
+    return `
+      <div class="auth-page-wrapper py-5">
+        <div class="auth-card-30 card bg-slate-900 border-amber-900/50 rounded-4 p-4 shadow-2xl">
+          
+          <div class="text-center mb-4">
+            <img src="${CONFIG.logoUrl}" width="56" height="56" class="rounded-circle mb-2 shadow border border-amber" onerror="this.onerror=null; this.src='${CONFIG.fallbackLogoUrl}';" />
+            <h4 class="fw-bold mb-0 text-amber">As A WholeSaller</h4>
+            <p class="text-muted text-xs">পাইকারি বিক্রেতাদের জন্য এক্সক্লুসিভ পোর্টাল</p>
+          </div>
+
+          <ul class="nav nav-pills nav-justified mb-4 p-1 bg-slate-950 rounded-3 border border-slate-800" id="wsAuthTab" role="tablist">
+            <li class="nav-item">
+              <button class="nav-link active btn-sm fw-bold text-amber" data-bs-toggle="pill" data-bs-target="#wsLoginPane">লগইন</button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link btn-sm fw-bold" data-bs-toggle="pill" data-bs-target="#wsRegPane">নতুন রেজিস্টার</button>
+            </li>
+          </ul>
+
+          <div class="tab-content" id="wsAuthTabContent">
+            
+            <!-- Wholesale Login -->
+            <div class="tab-pane fade show active" id="wsLoginPane">
+              <form onsubmit="PAGES.handleWholesaleLogin(event)">
+                <div class="mb-3">
+                  <label class="form-label text-xs fw-bold">শপ নাম / হোলসেলার আইডি *</label>
+                  <input type="text" id="ws-login-id" class="form-control" placeholder="দোকানের নাম বা আইডি" required />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label text-xs fw-bold">মোবাইল নম্বর *</label>
+                  <input type="tel" id="ws-login-phone" class="form-control" placeholder="018XXXXXXXX" required />
+                </div>
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="form-label text-xs fw-bold mb-0">পাসওয়ার্ড *</label>
+                    <a href="https://wa.me/8801581703822?text=I%20forgot%20my%20wholesale%20password" target="_blank" class="text-[11px] text-amber text-decoration-none">ভুলে গেছেন?</a>
+                  </div>
+                  <input type="password" id="ws-login-pwd" class="form-control" placeholder="******" required />
+                </div>
+                <div class="p-2 mb-3 bg-slate-950 rounded-3 border border-slate-800 d-flex align-items-center justify-content-between">
+                  <span class="text-amber font-monospace fw-bold text-xs">ক্যাপচা: <strong>৭ + ৯ = ?</strong></span>
+                  <input type="text" id="ws-captcha" class="form-control form-control-sm w-25 text-center" placeholder="উত্তর" required />
+                </div>
+                <button type="submit" class="btn btn-warning w-100 py-2 fw-bold text-dark shadow">
+                  <i class="bi bi-shop me-1"></i> হোলসেলার লগইন করুন →
+                </button>
+              </form>
+            </div>
+
+            <!-- Wholesale Register (Requirement 10: Shop name, Owner name, Shop logo, Owner photo, Mobile, Email, NID, Full address, Office address with same checkbox) -->
+            <div class="tab-pane fade" id="wsRegPane">
+              <form onsubmit="PAGES.handleWholesaleRegister(event)">
+                <div class="mb-2">
+                  <label class="form-label text-xs fw-bold">শপের নাম (Shop Name) *</label>
+                  <input type="text" id="ws-reg-shop" class="form-control form-control-sm" placeholder="দোকানের নাম" required />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label text-xs fw-bold">শপের মালিকের নাম *</label>
+                  <input type="text" id="ws-reg-owner" class="form-control form-control-sm" placeholder="মালিকের নাম" required />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label text-xs fw-bold">শপের লোগো (Google Drive ফোল্ডারে জমা)</label>
+                  <input type="file" id="ws-reg-logo" class="form-control form-control-sm" accept="image/*" />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label text-xs fw-bold">মালিকের ছবি (Google Drive ফোল্ডারে জমা)</label>
+                  <input type="file" id="ws-reg-photo" class="form-control form-control-sm" accept="image/*" />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label text-xs fw-bold">মোবাইল নম্বর *</label>
+                  <input type="tel" id="ws-reg-phone" class="form-control form-control-sm" placeholder="018XXXXXXXX" pattern="[0-9]{11}" required />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label text-xs fw-bold">অফিসিয়াল ইমেইল *</label>
+                  <input type="email" id="ws-reg-email" class="form-control form-control-sm" placeholder="shop@gmail.com" required />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label text-xs fw-bold">এনআইডি নম্বর (NID) *</label>
+                  <input type="text" id="ws-reg-nid" class="form-control form-control-sm" placeholder="NID Number" required />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label text-xs fw-bold">পূর্ণ ঠিকানা (Full Address) *</label>
+                  <textarea id="ws-reg-address" class="form-control form-control-sm" rows="2" placeholder="মার্কেটের নাম, দোকান নং, রোড, থানা, জেলা" required oninput="PAGES.syncOfficeAddress()"></textarea>
+                </div>
+                
+                <!-- Office Address Same Checkbox -->
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="ws-same-address-check" onchange="PAGES.syncOfficeAddress()" />
+                  <label class="form-check-label text-xs" for="ws-same-address-check">
+                    অফিস ঠিকানা একই হলে টিক দিন
+                  </label>
+                </div>
+
+                <div class="mb-2">
+                  <label class="form-label text-xs fw-bold">অফিস ঠিকানা (Office Address)</label>
+                  <textarea id="ws-reg-office" class="form-control form-control-sm" rows="2" placeholder="অফিস ঠিকানা"></textarea>
+                </div>
+
+                <div class="mb-2">
+                  <label class="form-label text-xs fw-bold">পাসওয়ার্ড *</label>
+                  <input type="password" id="ws-reg-pwd" class="form-control form-control-sm" placeholder="পাসওয়ার্ড দিন" required />
+                </div>
+
+                <div class="p-2 mb-3 bg-slate-950 rounded-3 border border-slate-800 d-flex align-items-center justify-content-between">
+                  <span class="text-amber font-monospace fw-bold text-xs">ক্যাপচা: <strong>৬ + ৮ = ?</strong></span>
+                  <input type="text" id="ws-reg-captcha" class="form-control form-control-sm w-25 text-center" placeholder="১৪" required />
+                </div>
+
+                <button type="submit" class="btn btn-warning w-100 py-2 fw-bold text-dark shadow">
+                  <i class="bi bi-patch-check-fill me-1"></i> হোলসেলার আবেদন সম্পন্ন করুন
+                </button>
+              </form>
+            </div>
+
+          </div>
+
         </div>
       </div>
     `;
   },
 
-  // 10 & 11. WHOLESALER LOGIN & DASHBOARD
-  renderWholesaleLogin() {
-    return `
-      <div class="auth-container max-w-md mx-auto py-5">
-        <div class="card bg-slate-900 border-amber-900/50 rounded-4 p-4 shadow-2xl">
-          <div class="text-center mb-4">
-            <img src="${CONFIG.logoUrl}" width="54" height="54" class="rounded-circle mb-2 shadow" />
-            <h3 class="fw-bold text-amber">As A WholeSeller</h3>
-            <p class="text-muted text-xs">পাইকারি বিক্রেতাদের এক্সক্লুসিভ পোর্টাল</p>
-          </div>
-
-          <form onsubmit="PAGES.handleWholesaleLogin(event)">
-            <div class="mb-3">
-              <label class="form-label text-xs fw-bold">শপ নাম / হোলসেলার আইডি</label>
-              <input type="text" id="ws-login-id" class="form-control bg-slate-950 border-slate-700 text-white" placeholder="দোকানের নাম বা আইডি" required />
-            </div>
-            <div class="mb-3">
-              <label class="form-label text-xs fw-bold">মোবাইল নম্বর</label>
-              <input type="tel" id="ws-login-phone" class="form-control bg-slate-950 border-slate-700 text-white" placeholder="018XXXXXXXX" required />
-            </div>
-            <div class="mb-3">
-              <label class="form-label text-xs fw-bold">পাসওয়ার্ড</label>
-              <input type="password" id="ws-login-pwd" class="form-control bg-slate-950 border-slate-700 text-white" placeholder="******" required />
-            </div>
-            <div class="p-2 mb-3 bg-slate-950 rounded-3 border border-slate-800 d-flex align-items-center justify-content-between">
-              <span class="text-amber font-monospace fw-bold text-xs">ক্যাপচা কোড: <strong>৭ + ৯ = ?</strong></span>
-              <input type="text" id="ws-captcha" class="form-control form-control-sm w-25 text-center text-white" placeholder="উত্তর" required />
-            </div>
-            <button type="submit" class="btn btn-warning w-100 py-2 fw-bold text-dark">হোলসেলার লগইন করুন →</button>
-          </form>
-        </div>
-      </div>
-    `;
+  syncOfficeAddress() {
+    const isSame = document.getElementById('ws-same-address-check')?.checked;
+    const fullAddr = document.getElementById('ws-reg-address')?.value || '';
+    const officeAddr = document.getElementById('ws-reg-office');
+    if (isSame && officeAddr) {
+      officeAddr.value = fullAddr;
+    }
   },
 
   handleWholesaleLogin(e) {
@@ -1434,33 +1998,84 @@ const PAGES = {
     if (ans !== '16') { alert('ভুল ক্যাপচা কোড!'); return; }
     const shop = document.getElementById('ws-login-id').value.trim();
     const phone = document.getElementById('ws-login-phone').value.trim();
+    const pwd = document.getElementById('ws-login-pwd').value.trim();
+
     STORE.auth.loginWholesaler({
       userId: 'WS-' + Math.floor(100 + Math.random() * 900),
       shopName: shop,
       phone: phone,
       address: 'চকবাজার, চট্টগ্রাম / কান্দিরপাড়, কুমিল্লা',
+      password: pwd,
       discountRate: '15-30%'
     });
     STORE.toast('success', 'হোলসেলার লগইন সফল!', 'হোলসেল রেট ক্যাটালগ ওপেন হয়েছে।');
     window.location.hash = '#/wholesale/dashboard';
   },
 
+  handleWholesaleRegister(e) {
+    e.preventDefault();
+    const ans = document.getElementById('ws-reg-captcha').value.trim();
+    if (ans !== '14') {
+      alert('ভুল ক্যাপচা কোড! সঠিক উত্তর দিন (৬+৮=১৪)।');
+      return;
+    }
+    const shop = document.getElementById('ws-reg-shop').value.trim();
+    const owner = document.getElementById('ws-reg-owner').value.trim();
+    const phone = document.getElementById('ws-reg-phone').value.trim();
+    const email = document.getElementById('ws-reg-email').value.trim();
+    const nid = document.getElementById('ws-reg-nid').value.trim();
+    const address = document.getElementById('ws-reg-address').value.trim();
+    const office = document.getElementById('ws-reg-office')?.value.trim() || address;
+    const pwd = document.getElementById('ws-reg-pwd').value.trim();
+
+    STORE.auth.loginWholesaler({
+      userId: 'WS-' + Math.floor(100 + Math.random() * 900),
+      shopName: shop,
+      ownerName: owner,
+      phone: phone,
+      email: email,
+      nid: nid,
+      address: address,
+      officeAddress: office,
+      password: pwd,
+      status: 'pending_approval'
+    });
+    STORE.toast('success', 'আবেদন জমা হয়েছে!', 'আপনার হোলসেলার আবেদন সফল হয়েছে।');
+    window.location.hash = '#/wholesale/dashboard';
+  },
+
+  // 11. WHOLESALER DASHBOARD (Requirement 12: On-click Filter Counters: All, In-Stock, Out of Stock, Low Stock, Catalog with Order, WhatsApp, Wishlist, Cart with Order Process, Track, Settings with Old Password, Forget password via WhatsApp)
   async renderWholesaleDashboard() {
     const ws = STORE.auth.wholesaler;
     if (!ws) { window.location.hash = '#/wholesale/login'; return ''; }
 
+    // Fetch all products directly from sheet / cache
     const prodsRes = await API.call('products/list');
-    const prods = (prodsRes.data && prodsRes.data.items) || [];
+    const allProds = (prodsRes.data && prodsRes.data.items) || [];
+
+    const inStockCount = allProds.filter(p => (parseInt(p.stock, 10) || 0) > 0).length;
+    const outStockCount = allProds.filter(p => (parseInt(p.stock, 10) || 0) <= 0).length;
+    const lowStockCount = allProds.filter(p => {
+      const s = parseInt(p.stock, 10) || 0;
+      return s > 0 && s <= 5;
+    }).length;
+
+    const ordersRes = await API.call('orders/list');
+    const myOrders = (ordersRes.data && ordersRes.data.items || []).filter(o => 
+      o.phone === ws.phone || o.customerName === ws.shopName
+    );
 
     return `
       <div class="wholesale-dashboard-container py-4">
+        
+        <!-- Wholesaler Header Banner -->
         <div class="card bg-slate-900 border-amber-900/50 rounded-4 p-4 mb-4 shadow-xl">
           <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
             <div class="d-flex align-items-center gap-3">
-              <img src="${CONFIG.logoUrl}" width="56" height="56" class="rounded-circle border-2 border-amber" />
+              <img src="${CONFIG.logoUrl}" width="56" height="56" class="rounded-circle border-2 border-amber" onerror="this.onerror=null; this.src='${CONFIG.fallbackLogoUrl}';" />
               <div>
                 <h3 class="fw-bold mb-0 text-amber">${ws.shopName}</h3>
-                <div class="text-xs text-muted">হোলসেলার আইডি: ${ws.userId} | মোবাইল: ${ws.phone}</div>
+                <div class="text-xs text-muted">মালিক: ${ws.ownerName || 'হোলসেল পার্টনার'} | আইডি: ${ws.userId} | মোবাইল: ${ws.phone}</div>
                 <span class="badge bg-amber text-dark text-xs mt-1">অনুমোদিত পাইকারি ডিলার</span>
               </div>
             </div>
@@ -1470,59 +2085,289 @@ const PAGES = {
           </div>
         </div>
 
-        <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-xl mb-4">
-          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-            <div>
-              <h4 class="fw-bold mb-0"><i class="bi bi-box-seam text-amber me-2"></i>হোলসেল রেট প্রোডাক্ট ক্যাটালগ</h4>
-              <p class="text-xs text-muted mb-0">বিশেষ পাইকারি মূল্য এবং ন্যূনতম অর্ডার পরিমাণ (MOQ)</p>
+        <!-- Requirement 12: On-click Filter Card Counters -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3">
+            <div class="card p-3 rounded-4 bg-slate-900 border-slate-800 text-center shadow-sm cursor-pointer" 
+                 onclick="PAGES.filterWholesaleTable('all')" style="cursor: pointer;">
+              <div class="text-muted text-xs fw-bold">সকল প্রোডাক্ট (All)</div>
+              <div class="fs-3 fw-black text-white mt-1">${allProds.length}</div>
             </div>
-            <div class="input-group max-w-sm">
-              <input type="text" class="form-control form-control-sm bg-slate-950 border-slate-700 text-white" 
-                     placeholder="হোলসেল পণ্য খুঁজুন..." oninput="PAGES.filterWholesaleCatalog(this.value)" />
-              <button class="btn btn-sm btn-warning"><i class="bi bi-search"></i></button>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card p-3 rounded-4 bg-slate-900 border-slate-800 text-center shadow-sm cursor-pointer" 
+                 onclick="PAGES.filterWholesaleTable('in_stock')" style="cursor: pointer;">
+              <div class="text-muted text-xs fw-bold text-success">ইন স্টক (In Stock)</div>
+              <div class="fs-3 fw-black text-success mt-1">${inStockCount}</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card p-3 rounded-4 bg-slate-900 border-slate-800 text-center shadow-sm cursor-pointer" 
+                 onclick="PAGES.filterWholesaleTable('out_of_stock')" style="cursor: pointer;">
+              <div class="text-muted text-xs fw-bold text-danger">আউট অব স্টক (Stock Out)</div>
+              <div class="fs-3 fw-black text-danger mt-1">${outStockCount}</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card p-3 rounded-4 bg-slate-900 border-slate-800 text-center shadow-sm cursor-pointer" 
+                 onclick="PAGES.filterWholesaleTable('low_stock')" style="cursor: pointer;">
+              <div class="text-muted text-xs fw-bold text-warning">লো স্টক (Low Stock <= 5)</div>
+              <div class="fs-3 fw-black text-warning mt-1">${lowStockCount}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Tabs & Sidebar -->
+        <div class="row g-4">
+          
+          <!-- Sidebar -->
+          <div class="col-12 col-lg-3">
+            <div class="card bg-slate-900 border-slate-800 rounded-4 p-3 shadow-md">
+              <div class="nav flex-column nav-pills gap-2 text-xs" id="wsDashPills" role="tablist">
+                <button class="nav-link active text-start py-2" data-bs-toggle="pill" data-bs-target="#wsTabCatalog">
+                  <i class="bi bi-grid-3x3-gap me-2 text-amber"></i> ক্যাটালগ লিস্ট (${allProds.length})
+                </button>
+                <button class="nav-link text-start py-2" data-bs-toggle="pill" data-bs-target="#wsTabOrders">
+                  <i class="bi bi-bag-check me-2 text-emerald"></i> মোট অর্ডার (${myOrders.length})
+                </button>
+                <button class="nav-link text-start py-2" data-bs-toggle="pill" data-bs-target="#wsTabFavs">
+                  <i class="bi bi-heart me-2 text-danger"></i> মোট ফেভরিট
+                </button>
+                <button class="nav-link text-start py-2" data-bs-toggle="pill" data-bs-target="#wsTabCart">
+                  <i class="bi bi-cart3 me-2 text-warning"></i> মোট কার্ট (অর্ডার প্রসেস)
+                </button>
+                <button class="nav-link text-start py-2" data-bs-toggle="pill" data-bs-target="#wsTabTrack">
+                  <i class="bi bi-truck me-2 text-info"></i> অর্ডার ট্র্যাক
+                </button>
+                <button class="nav-link text-start py-2" data-bs-toggle="pill" data-bs-target="#wsTabSettings">
+                  <i class="bi bi-gear me-2 text-primary"></i> সেটিংস ও পাসওয়ার্ড
+                </button>
+                <hr class="my-1 border-slate-800">
+                <a href="https://wa.me/8801581703822?text=Hello%20Dream%20Cart%20BD%20Admin,%20I%20need%20help%20with%20my%20wholesale%20account" target="_blank" class="nav-link text-start py-2 text-success">
+                  <i class="bi bi-whatsapp me-2"></i> ফরগেট পাসওয়ার্ড (WhatsApp Help)
+                </a>
+              </div>
             </div>
           </div>
 
-          <div class="table-responsive">
-            <table class="table table-dark table-hover align-middle text-xs mb-0" id="ws-catalog-table">
-              <thead>
-                <tr class="border-bottom border-slate-800 text-uppercase text-muted">
-                  <th>ছবি ও নাম</th>
-                  <th>ক্যাটাগরি</th>
-                  <th>খুচরা মূল্য</th>
-                  <th>হোলসেল রেট</th>
-                  <th>মিনিমাম অর্ডার (MOQ)</th>
-                  <th>স্টক</th>
-                  <th>অ্যাকশন</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${prods.map(p => `
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img src="${p.primaryImage}" width="40" height="40" class="rounded" style="object-fit: cover;" />
-                        <div>
-                          <a href="#/product/${p.sku}" class="text-white fw-bold text-decoration-none">${p.name}</a>
-                          <div class="text-muted text-[11px]">${p.sku}</div>
-                        </div>
+          <!-- Tab Content Panes -->
+          <div class="col-12 col-lg-9">
+            <div class="tab-content" id="wsDashContent">
+              
+              <!-- Tab 1: Catalog List with Search, Filters, Wholesale Rate, WhatsApp Order & Cart -->
+              <div class="tab-pane fade show active" id="wsTabCatalog">
+                <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-xl">
+                  
+                  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div>
+                      <h5 class="fw-bold mb-0 text-amber"><i class="bi bi-boxes me-2"></i>হোলসেল রেট প্রোডাক্ট ক্যাটালগ</h5>
+                      <small class="text-muted">সকল তথ্য গুগল স্প্রেডশিট থেকে স্বয়ংক্রিয়ভাবে সিঙ্ক হচ্ছে</small>
+                    </div>
+                    <div class="input-group max-w-sm">
+                      <input type="text" id="ws-catalog-search" class="form-control form-control-sm" 
+                             placeholder="ক্যাটালগে পণ্য খুঁজুন..." oninput="PAGES.filterWholesaleCatalog(this.value)" />
+                      <button class="btn btn-sm btn-warning"><i class="bi bi-search"></i></button>
+                    </div>
+                  </div>
+
+                  <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle text-xs mb-0" id="ws-catalog-table">
+                      <thead>
+                        <tr class="border-bottom border-slate-800 text-uppercase text-muted">
+                          <th>ছবি ও নাম</th>
+                          <th>ক্যাটাগরি</th>
+                          <th>খুচরা মূল্য</th>
+                          <th>হোলসেল রেট</th>
+                          <th>MOQ</th>
+                          <th>স্টক</th>
+                          <th>অ্যাকশন</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${allProds.map(p => {
+                          const stockNum = parseInt(p.stock, 10) || 0;
+                          const inStock = stockNum > 0;
+                          return `
+                            <tr data-stock-status="${inStock ? (stockNum <= 5 ? 'low_stock' : 'in_stock') : 'out_of_stock'}">
+                              <td>
+                                <div class="d-flex align-items-center gap-2">
+                                  <img src="${p.primaryImage}" width="40" height="40" class="rounded object-fit-cover" onerror="this.onerror=null; this.src='${CONFIG.fallbackLogoUrl}';" />
+                                  <div>
+                                    <a href="#/product/${p.sku}" class="text-white fw-bold text-decoration-none">${p.name}</a>
+                                    <div class="text-muted text-[11px]">${p.sku}</div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td><span class="badge bg-slate-800 text-muted">${p.category}</span></td>
+                              <td class="text-muted"><del>৳${p.sellingPrice}</del></td>
+                              <td class="text-amber fw-bold fs-6">৳${p.wholesalePrice || Math.round(p.sellingPrice * 0.85)}</td>
+                              <td><span class="badge bg-secondary">${p.minOrderQ || '1 Pcs'}</span></td>
+                              <td>
+                                ${inStock ? `<span class="badge bg-success">${stockNum} Pcs</span>` : `<span class="badge bg-danger">স্টক আউট</span>`}
+                              </td>
+                              <td>
+                                <div class="d-flex align-items-center gap-1">
+                                  <button class="btn btn-xs btn-warning text-dark fw-bold" 
+                                          onclick="STORE.cart.addItem({sku:'${p.sku}', name:'${p.name.replace(/'/g, "\'")}', price:${p.wholesalePrice || p.sellingPrice}, image:'${p.primaryImage}'}, 1, true); STORE.toast('success', 'হোলসেল কার্টে যুক্ত হয়েছে!');" title="কার্ট">
+                                    <i class="bi bi-cart-plus"></i>
+                                  </button>
+                                  <a href="https://wa.me/8801581703822?text=I%20want%20to%20order%20wholesale:%20${encodeURIComponent(p.name)}%20(SKU:%20${p.sku})" 
+                                     target="_blank" class="btn btn-xs btn-success" title="WhatsApp Order">
+                                    <i class="bi bi-whatsapp"></i>
+                                  </a>
+                                  <a href="#/product/${p.sku}" class="btn btn-xs btn-outline-light" title="বিস্তারিত">
+                                    <i class="bi bi-eye"></i>
+                                  </a>
+                                </div>
+                              </td>
+                            </tr>
+                          `;
+                        }).join('')}
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Tab 2: Orders -->
+              <div class="tab-pane fade" id="wsTabOrders">
+                <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-xl">
+                  <h5 class="fw-bold mb-3 border-bottom border-slate-800 pb-2"><i class="bi bi-bag-check text-emerald me-2"></i>আমার হোলসেল অর্ডার তালিকা (${myOrders.length})</h5>
+                  ${myOrders.length === 0 ? `
+                    <div class="text-center py-4 text-muted">কোনো অর্ডার ইতিহাস নেই।</div>
+                  ` : `
+                    <div class="table-responsive">
+                      <table class="table table-dark table-hover text-xs mb-0">
+                        <thead><tr><th>অর্ডার নং</th><th>তারিখ</th><th>পণ্য</th><th>মোট টাকা</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead>
+                        <tbody>
+                          ${myOrders.map(o => `
+                            <tr>
+                              <td><strong>${o.orderId}</strong></td>
+                              <td>${o.date}</td>
+                              <td>${o.products}</td>
+                              <td class="text-amber fw-bold">৳${(o.totalAmount || 0).toLocaleString()}</td>
+                              <td><span class="badge bg-secondary">${o.status}</span></td>
+                              <td><button class="btn btn-xs btn-outline-light" onclick="PAGES.printOrderVoucher('${o.orderId}')">ভাউচার</button></td>
+                            </tr>
+                          `).join('')}
+                        </tbody>
+                      </table>
+                    </div>
+                  `}
+                </div>
+              </div>
+
+              <!-- Tab 3: Favorites -->
+              <div class="tab-pane fade" id="wsTabFavs">
+                <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-xl">
+                  <h5 class="fw-bold mb-3 border-bottom border-slate-800 pb-2"><i class="bi bi-heart text-danger me-2"></i>ফেভরিট তালিকা</h5>
+                  <div class="text-muted text-xs">ক্যাটালগ থেকে যেকোনো পণ্য পছন্দের তালিকায় যোগ করতে পারেন।</div>
+                </div>
+              </div>
+
+              <!-- Tab 4: Cart with Order Process -->
+              <div class="tab-pane fade" id="wsTabCart">
+                <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-xl">
+                  <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-slate-800 pb-2">
+                    <h5 class="fw-bold mb-0 text-warning"><i class="bi bi-cart3 me-2"></i>হোলসেল শপিং কার্ট (${STORE.cart.getCount()} টি)</h5>
+                    <a href="#/checkout" class="btn btn-sm btn-warning fw-bold text-dark shadow">
+                      অর্ডার প্রসেস করুন <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                  </div>
+                  ${STORE.cart.items.length === 0 ? `
+                    <div class="text-center py-4 text-muted">আপনার কার্ট খালি রয়েছে। ক্যাটালগ থেকে পণ্য যোগ করুন।</div>
+                  ` : `
+                    <div class="table-responsive">
+                      <table class="table table-dark text-xs mb-3">
+                        <thead><tr><th>পণ্য</th><th>হোলসেল রেট</th><th>পরিমাণ</th><th>মোট</th><th>মুছুন</th></tr></thead>
+                        <tbody>
+                          ${STORE.cart.items.map(it => `
+                            <tr>
+                              <td>${it.name}</td>
+                              <td>৳${it.price}</td>
+                              <td>${it.quantity}</td>
+                              <td class="text-amber fw-bold">৳${it.price * it.quantity}</td>
+                              <td><button class="btn btn-xs btn-outline-danger" onclick="STORE.cart.removeItem('${it.sku}'); location.reload();">✕</button></td>
+                            </tr>
+                          `).join('')}
+                        </tbody>
+                      </table>
+                      <div class="text-end">
+                        <h6 class="fw-bold">সর্বমোট: <span class="text-amber">৳${STORE.cart.getSubtotal().toLocaleString()}</span></h6>
+                        <a href="#/checkout" class="btn btn-warning text-dark px-4 py-2 fw-bold mt-2">অর্ডার প্রসেস করুন →</a>
                       </div>
-                    </td>
-                    <td>${p.category}</td>
-                    <td class="text-decoration-line-through text-muted">${CONFIG.currency}${p.sellingPrice.toLocaleString()}</td>
-                    <td class="text-amber fw-black fs-6">${CONFIG.currency}${p.wholesalePrice.toLocaleString()}</td>
-                    <td><span class="badge bg-slate-800">${p.minOrderQ}</span></td>
-                    <td><span class="text-success">${p.stock} পিস</span></td>
-                    <td>
-                      <button class="btn btn-sm btn-warning text-dark fw-bold px-3" 
-                              onclick="STORE.cart.addItem(${JSON.stringify(p).replace(/"/g, '&quot;')}, ${p.minOrderQ || 5}, true)">
-                        <i class="bi bi-cart-plus me-1"></i> বাল্ক অর্ডার
-                      </button>
-                    </td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
+                    </div>
+                  `}
+                </div>
+              </div>
+
+              <!-- Tab 5: Track -->
+              <div class="tab-pane fade" id="wsTabTrack">
+                <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-xl">
+                  <h5 class="fw-bold mb-3"><i class="bi bi-truck text-info me-2"></i>হোলসেল অর্ডার ট্র্যাক</h5>
+                  <div class="input-group mb-3">
+                    <input type="text" id="ws-track-input" class="form-control" placeholder="অর্ডার নং লিখুন..." />
+                    <button class="btn btn-info" onclick="const v=document.getElementById('ws-track-input').value; window.location.hash='#/track?orderId='+encodeURIComponent(v);">ট্র্যাক করুন</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab 6: Settings with Old Password Requirement (Requirement 12) -->
+              <div class="tab-pane fade" id="wsTabSettings">
+                <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-xl">
+                  <h5 class="fw-bold mb-3 border-bottom border-slate-800 pb-2"><i class="bi bi-gear text-primary me-2"></i>শপ প্রোফাইল ও পাসওয়ার্ড পরিবর্তন</h5>
+                  
+                  <form onsubmit="PAGES.handleWholesaleProfileUpdate(event)">
+                    <div class="row g-3">
+                      <div class="col-12 col-md-6">
+                        <label class="form-label text-xs fw-bold">শপের নাম</label>
+                        <input type="text" id="ws-set-shop" class="form-control form-control-sm" value="${ws.shopName}" required />
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label text-xs fw-bold">মালিকের নাম</label>
+                        <input type="text" id="ws-set-owner" class="form-control form-control-sm" value="${ws.ownerName || ''}" />
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label text-xs fw-bold">মোবাইল নম্বর (অপরিবর্তনীয়)</label>
+                        <input type="text" class="form-control form-control-sm" value="${ws.phone}" readonly disabled />
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label text-xs fw-bold">ঠিকানা</label>
+                        <input type="text" id="ws-set-address" class="form-control form-control-sm" value="${ws.address || ''}" />
+                      </div>
+
+                      <hr class="my-2 border-slate-800">
+                      <h6 class="fw-bold text-amber text-xs mb-0">পাসওয়ার্ড পরিবর্তন (পুরাতন পাসওয়ার্ড আবশ্যক)</h6>
+
+                      <div class="col-12 col-md-6">
+                        <label class="form-label text-xs fw-bold">বর্তমান/পুরাতন পাসওয়ার্ড *</label>
+                        <input type="password" id="ws-set-old-pwd" class="form-control form-control-sm" placeholder="বর্তমান পাসওয়ার্ড দিন" />
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label text-xs fw-bold">নতুন পাসওয়ার্ড</label>
+                        <input type="password" id="ws-set-new-pwd" class="form-control form-control-sm" placeholder="নতুন পাসওয়ার্ড দিন" />
+                      </div>
+
+                      <div class="col-12">
+                        <button type="submit" class="btn btn-warning text-dark btn-sm px-4 fw-bold shadow">
+                          তথ্য ও পাসওয়ার্ড আপডেট করুন
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+
+                  <div class="mt-4 p-3 bg-slate-950 rounded-3 border border-slate-800 text-xs">
+                    <strong>পাসওয়ার্ড সংক্রান্ত সহায়তায়:</strong> এডমিনের সাথে হোয়াটসঅ্যাপে সরাসরি যোগাযোগ করুন:
+                    <a href="https://wa.me/8801581703822?text=Hello%20Admin,%20I%20forgot%20my%20wholesale%20password.%20My%20shop%20is%20${encodeURIComponent(ws.shopName)}" target="_blank" class="btn btn-xs btn-outline-success ms-2 mt-1">
+                      <i class="bi bi-whatsapp"></i> হোয়াটসঅ্যাপে যোগাযোগ
+                    </a>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
           </div>
 
         </div>
@@ -1531,14 +2376,153 @@ const PAGES = {
     `;
   },
 
-  filterWholesaleCatalog(query) {
-    const q = query.toLowerCase();
+  filterWholesaleTable(status) {
     const rows = document.querySelectorAll('#ws-catalog-table tbody tr');
-    rows.forEach(row => {
-      row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    rows.forEach(r => {
+      const rowStatus = r.getAttribute('data-stock-status');
+      if (status === 'all') {
+        r.style.display = '';
+      } else if (status === 'in_stock') {
+        r.style.display = (rowStatus === 'in_stock' || rowStatus === 'low_stock') ? '' : 'none';
+      } else if (status === 'out_of_stock') {
+        r.style.display = (rowStatus === 'out_of_stock') ? '' : 'none';
+      } else if (status === 'low_stock') {
+        r.style.display = (rowStatus === 'low_stock') ? '' : 'none';
+      }
     });
-  }
+  },
 
+  async handleWholesaleProfileUpdate(e) {
+    e.preventDefault();
+    const ws = STORE.auth.wholesaler;
+    const shop = document.getElementById('ws-set-shop').value.trim();
+    const owner = document.getElementById('ws-set-owner').value.trim();
+    const address = document.getElementById('ws-set-address').value.trim();
+    const oldPwd = document.getElementById('ws-set-old-pwd').value.trim();
+    const newPwd = document.getElementById('ws-set-new-pwd').value.trim();
+
+    if (newPwd) {
+      if (!oldPwd) {
+        alert('পাসওয়ার্ড পরিবর্তন করতে অবশ্যই পুরাতন পাসওয়ার্ড দিতে হবে!');
+        return;
+      }
+      const chkRes = await API.call('wholesalers/change_password', {
+        phone: ws.phone,
+        oldPassword: oldPwd,
+        newPassword: newPwd
+      });
+      if (!chkRes.success) {
+        alert(chkRes.message || 'পুরাতন পাসওয়ার্ডটি সঠিক নয়!');
+        return;
+      }
+      ws.password = newPwd;
+    }
+
+    ws.shopName = shop;
+    ws.ownerName = owner;
+    ws.address = address;
+    STORE.auth.loginWholesaler(ws);
+    STORE.toast('success', 'সফল!', 'হোলসেলার প্রোফাইল তথ্য সংরক্ষিত হয়েছে।');
+  },
+
+  // 12. TERMS & PRIVACY (Requirement 18)
+  renderTerms() {
+    return `
+      <div class="terms-page-container max-w-4xl mx-auto py-4">
+        <div class="card p-4 rounded-4 mb-4 border-slate-800 shadow-lg" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(15, 23, 42, 0.9) 100%);">
+          <h2 class="fw-bold mb-1"><i class="bi bi-shield-check text-emerald me-2"></i>ব্যবহারের শর্তাবলী (Terms & Conditions)</h2>
+          <p class="text-xs text-muted mb-0">Dream Cart BD — খাঁটি পণ্য, সাশ্রয়ী দাম, দ্রুততম ডেলিভারি ও বিশ্বস্ত হোলসেল প্ল্যাটফর্ম</p>
+        </div>
+        <div class="row g-4">
+          <div class="col-12 col-md-6">
+            <div class="legal-card h-100">
+              <div class="legal-icon-box"><i class="bi bi-file-earmark-check-fill"></i></div>
+              <h5 class="fw-bold mb-2">১. সাধারণ নীতিমালা ও সেবার শর্ত</h5>
+              <p class="text-xs text-muted leading-relaxed">
+                Dream Cart BD-এর ওয়েবসাইট ব্যবহার বা কোনো অর্ডার সম্পন্ন করার মাধ্যমে আপনি আমাদের সকল শর্তাবলী মেনে নিচ্ছেন।
+              </p>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="legal-card h-100">
+              <div class="legal-icon-box"><i class="bi bi-truck"></i></div>
+              <h5 class="fw-bold mb-2">২. শিপিং ও ডেলিভারি পলিসি</h5>
+              <p class="text-xs text-muted leading-relaxed">
+                কুমিল্লা ৳৯০ | ঢাকা ৳১১০ | বাইরে ৳১৩৫। ২০০০ টাকার বেশি কেনাকাটায় সারা দেশে ডেলিভারি সম্পূর্ণ ফ্রি!
+              </p>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="legal-card h-100">
+              <div class="legal-icon-box"><i class="bi bi-percent"></i></div>
+              <h5 class="fw-bold mb-2">৩. ৫% অনলাইন ডিসকাউন্ট</h5>
+              <p class="text-xs text-muted leading-relaxed">
+                বিকাশ, নগদ, রকেট অথবা ব্যাংক পেমেন্টে অর্ডার করলে মোট মূল্য থেকে তাৎক্ষণিক ৫% নগদ ছাড় দেওয়া হয়।
+              </p>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="legal-card h-100">
+              <div class="legal-icon-box"><i class="bi bi-arrow-repeat"></i></div>
+              <h5 class="fw-bold mb-2">৪. ৭ দিনের রিটার্ন গ্যারান্টি</h5>
+              <p class="text-xs text-muted leading-relaxed">
+                পণ্য হাতে পেয়ে কোনো ক্রটি থাকলে ৭ দিনের মধ্যে হটলাইনে (01581703822 / 01818273838) যোগাযোগ করে দ্রুত রিটার্ন/রিপ্লেসমেন্ট সুবিধা পাবেন।
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  renderPrivacy() {
+    return `
+      <div class="privacy-page-container max-w-4xl mx-auto py-4">
+        <div class="card p-4 rounded-4 mb-4 border-slate-800 shadow-lg" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(15, 23, 42, 0.9) 100%);">
+          <h2 class="fw-bold mb-1"><i class="bi bi-lock-fill text-sky me-2"></i>গোপনীয়তা নীতি (Privacy Policy)</h2>
+          <p class="text-xs text-muted mb-0">আপনার ব্যক্তিগত তথ্য ও লেনদেনের সর্বোচ্চ নিরাপত্তা নিশ্চিত করা আমাদের অঙ্গীকার।</p>
+        </div>
+        <div class="row g-4">
+          <div class="col-12 col-md-6">
+            <div class="legal-card h-100">
+              <div class="legal-icon-box"><i class="bi bi-person-badge-fill"></i></div>
+              <h5 class="fw-bold mb-2">১. তথ্য সংগ্রহ ও ব্যবহার</h5>
+              <p class="text-xs text-muted leading-relaxed">
+                ডেলিভারি সম্পন্ন করার জন্য আমরা নাম, ফোন নম্বর ও ঠিকানা সংগ্রহ করি। কোনো তথ্য তৃতীয় পক্ষের সাথে শেয়ার করা হয় না।
+              </p>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="legal-card h-100">
+              <div class="legal-icon-box"><i class="bi bi-cloud-arrow-up-fill"></i></div>
+              <h5 class="fw-bold mb-2">২. গুগল ড্রাইভ স্টোরেজ</h5>
+              <p class="text-xs text-muted leading-relaxed">
+                সকল ছবি ও ফাইল আমাদের সিকিউর গুগল ড্রাইভে সুরক্ষিত থাকে।
+              </p>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="legal-card h-100">
+              <div class="legal-icon-box"><i class="bi bi-shield-lock-fill"></i></div>
+              <h5 class="fw-bold mb-2">৩. এডমিন সেশন সিকিউরিটি</h5>
+              <p class="text-xs text-muted leading-relaxed">
+                ব্রাউজার ট্যাব বন্ধ করার সাথে সাথে এডমিন অ্যাকাউন্ট স্বয়ংক্রিয়ভাবে লগআউট হয়ে যায়।
+              </p>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="legal-card h-100">
+              <div class="legal-icon-box"><i class="bi bi-headset"></i></div>
+              <h5 class="fw-bold mb-2">৪. হেল্পলাইন ও সাপোর্ট</h5>
+              <p class="text-xs text-muted leading-relaxed">
+                যোগাযোগ: 01581703822, 01818273838 | ইমেইল: jainal.dcitbd@gmail.com, saiful05333@gmail.com
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
 };
 
 window.PAGES = PAGES;
