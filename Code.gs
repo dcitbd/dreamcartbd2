@@ -3,11 +3,11 @@
  * DREAM CART BD — ENTERPRISE GOOGLE APPS SCRIPT BACKEND
  * Multi-Sheet Sync, Order Processing, Brand & Product Management
  * 
- * Google Spreadsheet ID: 1W4k4HP1MBuHfdU7AkPHPf_P-huHATEpIbGhJQDRtpH4
+ * Google Spreadsheet ID: 1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g
  * ===================================================================
  */
 
-const SPREADSHEET_ID = "1W4k4HP1MBuHfdU7AkPHPf_P-huHATEpIbGhJQDRtpH4";
+const SPREADSHEET_ID = "1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g";
 const OWNER_EMAIL = "dubaiwholesalebd@gmail.com";
 
 // Sheet Tab Names matching exact sheet structure
