@@ -285,7 +285,13 @@ const PAGES = {
           
           <!-- Left Sidebar: Filters & Tree Categories (Requirement 6) -->
           <div class="col-12 col-lg-3">
-            <div class="filter-sidebar p-3 rounded-4 shadow-sm bg-slate-900 border border-slate-800">
+            <div class="d-lg-none mb-3">
+              <button class="btn btn-sm btn-outline-success w-100 d-flex align-items-center justify-content-between p-2 rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#mobileFilterPanel">
+                <span><i class="bi bi-sliders me-2 text-emerald"></i> ক্যাটাগরি ও ফিল্টার অপশন</span>
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="filter-sidebar p-3 rounded-4 shadow-sm bg-slate-900 border border-slate-800 collapse d-lg-block" id="mobileFilterPanel">
               <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-slate-800 pb-2">
                 <h6 class="mb-0 fw-bold"><i class="bi bi-sliders me-1 text-emerald"></i> ফিল্টার অপশন</h6>
                 <a href="#/products" class="text-xs text-danger text-decoration-none">সব রিসেট</a>
@@ -540,9 +546,9 @@ const PAGES = {
 
               <!-- Price & Discount Box -->
               <div class="price-box-details p-3 rounded-3 mb-3 bg-slate-900/60 border border-slate-800 d-flex align-items-center gap-3">
-                <div class="display-6 fw-bold text-emerald">${CONFIG.currency}${p.sellingPrice.toLocaleString()}</div>
+                <div class="display-6 fw-bold text-emerald">${CONFIG.currency}${(Number(p.sellingPrice) || 0).toLocaleString()}</div>
                 ${p.originalPrice > p.sellingPrice ? `
-                  <div class="text-decoration-line-through text-muted fs-5">${CONFIG.currency}${p.originalPrice.toLocaleString()}</div>
+                  <div class="text-decoration-line-through text-muted fs-5">${CONFIG.currency}${(Number(p.originalPrice) || 0).toLocaleString()}</div>
                   <span class="badge bg-danger">-${p.discountPercent}% ছাড়</span>
                 ` : ''}
               </div>
@@ -599,7 +605,7 @@ const PAGES = {
                 </a>
 
                 <button class="btn btn-outline-danger px-3 ${isLoved ? 'active' : ''}" 
-                        onclick="STORE.wishlist.toggle(${JSON.stringify(p).replace(/"/g, '&quot;')}); this.classList.toggle('active');" 
+                        onclick="STORE.wishlist.toggle(\'${p.sku}\'); this.classList.toggle(\'active\');" 
                         title="ফেভরিট">
                   <i class="bi ${isLoved ? 'bi-heart-fill' : 'bi-heart'}"></i>
                 </button>
@@ -798,7 +804,7 @@ const PAGES = {
           <div class="col-6"><span class="text-muted">ফোন:</span> <strong>${o.phone}</strong></div>
           <div class="col-12"><span class="text-muted">ডেলিভারি ঠিকানা:</span> <strong>${o.address}</strong></div>
           <div class="col-12"><span class="text-muted">প্রোডাক্ট:</span> <strong>${o.products}</strong></div>
-          <div class="col-6"><span class="text-muted">মোট প্রদেয়:</span> <strong class="text-emerald">${CONFIG.currency}${o.totalAmount.toLocaleString()}</strong></div>
+          <div class="col-6"><span class="text-muted">মোট প্রদেয়:</span> <strong class="text-emerald">${CONFIG.currency}${(Number(o.totalAmount) || 0).toLocaleString()}</strong></div>
           <div class="col-6"><span class="text-muted">পেমেন্ট মেথড:</span> <strong>${o.paymentMethod || 'ক্যাশ অন ডেলিভারি'}</strong></div>
         </div>
 
@@ -865,9 +871,9 @@ const PAGES = {
         <div class="p-3 mb-4 rounded-4 ${isFreeDel ? 'bg-emerald/20 border-emerald/50' : 'bg-slate-900 border-slate-800'} border shadow-sm">
           <div class="d-flex align-items-center justify-content-between mb-1">
             <strong class="text-xs ${isFreeDel ? 'text-emerald' : 'text-slate-300'}">
-              ${isFreeDel ? '🎉 অভিনন্দন! আপনি সারা দেশে ফ্রি ডেলিভারি পাচ্ছেন!' : `🚚 আর মাত্র ৳${remainingForFree.toLocaleString()} শপিং করলেই ডেলিভারি চার্জ সম্পূর্ণ ফ্রি!`}
+              ${isFreeDel ? '🎉 অভিনন্দন! আপনি সারা দেশে ফ্রি ডেলিভারি পাচ্ছেন!' : `🚚 আর মাত্র ৳${(Number(remainingForFree) || 0).toLocaleString()} শপিং করলেই ডেলিভারি চার্জ সম্পূর্ণ ফ্রি!`}
             </strong>
-            <span class="text-xs text-muted">টার্গেট: ৳${CONFIG.freeDeliveryThreshold.toLocaleString()}</span>
+            <span class="text-xs text-muted">টার্গেট: ৳${(Number(CONFIG.freeDeliveryThreshold) || 0).toLocaleString()}</span>
           </div>
           <div class="progress" style="height: 6px;">
             <div class="progress-bar bg-emerald" role="progressbar" 
@@ -909,7 +915,7 @@ const PAGES = {
                               </div>
                             </div>
                           </td>
-                          <td class="text-sm">${CONFIG.currency}${it.price.toLocaleString()}</td>
+                          <td class="text-sm">${CONFIG.currency}${(Number(it.price) || 0).toLocaleString()}</td>
                           <td class="text-center">
                             <div class="qty-selector-group small">
                               <button class="btn btn-sm btn-qty" onclick="STORE.cart.updateQty('${it.sku}', -1)">-</button>
@@ -917,7 +923,7 @@ const PAGES = {
                               <button class="btn btn-sm btn-qty" onclick="STORE.cart.updateQty('${it.sku}', 1)">+</button>
                             </div>
                           </td>
-                          <td class="text-end text-sm fw-bold text-emerald">${CONFIG.currency}${(it.price * it.quantity).toLocaleString()}</td>
+                          <td class="text-end text-sm fw-bold text-emerald">${CONFIG.currency}${((Number(it.price) || 0) * (Math.max(1, Number(it.quantity) || 1))).toLocaleString()}</td>
                           <td class="text-end">
                             <button class="btn btn-link text-danger p-0" onclick="STORE.cart.removeItem('${it.sku}')">
                               <i class="bi bi-trash"></i>
@@ -943,7 +949,7 @@ const PAGES = {
                 <h5 class="fw-bold mb-3 border-bottom border-slate-800 pb-2">অর্ডার সামারি</h5>
                 <div class="d-flex justify-content-between text-sm mb-2">
                   <span class="text-muted">সাবটোটাল:</span>
-                  <strong>${CONFIG.currency}${subtotal.toLocaleString()}</strong>
+                  <strong>${CONFIG.currency}${(Number(subtotal) || 0).toLocaleString()}</strong>
                 </div>
                 <div class="d-flex justify-content-between text-sm mb-2">
                   <span class="text-muted">ডেলিভারি চার্জ:</span>
@@ -958,7 +964,7 @@ const PAGES = {
                 <hr class="border-slate-800">
                 <div class="d-flex justify-content-between text-base fw-bold mb-4">
                   <span>আনুমানিক মোট:</span>
-                  <span class="text-emerald fs-5">${CONFIG.currency}${subtotal.toLocaleString()}</span>
+                  <span class="text-emerald fs-5">${CONFIG.currency}${(Number(subtotal) || 0).toLocaleString()}</span>
                 </div>
 
                 <a href="#/checkout" class="btn btn-primary w-100 py-3 fw-bold shadow-lg">
@@ -977,6 +983,7 @@ const PAGES = {
   async renderCheckout() {
     const items = STORE.cart.items;
     const subtotal = STORE.cart.getSubtotal();
+    const isFreeDel = subtotal >= CONFIG.freeDeliveryThreshold;
     const customer = STORE.auth.customer || {};
 
     if (items.length === 0) {
@@ -1158,17 +1165,17 @@ const PAGES = {
                       <img src="${it.image}" width="36" height="36" class="rounded" style="object-fit: cover;" />
                       <div>
                         <div class="fw-bold text-white text-truncate-1" style="max-width: 170px;">${it.name}</div>
-                        <span class="text-muted">${it.quantity} × ${CONFIG.currency}${it.price}</span>
+                        <span class="text-muted">${it.quantity} × ${CONFIG.currency}${(Number(it.price) || 0).toLocaleString()}</span>
                       </div>
                     </div>
-                    <strong class="text-emerald">${CONFIG.currency}${(it.price * it.quantity).toLocaleString()}</strong>
+                    <strong class="text-emerald">${CONFIG.currency}${((Number(it.price) || 0) * (Math.max(1, Number(it.quantity) || 1))).toLocaleString()}</strong>
                   </div>
                 `).join('')}
               </div>
 
               <div class="d-flex justify-content-between text-sm mb-2">
                 <span class="text-muted">সাবটোটাল:</span>
-                <strong>${CONFIG.currency}${subtotal.toLocaleString()}</strong>
+                <strong>${CONFIG.currency}${(Number(subtotal) || 0).toLocaleString()}</strong>
               </div>
 
               <!-- Online 5% Discount Row -->
@@ -1191,7 +1198,7 @@ const PAGES = {
 
               <div class="d-flex justify-content-between text-base fw-bold mb-3">
                 <span>সর্বমোট প্রদেয় টাকা:</span>
-                <span id="summary-grand-total" class="text-emerald fs-4">${CONFIG.currency}${(subtotal + CONFIG.deliveryOutside).toLocaleString()}</span>
+                <span id="summary-grand-total" class="text-emerald fs-4">${CONFIG.currency}${((Number(subtotal) || 0) + (isFreeDel ? 0 : CONFIG.deliveryOutside)).toLocaleString()}</span>
               </div>
 
               <div class="p-2 rounded bg-slate-950 text-xs text-muted text-center">
@@ -1317,10 +1324,10 @@ const PAGES = {
 
     if (discRow && discVal) {
       discRow.classList.toggle('d-none', !isOnline);
-      discVal.innerHTML = `<span class="text-warning fw-bold">-${CONFIG.currency}${onlineDiscount.toLocaleString()}</span> <span class="badge bg-success text-[10px] ms-1">৫% ছাড়</span>`;
+      discVal.innerHTML = `<span class="text-warning fw-bold">-${CONFIG.currency}${(Number(onlineDiscount) || 0).toLocaleString()}</span> <span class="badge bg-success text-[10px] ms-1">৫% ছাড়</span>`;
     }
 
-    if (grandEl) grandEl.textContent = `${CONFIG.currency}${grandTotal.toLocaleString()}`;
+    if (grandEl) grandEl.textContent = `${CONFIG.currency}${(Number(grandTotal) || 0).toLocaleString()}`;
   },
 
   trackIncompleteOrder() {
@@ -1614,7 +1621,7 @@ const PAGES = {
           <div class="col-6 col-md-3">
             <div class="card p-3 rounded-4 bg-slate-900 border-slate-800 text-center shadow-sm">
               <div class="text-muted text-xs fw-bold">মোট কেনাকাটা</div>
-              <div class="fs-3 fw-black text-sky mt-1">৳${totalSpent.toLocaleString()}</div>
+              <div class="fs-3 fw-black text-sky mt-1">৳${(Number(totalSpent) || 0).toLocaleString()}</div>
             </div>
           </div>
         </div>
@@ -1672,7 +1679,7 @@ const PAGES = {
                               <td><strong>${o.orderId}</strong></td>
                               <td>${o.date}</td>
                               <td class="text-truncate-1" style="max-width: 140px;">${o.products}</td>
-                              <td class="text-emerald fw-bold">৳${(o.totalAmount || 0).toLocaleString()}</td>
+                              <td class="text-emerald fw-bold">৳${(Number(o.totalAmount) || 0).toLocaleString()}</td>
                               <td><span class="badge bg-secondary">${o.status}</span></td>
                               <td><button class="btn btn-xs btn-outline-light" onclick="PAGES.printOrderVoucher('${o.orderId}')">ভাউচার প্রিন্ট</button></td>
                             </tr>
@@ -1697,8 +1704,8 @@ const PAGES = {
                           <div class="card bg-slate-950 border border-slate-800 p-2 rounded-3 text-xs">
                             <img src="${p.primaryImage || p.image || CONFIG.fallbackLogoUrl}" class="rounded w-100 mb-2" style="height: 120px; object-fit: cover;" />
                             <div class="fw-bold text-truncate">${p.name}</div>
-                            <div class="text-emerald fw-bold my-1">৳${p.price || p.sellingPrice}</div>
-                            <button class="btn btn-xs btn-success w-100" onclick="STORE.cart.addItem(p); STORE.toast('success', 'কার্টে যুক্ত হয়েছে');">কার্টে যোগ করুন</button>
+                            <div class="text-emerald fw-bold my-1">৳${(Number(p.price || p.sellingPrice) || 0).toLocaleString()}</div>
+                            <button class="btn btn-xs btn-success w-100" onclick="STORE.cart.addBySku('${p.sku || p.id}');">কার্টে যোগ করুন</button>
                           </div>
                         </div>
                       `).join('')}
@@ -1726,16 +1733,16 @@ const PAGES = {
                           ${STORE.cart.items.map(it => `
                             <tr>
                               <td>${it.name}</td>
-                              <td>৳${it.price}</td>
+                              <td>৳${(Number(it.price) || 0).toLocaleString()}</td>
                               <td>${it.quantity}</td>
-                              <td class="text-emerald fw-bold">৳${it.price * it.quantity}</td>
+                              <td class="text-emerald fw-bold">৳${((Number(it.price) || 0) * (Math.max(1, Number(it.quantity) || 1))).toLocaleString()}</td>
                               <td><button class="btn btn-xs btn-outline-danger" onclick="STORE.cart.removeItem('${it.sku}'); location.reload();">✕</button></td>
                             </tr>
                           `).join('')}
                         </tbody>
                       </table>
                       <div class="text-end">
-                        <h6 class="fw-bold">সর্বমোট: <span class="text-emerald">৳${STORE.cart.getSubtotal().toLocaleString()}</span></h6>
+                        <h6 class="fw-bold">সর্বমোট: <span class="text-emerald">৳${(Number(STORE.cart.getSubtotal()) || 0).toLocaleString()}</span></h6>
                         <a href="#/checkout" class="btn btn-success px-4 py-2 fw-bold mt-2">অর্ডার প্রসেস করুন →</a>
                       </div>
                     </div>
@@ -2208,7 +2215,7 @@ const PAGES = {
                               <td>
                                 <div class="d-flex align-items-center gap-1">
                                   <button class="btn btn-xs btn-warning text-dark fw-bold" 
-                                          onclick="STORE.cart.addItem({sku:'${p.sku}', name:'${p.name.replace(/'/g, "\'")}', price:${p.wholesalePrice || p.sellingPrice}, image:'${p.primaryImage}'}, 1, true); STORE.toast('success', 'হোলসেল কার্টে যুক্ত হয়েছে!');" title="কার্ট">
+                                          onclick="STORE.cart.addBySku(\'${p.sku}\', 1, true);" title="কার্ট">
                                     <i class="bi bi-cart-plus"></i>
                                   </button>
                                   <a href="https://wa.me/8801581703822?text=I%20want%20to%20order%20wholesale:%20${encodeURIComponent(p.name)}%20(SKU:%20${p.sku})" 
@@ -2246,7 +2253,7 @@ const PAGES = {
                               <td><strong>${o.orderId}</strong></td>
                               <td>${o.date}</td>
                               <td>${o.products}</td>
-                              <td class="text-amber fw-bold">৳${(o.totalAmount || 0).toLocaleString()}</td>
+                              <td class="text-amber fw-bold">৳${(Number(o.totalAmount) || 0).toLocaleString()}</td>
                               <td><span class="badge bg-secondary">${o.status}</span></td>
                               <td><button class="btn btn-xs btn-outline-light" onclick="PAGES.printOrderVoucher('${o.orderId}')">ভাউচার</button></td>
                             </tr>
@@ -2285,16 +2292,16 @@ const PAGES = {
                           ${STORE.cart.items.map(it => `
                             <tr>
                               <td>${it.name}</td>
-                              <td>৳${it.price}</td>
+                              <td>৳${(Number(it.price) || 0).toLocaleString()}</td>
                               <td>${it.quantity}</td>
-                              <td class="text-amber fw-bold">৳${it.price * it.quantity}</td>
+                              <td class="text-amber fw-bold">৳${((Number(it.price) || 0) * (Math.max(1, Number(it.quantity) || 1))).toLocaleString()}</td>
                               <td><button class="btn btn-xs btn-outline-danger" onclick="STORE.cart.removeItem('${it.sku}'); location.reload();">✕</button></td>
                             </tr>
                           `).join('')}
                         </tbody>
                       </table>
                       <div class="text-end">
-                        <h6 class="fw-bold">সর্বমোট: <span class="text-amber">৳${STORE.cart.getSubtotal().toLocaleString()}</span></h6>
+                        <h6 class="fw-bold">সর্বমোট: <span class="text-amber">৳${(Number(STORE.cart.getSubtotal()) || 0).toLocaleString()}</span></h6>
                         <a href="#/checkout" class="btn btn-warning text-dark px-4 py-2 fw-bold mt-2">অর্ডার প্রসেস করুন →</a>
                       </div>
                     </div>

@@ -1050,18 +1050,19 @@ const API = {
     };
   },
 
-  // Live Sync directly from Google Sheet without throwing AbortError
+  // Live Sync directly from Google Sheet with redirect protection to prevent CORS errors
   async fetchLiveSheetData() {
     const sheetUrl = CONFIG.sheetGvizUrl;
     if (!sheetUrl) return false;
 
     try {
+      // Use redirect: 'error' so if Google tries to redirect to accounts.google.com, browser won't throw CORS errors
       const res = await Promise.race([
-        fetch(sheetUrl),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 12000))
+        fetch(sheetUrl, { redirect: 'error' }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 6000))
       ]);
 
-      if (!res.ok) return false;
+      if (!res.ok) throw new Error('Status ' + res.status);
       const text = await res.text();
       const match = text.match(/google\.visualization\.Query\.setResponse\((.+)\);/s);
       if (match && match[1]) {
@@ -1072,7 +1073,7 @@ const API = {
           table.rows.forEach((r, idx) => {
             const rawCells = (r.c || []).map(cell => (cell ? cell.v : ''));
             const p = this.rowToProduct(rawCells, idx);
-            if (p && p.name && p.sellingPrice > 0) {
+            if (p && p.name && (Number(p.sellingPrice) > 0 || Number(p.price) > 0)) {
               products.push(p);
             }
           });
@@ -1084,9 +1085,34 @@ const API = {
         }
       }
     } catch (e) {
+      // Fallback seamlessly to Apps Script Web App API if available
+      try {
+        if (CONFIG.apiBaseUrl) {
+          const apiRes = await Promise.race([
+            fetch(`${CONFIG.apiBaseUrl}?action=products/list`),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+          ]);
+          if (apiRes.ok) {
+            const result = await apiRes.json();
+            if (result && result.success && result.data && Array.isArray(result.data.items) && result.data.items.length > 0) {
+              this.setStorage(this.STORAGE_KEYS.PRODUCTS, result.data.items);
+              console.log(`[Apps Script Live] Synchronized ${result.data.items.length} products via Web App API.`);
+              return true;
+            }
+          }
+        }
+      } catch (err) {}
       console.log('[Google Sheet Live] Using pre-loaded sheet catalog of 33 products.');
     }
     return false;
+  },
+
+  // Instant Synchronous Product Lookup by SKU
+  getProductBySku(sku) {
+    if (!sku) return null;
+    this.initSeedData();
+    const products = this.getStorage(this.STORAGE_KEYS.PRODUCTS, this.SEED_PRODUCTS);
+    return products.find(p => p.sku === sku || p.id === sku) || null;
   },
 
   // Initialize seed catalog safely (Only runs once, Quota Safe)

@@ -679,7 +679,7 @@ const ADMIN = {
       payload[field] = newVal;
       const res = await API.call('products/update_inline', payload);
       if (res.success) {
-        element.textContent = (field === 'stock') ? newVal : `${CONFIG.currency}${parseFloat(newVal).toLocaleString()}`;
+        element.textContent = (field === 'stock') ? newVal : `${CONFIG.currency}${(parseFloat(newVal) || 0).toLocaleString()}`;
         STORE.toast('success', 'আপডেট সফল!', `${field} পরিবর্তিত হয়েছে।`);
       }
     }
@@ -898,7 +898,7 @@ const ADMIN = {
                         <td class="text-truncate" style="max-width: 120px;">${o.address}</td>
                         <td class="text-truncate" style="max-width: 140px;">${o.products}</td>
                         <td>${o.quantity || 1}</td>
-                        <td class="text-emerald fw-bold">${CONFIG.currency}${o.totalAmount.toLocaleString()}</td>
+                        <td class="text-emerald fw-bold">${CONFIG.currency}${(Number(o.totalAmount) || 0).toLocaleString()}</td>
                         <td>
                           <select class="form-select form-select-xs bg-slate-950 text-white border-slate-700" 
                                   onchange="ADMIN.updateOrderStatus('${o.orderId}', this.value)">
@@ -1113,7 +1113,7 @@ const ADMIN = {
               <td>${it.name}</td>
               <td>${CONFIG.currency}${it.price}</td>
               <td><input type="number" value="${it.qty}" min="1" class="form-control form-control-sm w-16 text-center" onchange="ADMIN._posItems[${idx}].qty=parseInt(this.value,10); ADMIN.updatePOSTotals();"></td>
-              <td>${CONFIG.currency}${(it.price * it.qty).toLocaleString()}</td>
+              <td>${CONFIG.currency}${((Number(it.price) || 0) * (Number(it.qty) || 1)).toLocaleString()}</td>
               <td><button type="button" class="btn btn-link text-danger p-0" onclick="ADMIN._posItems.splice(${idx},1); ADMIN.renderPOSItems();"><i class="bi bi-trash"></i></button></td>
             </tr>
           `).join('')}
@@ -1130,7 +1130,7 @@ const ADMIN = {
     const disc = parseInt(document.getElementById('pos-discount')?.value || '0', 10);
     const grand = Math.max(0, sub + del - disc);
     const el = document.getElementById('pos-grand-total');
-    if (el) el.textContent = `${CONFIG.currency}${grand.toLocaleString()}`;
+    if (el) el.textContent = `${CONFIG.currency}${(Number(grand) || 0).toLocaleString()}`;
   },
 
   async handlePOSSubmit(e) {

@@ -20,8 +20,10 @@ const COMPONENTS = {
     const admin = (typeof STORE !== 'undefined' && STORE.auth) ? STORE.auth.admin : null;
 
     return `
-      <!-- Top Announcement & Slogan Bar -->
-      <div class="top-announcement-bar py-1 px-3 text-xs d-flex justify-content-between align-items-center">
+      <!-- Sticky Top Header Container -->
+      <div class="site-header-wrapper sticky-top">
+        <!-- Top Announcement & Slogan Bar -->
+        <div class="top-announcement-bar py-1 px-3 text-xs d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-2 overflow-hidden text-truncate">
           <span class="badge bg-danger text-white">মেগা অফার</span>
           <span class="announcement-text text-truncate">
@@ -35,8 +37,8 @@ const COMPONENTS = {
         </div>
       </div>
 
-      <!-- Main Navigation Bar -->
-      <header class="main-navbar fixed-top">
+        <!-- Main Navigation Bar -->
+        <nav class="main-navbar">
         <div class="container-fluid px-3 px-lg-5">
           <div class="d-flex align-items-center justify-content-between py-2 gap-2 gap-lg-3">
             
@@ -190,7 +192,8 @@ const COMPONENTS = {
           </div>
 
         </div>
-      </header>
+        </nav>
+      </div>
 
       <!-- 2. Fixed Floating Action Buttons (Right-Side: Cart + WhatsApp 1 & 2 + Call 1 & 2) -->
       <div class="floating-quick-contacts">
@@ -391,7 +394,7 @@ const COMPONENTS = {
           <div class="d-flex align-items-center justify-content-between gap-1 mt-2">
             ${inStock ? `
               <button class="btn btn-sm btn-success w-100 py-1 fw-bold text-xs" 
-                      onclick="STORE.cart.addItem({sku:'${p.sku}', name:'${p.name.replace(/'/g, "\'")}', price:${p.sellingPrice}, image:'${p.primaryImage || p.images[0]}'}); STORE.toast('success', 'কার্টে যুক্ত হয়েছে!', '${p.name.replace(/'/g, "\'")}');">
+                      onclick="STORE.cart.addBySku('${p.sku}')">
                 <i class="bi bi-cart-plus me-1"></i> কার্ট
               </button>
               <a href="#/product/${p.sku}" class="btn btn-sm btn-outline-primary px-2 py-1 text-xs" title="অর্ডার করুন">
@@ -556,6 +559,7 @@ const COMPONENTS = {
   renderFloatingContacts() {
     const mount = document.getElementById('floating-contacts-container');
     if (mount) {
+      if (document.querySelector('.floating-quick-contacts')) { mount.innerHTML = ''; return; }
       const cartCount = (typeof STORE !== 'undefined' && STORE.cart) ? STORE.cart.getCount() : 0;
       mount.innerHTML = `
         <div class="floating-quick-contacts">

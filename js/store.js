@@ -3,6 +3,11 @@
  * Handles Cart, Wishlist, Authentication (Customer, Wholesaler, Admin Roles with SessionStorage), Theme
  */
 const STORE = {
+  // Safe Currency Formatter
+  formatPrice(val) {
+    const n = Number(val);
+    return isNaN(n) ? '0' : n.toLocaleString('en-US');
+  },
   safeSet(key, value) {
     try {
       localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
@@ -21,40 +26,94 @@ const STORE = {
 
   // Cart Management
   cart: {
-    items: JSON.parse(localStorage.getItem('dcbd_cart') || '[]'),
+    items: (function() {
+      try {
+        const raw = JSON.parse(localStorage.getItem('dcbd_cart') || '[]');
+        if (!Array.isArray(raw)) return [];
+        return raw.filter(i => i && (i.sku || i.id)).map(i => {
+          const rawPrice = i.price !== undefined ? i.price : (i.sellingPrice !== undefined ? i.sellingPrice : 0);
+          const price = Number(rawPrice) || 0;
+          const origPrice = Number(i.originalPrice || (price > 0 ? price * 1.2 : 0)) || price;
+          return {
+            id: i.id || i.sku,
+            sku: i.sku || i.id,
+            name: i.name || 'পণ্য',
+            category: i.category || 'General',
+            price: price,
+            originalPrice: origPrice,
+            image: i.image || i.primaryImage || (i.images && i.images[0]) || CONFIG.fallbackLogoUrl,
+            quantity: Math.max(1, Number(i.quantity) || 1),
+            isWholesale: !!i.isWholesale,
+            minOrderQ: i.minOrderQ || 1,
+            selectedColor: i.selectedColor || 'Default',
+            selectedSize: i.selectedSize || 'Standard'
+          };
+        });
+      } catch (e) {
+        return [];
+      }
+    })(),
     
     save() {
       STORE.safeSet('dcbd_cart', this.items);
       STORE.emit('cart_updated', this.items);
+      const count = this.getCount();
       const flCart = document.getElementById('floating-cart-count');
-      if (flCart) flCart.textContent = this.getCount();
+      if (flCart) flCart.textContent = count;
       const navCart = document.getElementById('nav-cart-count');
-      if (navCart) navCart.textContent = this.getCount();
+      if (navCart) navCart.textContent = count;
+      const navCartMobile = document.getElementById('nav-cart-count-mobile');
+      if (navCartMobile) navCartMobile.textContent = count;
     },
 
     addItem(product, qty = 1, isWholesale = false) {
-      const price = isWholesale ? (product.wholesalePrice || product.sellingPrice) : product.sellingPrice;
-      const existing = this.items.find(i => i.sku === product.sku);
+      if (!product || (!product.sku && !product.id)) return;
+      const sku = product.sku || product.id;
+      const rawPrice = isWholesale
+        ? (product.wholesalePrice ?? product.sellingPrice ?? product.price ?? 0)
+        : (product.sellingPrice ?? product.price ?? 0);
+      const price = Number(rawPrice) || 0;
+      const originalPrice = Number(product.originalPrice || (price > 0 ? price * 1.2 : 0)) || price;
+      const quantity = Math.max(1, Number(qty) || 1);
+
+      const existing = this.items.find(i => i.sku === sku);
       if (existing) {
-        existing.quantity += qty;
+        existing.quantity += quantity;
+        if (price > 0) existing.price = price;
       } else {
         this.items.push({
-          id: product.id || product.sku,
-          sku: product.sku,
-          name: product.name,
-          category: product.category,
+          id: product.id || sku,
+          sku: sku,
+          name: product.name || 'পণ্য',
+          category: product.category || 'General',
           price: price,
-          originalPrice: product.originalPrice,
+          originalPrice: originalPrice,
           image: product.primaryImage || product.image || (product.images && product.images[0]) || CONFIG.fallbackLogoUrl,
-          quantity: qty,
-          isWholesale: isWholesale,
+          quantity: quantity,
+          isWholesale: !!isWholesale,
           minOrderQ: product.minOrderQ || 1,
           selectedColor: product.selectedColor || 'Default',
           selectedSize: product.selectedSize || 'Standard'
         });
       }
       this.save();
-      STORE.toast('success', 'কার্টে যুক্ত করা হয়েছে!', product.name);
+      STORE.toast('success', 'কার্টে যুক্ত করা হয়েছে!', product.name || sku);
+    },
+
+    addBySku(sku, qty = 1, isWholesale = false) {
+      if (!sku) return;
+      let p = (window.API && typeof API.getProductBySku === 'function') ? API.getProductBySku(sku) : null;
+      if (!p) {
+        try {
+          const prods = JSON.parse(localStorage.getItem('dcbd_products_cache') || '[]');
+          p = prods.find(x => x.sku === sku || x.id === sku);
+        } catch(e) {}
+      }
+      if (p) {
+        this.addItem(p, qty, isWholesale);
+      } else {
+        this.addItem({ sku: sku, name: 'পণ্য ' + sku, sellingPrice: 0, price: 0 }, qty, isWholesale);
+      }
     },
 
     updateQty(sku, delta) {
@@ -80,11 +139,11 @@ const STORE = {
     },
 
     getCount() {
-      return this.items.reduce((s, i) => s + i.quantity, 0);
+      return this.items.reduce((s, i) => s + (Math.max(1, Number(i.quantity) || 1)), 0);
     },
 
     getSubtotal() {
-      return this.items.reduce((s, i) => s + (i.price * i.quantity), 0);
+      return this.items.reduce((s, i) => s + ((Number(i.price) || 0) * (Math.max(1, Number(i.quantity) || 1))), 0);
     }
   },
 

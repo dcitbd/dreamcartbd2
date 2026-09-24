@@ -25,7 +25,13 @@ const APP = {
     this.attachEvents();
 
     // 5. Subscribe to Store updates
-    STORE.on('cart_updated', () => this.updateNavbar());
+    STORE.on('cart_updated', () => {
+      this.updateNavbar();
+      const hash = window.location.hash || '';
+      if (hash.startsWith('#/cart')) {
+        this.route();
+      }
+    });
     STORE.on('wishlist_updated', () => this.updateNavbar());
     STORE.on('auth_changed', () => this.updateNavbar());
     STORE.on('theme_changed', () => this.updateNavbar());
@@ -136,7 +142,20 @@ const APP = {
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    const rawHash = window.location.hash || '#/';
+    let rawHash = window.location.hash;
+    if (!rawHash || rawHash === '#/' || rawHash === '#') {
+      const pName = (window.location.pathname || '').toLowerCase();
+      if (pName.includes('cart.html')) rawHash = '#/cart';
+      else if (pName.includes('checkout.html')) rawHash = '#/checkout';
+      else if (pName.includes('track') || pName.includes('order.html')) rawHash = '#/track';
+      else if (pName.includes('terms.html')) rawHash = '#/terms';
+      else if (pName.includes('privacy') || pName.includes('privecy')) rawHash = '#/privacy';
+      else if (pName.includes('customer')) rawHash = '#/customer/dashboard';
+      else if (pName.includes('wholesale')) rawHash = '#/wholesale/dashboard';
+      else if (pName.includes('login.html')) rawHash = '#/customer/login';
+      else if (pName.includes('admin') || pName.includes('product-management') || pName.includes('product management') || pName.includes('order-management') || pName.includes('brand') || pName.includes('categor')) rawHash = '#/admin/dashboard';
+      else rawHash = '#/';
+    }
     const [path, queryString] = rawHash.split('?');
     const params = new URLSearchParams(queryString || '');
     const queryObj = Object.fromEntries(params.entries());
