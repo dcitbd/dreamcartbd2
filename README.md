@@ -106,8 +106,94 @@ Dream_Cart_BD/
     ├── admin.js                   # অ্যাডমিন ড্যাশবোর্ড, টেবিল, ইনলাইন এডিট ও এক্সপোর্ট ইঞ্জিন
     └── app.js                     # ক্লায়েন্ট-সাইড রাউটার ও অ্যাপ্লিকেশন বুটস্ট্র্যাপ
 
+```
+
+---
+
+## 📊 সংযুক্ত গুগল শিট ডেটাবেজ আর্কিটেকচার
+
+ওয়েবসাইটটি নিচের গুগল শিটের সাথে সংযুক্ত:
+
+* **গুগল শিট লিঙ্ক:** [Dream Cart BD Google Sheet](https://docs.google.com/spreadsheets/d/1W4k4HP1MBuHfdU7AkPHPf_P-huHATEpIbGhJQDRtpH4/edit?gid=2106627979&utm_source=gemini#gid=2106627979)
+* **স্প্রেডশিট আইডি:** `1W4k4HP1MBuHfdU7AkPHPf_P-huHATEpIbGhJQDRtpH4` *(বিকল্প আইডি: `1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g`)*
+
+### শিটের ১০টি ট্যাব ও কলাম বিন্যাস:
+
+| ট্যাব (Sheet Tab) | কলাম বিন্যাস (Columns Structure) |
+| --- | --- |
+| **Products** | `A=ID/SKU`, `B=P_Name`, `C=Category`, `D=Sub_Category`, `E=Child_Category`, `F=Brand`, `G=Buying_price`, `H=Selling_Price`, `I=Stock`, `J=Original_Price`, `K=WholeSale_price`, `L=Min_order_Q`, `M=Images`, `N=Description`, `O=Specification`, `P=Others`, `Q=Color`, `R=Size` |
+| **Orders** | `OrderID`, `Date`, `Customer_Name`, `Phone`, `Address`, `Products`, `Quantity`, `Total_Amount`, `Delivery_Type`, `Status` |
+| **Catagories** | `Catagory ID`, `Catagory Name`, `Sub Catagory id`, `Sub Catagory`, `Child Catagory id`, `Child Catagory` |
+| **Brand** | `Brand_ID`, `Brand_Image`, `Brand_Name`, `Brand_Description` |
+| **Buying** | `Date`, `Who Buy`, `Product Name`, `buying price`, `Quantity`, `Total buying (calculated)`, `Supplier`, `Location` |
+| **Costs** | `Date`, `Who Paid`, `Purpose`, `Amount`, `Note` |
+| **Invest** | `Date`, `Invest type`, `Name of investor`, `Amount`, `Note` |
+| **User/Customer** | `USER_ID`, `Profile_photo`, `Name`, `Mobile`, `Mail`, `Address`, `User_ID`, `Password`, `Status` |
+| **WholeSaller** | `USER_ID`, `Shop_logo`, `Name`, `Mobile`, `Mail`, `Address`, `Shop_Name`, `User_ID`, `Password`, `Status` |
+| **Admin/Worker** | `USER_ID`, `Profile Photo`, `Name`, `Mobile`, `Mail`, `Address`, `Worker_Type`, `Role`, `User_ID`, `Password` |
+
+---
+
+## 🚀 সেটআপ ও ইনস্টলেশন গাইড (Setup & Deployment)
+
+### ধাপ ১: প্রজেক্ট ফাইল ডাউনলোড ও এক্সট্রাক্ট
+
+1. [Dream_Cart_BD_Full_Complete_Project.zip](https://drive.google.com/file/d/1bhNYg_qPIN8xnYillMSFRvCGiYgSkTeh/view?usp=drivesdk&utm_source=gemini) ডাউনলোড করুন।
+2. জিপ ফাইলটি আপনার কম্পিউটারে যেকোনো ফোল্ডারে আনজিপ করুন।
+
+### ধাপ ২: GitHub ও লাইভ হোস্টিং (GitHub Pages / Netlify / Vercel)
+
+1. আপনার GitHub অ্যাকাউন্টে একটি নতুন রিপোজিটরি তৈরি করুন (যেমন: `dream-cart-bd`)।
+2. আনজিপ করা সকল ফাইল রিপোজিটরির মূল ডিরেক্টরিতে (Root Directory) আপলোড করে Commit ও Push করুন।
+3. **Settings > Pages**-এ গিয়ে `main` অথবা `master` ব্রাঞ্চ সিলেক্ট করে সেভ করুন।
+4. কয়েক সেকেন্ডের মধ্যে আপনার ফ্রি লাইভ ওয়েবসাইট লিঙ্ক প্রস্তুত হয়ে যাবে (যেমন: `https://yourusername.github.io/dream-cart-bd/`)।
+
+### ধাপ ৩: গুগল অ্যাপস স্ক্রিপ্ট ব্যাকএন্ড কনফিগারেশন (`Code.gs`)
+
+1. আপনার [গুগল শিট](https://docs.google.com/spreadsheets/d/1W4k4HP1MBuHfdU7AkPHPf_P-huHATEpIbGhJQDRtpH4/edit?utm_source=gemini) ওপেন করুন।
+2. মেনুবার থেকে **Extensions > Apps Script**-এ ক্লিক করুন।
+3. প্রজেক্টের ভেতরের `Code.gs` ফাইলের সমস্ত কোড কপি করে গুগল অ্যাপস স্ক্রিপ্ট এডিটরে পেস্ট করুন।
+4. উপরের **Deploy > New deployment** বাটনে ক্লিক করুন।
+5. সিলেক্ট করুন: **Web app**:
+* **Execute as:** `Me (your email)`
+* **Who has access:** `Anyone` (বাধ্যতামূলক, যাতে ভিজিটররা চেকআউটে অর্ডার প্লেস করতে পারে)
+
+
+6. **Deploy** বাটনে ক্লিক করে পারমিশন দিয়ে দিন এবং প্রাপ্ত **Web app URL** টি কপি করুন।
+7. আপনার প্রজেক্টের `js/config.js` ফাইলের `apiBaseUrl` প্রোপার্টিতে এই নতুন URL-টি বসিয়ে দিন:
+```javascript
+apiBaseUrl: '[https://script.google.com/macros/s/YOUR_NEW_DEPLOYMENT_ID/exec](https://script.google.com/macros/s/YOUR_NEW_DEPLOYMENT_ID/exec)',
+
+```
 
 
 
-📊 সংযুক্ত গুগল শিট ডেটাবেজ আর্কিটেকচারওয়েবসাইটটি নিচের গুগল শিটের সাথে সংযুক্ত:গুগল শিট লিঙ্ক: Dream Cart BD Google Sheetস্প্রেডশিট আইডি: 1W4k4HP1MBuHfdU7AkPHPf_P-huHATEpIbGhJQDRtpH4 (বিকল্প আইডি: 1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g)শিটের ১০টি ট্যাব ও কলাম বিন্যাস:ট্যাব (Sheet Tab)কলাম বিন্যাস (Columns Structure)ProductsA=ID/SKU, B=P_Name, C=Category, D=Sub_Category, E=Child_Category, F=Brand, G=Buying_price, H=Selling_Price, I=Stock, J=Original_Price, K=WholeSale_price, L=Min_order_Q, M=Images, N=Description, O=Specification, P=Others, Q=Color, R=SizeOrdersOrderID, Date, Customer_Name, Phone, Address, Products, Quantity, Total_Amount, Delivery_Type, StatusCatagoriesCatagory ID, Catagory Name, Sub Catagory id, Sub Catagory, Child Catagory id, Child CatagoryBrandBrand_ID, Brand_Image, Brand_Name, Brand_DescriptionBuyingDate, Who Buy, Product Name, buying price, Quantity, Total buying (calculated), Supplier, LocationCostsDate, Who Paid, Purpose, Amount, NoteInvestDate, Invest type, Name of investor, Amount, NoteUser/CustomerUSER_ID, Profile_photo, Name, Mobile, Mail, Address, User_ID, Password, StatusWholeSallerUSER_ID, Shop_logo, Name, Mobile, Mail, Address, Shop_Name, User_ID, Password, StatusAdmin/WorkerUSER_ID, Profile Photo, Name, Mobile, Mail, Address, Worker_Type, Role, User_ID, Password🚀 সেটআপ ও ইনস্টলেশন গাইড (Setup & Deployment)ধাপ ১: প্রজেক্ট ফাইল ডাউনলোড ও এক্সট্রাক্টDream_Cart_BD_Full_Complete_Project.zip ডাউনলোড করুন।জিপ ফাইলটি আপনার কম্পিউটারে যেকোনো ফোল্ডারে আনজিপ করুন।ধাপ ২: GitHub ও লাইভ হোস্টিং (GitHub Pages / Netlify / Vercel)আপনার GitHub অ্যাকাউন্টে একটি নতুন রিপোজিটরি তৈরি করুন (যেমন: dream-cart-bd)।আনজিপ করা সকল ফাইল রিপোজিটরির মূল ডিরেক্টরিতে (Root Directory) আপলোড করে Commit ও Push করুন।Settings > Pages-এ গিয়ে main অথবা master ব্রাঞ্চ সিলেক্ট করে সেভ করুন।কয়েক সেকেন্ডের মধ্যে আপনার ফ্রি লাইভ ওয়েবসাইট লিঙ্ক প্রস্তুত হয়ে যাবে (যেমন: https://yourusername.github.io/dream-cart-bd/)।ধাপ ৩: গুগল অ্যাপস স্ক্রিপ্ট ব্যাকএন্ড কনফিগারেশন (Code.gs)আপনার গুগল শিট ওপেন করুন।মেনুবার থেকে Extensions > Apps Script-এ ক্লিক করুন।প্রজেক্টের ভেতরের Code.gs ফাইলের সমস্ত কোড কপি করে গুগল অ্যাপস স্ক্রিপ্ট এডিটরে পেস্ট করুন।উপরের Deploy > New deployment বাটনে ক্লিক করুন।সিলেক্ট করুন: Web app:Execute as: Me (your email)Who has access: Anyone (বাধ্যতামূলক, যাতে ভিজিটররা চেকআউটে অর্ডার প্লেস করতে পারে)Deploy বাটনে ক্লিক করে পারমিশন দিয়ে দিন এবং প্রাপ্ত Web app URL টি কপি করুন।আপনার প্রজেক্টের js/config.js ফাইলের apiBaseUrl প্রোপার্টিতে এই নতুন URL-টি বসিয়ে দিন:JavaScriptapiBaseUrl: '[https://script.google.com/macros/s/YOUR_NEW_DEPLOYMENT_ID/exec](https://script.google.com/macros/s/YOUR_NEW_DEPLOYMENT_ID/exec)',
-🛠 প্রযুক্তি স্ট্যাক (Technology Stack)ফ্রন্টএন্ড কোর: HTML5, Modern Vanilla JavaScript (ES6+ Modules & Single Page Router).স্টাইলিং ও লেআউট: Bootstrap 5.3.3, Bootstrap Icons, Custom CSS3 Variables, CSS Grid 6 System.টাইপোগ্রাফি: Google Fonts (Hind Siliguri & Plus Jakarta Sans).ব্যাকএন্ড ও ডেটাবেজ: Google Apps Script (Serverless JavaScript runtime) & Google Sheets.সিঙ্ক্রোনাইজেশন: Google Visualization API (GViz) + Abort-Safe Fallback Local Storage Engine.ডকুমেন্ট প্রিন্টিং: Native @media print CSS for standard A5 Thermal/Invoice Printing.📞 সাপোর্ট ও যোগাযোগ (Support & Contacts)প্রতিষ্ঠান: Dream Cart BDহেল্পলাইন ১: 01581703822 (কল ও হোয়াটসঅ্যাপ)হেল্পলাইন ২: 01818273838 (কল ও হোয়াটসঅ্যাপ)অফিসিয়াল ইমেইল: dubaiwholesalebd@gmail.comঠিকানা: মহেশখালী, কক্সবাজার / কুমিল্লা ও ঢাকা কর্পোরেট হাব, বাংলাদেশঅফিস সময়: সকাল ৯:০০ টা থেকে রাত ১১:০০ টা (সপ্তাহে ৭ দিন)© 2026 Dream Cart BD. All rights reserved.
+---
+
+## 🛠 প্রযুক্তি স্ট্যাক (Technology Stack)
+
+* **ফ্রন্টএন্ড কোর:** HTML5, Modern Vanilla JavaScript (ES6+ Modules & Single Page Router).
+* **স্টাইলিং ও লেআউট:** Bootstrap 5.3.3, Bootstrap Icons, Custom CSS3 Variables, CSS Grid 6 System.
+* **টাইপোগ্রাফি:** Google Fonts (*Hind Siliguri* & *Plus Jakarta Sans*).
+* **ব্যাকএন্ড ও ডেটাবেজ:** Google Apps Script (Serverless JavaScript runtime) & Google Sheets.
+* **সিঙ্ক্রোনাইজেশন:** Google Visualization API (GViz) + Abort-Safe Fallback Local Storage Engine.
+* **ডকুমেন্ট প্রিন্টিং:** Native `@media print` CSS for standard A5 Thermal/Invoice Printing.
+
+---
+
+## 📞 সাপোর্ট ও যোগাযোগ (Support & Contacts)
+
+* **প্রতিষ্ঠান:** Dream Cart BD
+* **হেল্পলাইন ১:** `01581703822` (কল ও হোয়াটসঅ্যাপ)
+* **হেল্পলাইন ২:** `01818273838` (কল ও হোয়াটসঅ্যাপ)
+* **অফিসিয়াল ইমেইল:** `dubaiwholesalebd@gmail.com`
+* **ঠিকানা:** মহেশখালী, কক্সবাজার / কুমিল্লা ও ঢাকা কর্পোরেট হাব, বাংলাদেশ
+* **অফিস সময়:** সকাল ৯:০০ টা থেকে রাত ১১:০০ টা (সপ্তাহে ৭ দিন)
+
+---
+
+*© 2026 Dream Cart BD. All rights reserved.*
+
+```
+
+```
