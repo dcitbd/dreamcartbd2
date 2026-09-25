@@ -69,7 +69,8 @@ const STORE = {
     addItem(product, qty = 1, isWholesale = false) {
       if (!product || (!product.sku && !product.id)) return;
       const sku = product.sku || product.id;
-      const rawPrice = isWholesale
+      const isWs = isWholesale || (typeof STORE !== 'undefined' && STORE.auth && STORE.auth.wholesaler !== null) || !!product.isWholesale;
+      const rawPrice = isWs
         ? (product.wholesalePrice ?? product.sellingPrice ?? product.price ?? 0)
         : (product.sellingPrice ?? product.price ?? 0);
       const price = Number(rawPrice) || 0;
@@ -78,7 +79,7 @@ const STORE = {
 
       const selColor = product.selectedColor || product.color || 'Default';
       const selSize = product.selectedSize || product.size || 'Standard';
-      const existing = this.items.find(i => i.sku === sku && i.selectedColor === selColor && i.selectedSize === selSize);
+      const existing = this.items.find(i => i.sku === sku && i.selectedColor === selColor && i.selectedSize === selSize && i.isWholesale === isWs);
       if (existing) {
         existing.quantity += quantity;
         if (price > 0) existing.price = price;
@@ -92,7 +93,7 @@ const STORE = {
           originalPrice: originalPrice,
           image: product.primaryImage || product.image || (product.images && product.images[0]) || CONFIG.fallbackLogoUrl,
           quantity: quantity,
-          isWholesale: !!isWholesale,
+          isWholesale: isWs,
           minOrderQ: product.minOrderQ || 1,
           selectedColor: selColor,
           selectedSize: selSize

@@ -5,7 +5,7 @@
  * Brands, Banners, Customers, Wholesalers, Buying, Costs, Invest,
  * Workers, Reviews & Global Settings
  *
- * Google Spreadsheet ID: 1W4k4HP1MBuHfdU7AkPHPf_P-huHATEpIbGhJQDRtpH4
+ * Google Spreadsheet ID: 1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g
  * ===================================================================
  */
 
@@ -134,12 +134,18 @@ function parseNum(val, defVal) {
 
 function handleAction(action, payload) {
   let ss = null;
+  // 1. First priority: active spreadsheet (zero authorization friction for container-bound scripts)
   try {
-    if (typeof SPREADSHEET_ID !== 'undefined' && SPREADSHEET_ID && SPREADSHEET_ID.trim() !== '') {
+    ss = SpreadsheetApp.getActiveSpreadsheet();
+  } catch (e) {}
+
+  // 2. Second priority: open by SPREADSHEET_ID
+  if (!ss && typeof SPREADSHEET_ID !== 'undefined' && SPREADSHEET_ID && SPREADSHEET_ID.trim() !== '') {
+    try {
       ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    } catch (e) {
+      console.warn('Could not open primary spreadsheet by ID: ' + e);
     }
-  } catch (e) {
-    console.warn('Could not open primary spreadsheet by ID: ' + e);
   }
   if (!ss && typeof FALLBACK_SPREADSHEET_ID !== 'undefined' && FALLBACK_SPREADSHEET_ID) {
     try {
@@ -147,11 +153,6 @@ function handleAction(action, payload) {
     } catch (e) {
       console.warn('Could not open fallback spreadsheet by ID: ' + e);
     }
-  }
-  if (!ss) {
-    try {
-      ss = SpreadsheetApp.getActiveSpreadsheet();
-    } catch (e) {}
   }
   if (!ss) {
     return { success: false, error: 'Cannot access Spreadsheet. Please check SPREADSHEET_ID.' };
@@ -427,6 +428,158 @@ function handleAction(action, payload) {
         });
       }
       return { success: true, data: { items: items, total: items.length } };
+    }
+
+    
+    case 'orders/update': {
+      const sheet = getOrCreateSheet(ss, SHEETS.ORDERS);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.orderId)) {
+          if (payload.customerName) sheet.getRange(i + 1, 3).setValue(payload.customerName);
+          if (payload.phone) sheet.getRange(i + 1, 4).setValue(payload.phone);
+          if (payload.address) sheet.getRange(i + 1, 5).setValue(payload.address);
+          if (payload.deliveryCharge !== undefined) sheet.getRange(i + 1, 9).setValue(payload.deliveryCharge);
+          if (payload.paymentMethod) sheet.getRange(i + 1, 11).setValue(payload.paymentMethod);
+          if (payload.trxId) sheet.getRange(i + 1, 13).setValue(payload.trxId);
+          if (payload.totalAmount !== undefined) sheet.getRange(i + 1, 14).setValue(payload.totalAmount);
+          if (payload.status) sheet.getRange(i + 1, 15).setValue(payload.status);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Order not found' };
+    }
+
+    case 'customers/update': {
+      const sheet = getOrCreateSheet(ss, SHEETS.CUSTOMERS);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.id) || String(data[i][2]) === String(payload.phone)) {
+          if (payload.name) sheet.getRange(i + 1, 2).setValue(payload.name);
+          if (payload.phone) sheet.getRange(i + 1, 3).setValue(payload.phone);
+          if (payload.email) sheet.getRange(i + 1, 4).setValue(payload.email);
+          if (payload.address) sheet.getRange(i + 1, 5).setValue(payload.address);
+          if (payload.status) sheet.getRange(i + 1, 8).setValue(payload.status);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Customer not found' };
+    }
+
+    case 'wholesalers/update': {
+      const sheet = getOrCreateSheet(ss, SHEETS.WHOLESALERS);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.id)) {
+          if (payload.shopName) sheet.getRange(i + 1, 2).setValue(payload.shopName);
+          if (payload.ownerName) sheet.getRange(i + 1, 3).setValue(payload.ownerName);
+          if (payload.phone) sheet.getRange(i + 1, 4).setValue(payload.phone);
+          if (payload.email) sheet.getRange(i + 1, 5).setValue(payload.email);
+          if (payload.district) sheet.getRange(i + 1, 6).setValue(payload.district);
+          if (payload.tradeLicense) sheet.getRange(i + 1, 7).setValue(payload.tradeLicense);
+          if (payload.status) sheet.getRange(i + 1, 10).setValue(payload.status);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Wholesaler not found' };
+    }
+
+    case 'buying/update': {
+      const sheet = getOrCreateSheet(ss, SHEETS.BUYING);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.id)) {
+          if (payload.invoiceNo) sheet.getRange(i + 1, 2).setValue(payload.invoiceNo);
+          if (payload.supplier) sheet.getRange(i + 1, 3).setValue(payload.supplier);
+          if (payload.productName) sheet.getRange(i + 1, 4).setValue(payload.productName);
+          if (payload.sku) sheet.getRange(i + 1, 5).setValue(payload.sku);
+          if (payload.qty !== undefined) sheet.getRange(i + 1, 6).setValue(payload.qty);
+          if (payload.unitPrice !== undefined) sheet.getRange(i + 1, 7).setValue(payload.unitPrice);
+          if (payload.totalAmount !== undefined) sheet.getRange(i + 1, 8).setValue(payload.totalAmount);
+          if (payload.date) sheet.getRange(i + 1, 9).setValue(payload.date);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Buying record not found' };
+    }
+
+    case 'costs/update': {
+      const sheet = getOrCreateSheet(ss, SHEETS.COSTS);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.id)) {
+          if (payload.category) sheet.getRange(i + 1, 2).setValue(payload.category);
+          if (payload.description) sheet.getRange(i + 1, 3).setValue(payload.description);
+          if (payload.amount !== undefined) sheet.getRange(i + 1, 4).setValue(payload.amount);
+          if (payload.date) sheet.getRange(i + 1, 5).setValue(payload.date);
+          if (payload.paidBy) sheet.getRange(i + 1, 6).setValue(payload.paidBy);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Cost record not found' };
+    }
+
+    case 'invest/update': {
+      const sheet = getOrCreateSheet(ss, SHEETS.INVEST);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.id)) {
+          if (payload.investorName) sheet.getRange(i + 1, 2).setValue(payload.investorName);
+          if (payload.phone) sheet.getRange(i + 1, 3).setValue(payload.phone);
+          if (payload.amount !== undefined) sheet.getRange(i + 1, 4).setValue(payload.amount);
+          if (payload.date) sheet.getRange(i + 1, 5).setValue(payload.date);
+          if (payload.sourcePurpose) sheet.getRange(i + 1, 6).setValue(payload.sourcePurpose);
+          if (payload.shareTerms) sheet.getRange(i + 1, 7).setValue(payload.shareTerms);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Invest record not found' };
+    }
+
+    case 'workers/update': {
+      const sheet = getOrCreateSheet(ss, SHEETS.WORKERS);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.id)) {
+          if (payload.name) sheet.getRange(i + 1, 2).setValue(payload.name);
+          if (payload.email) sheet.getRange(i + 1, 3).setValue(payload.email);
+          if (payload.phone) sheet.getRange(i + 1, 4).setValue(payload.phone);
+          if (payload.role) sheet.getRange(i + 1, 5).setValue(payload.role);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Worker record not found' };
+    }
+
+    case 'reviews/update': {
+      const sheet = getOrCreateSheet(ss, SHEETS.REVIEWS);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.id)) {
+          if (payload.customerName) sheet.getRange(i + 1, 2).setValue(payload.customerName);
+          if (payload.rating !== undefined) sheet.getRange(i + 1, 5).setValue(payload.rating);
+          if (payload.comment) sheet.getRange(i + 1, 6).setValue(payload.comment);
+          if (payload.status) sheet.getRange(i + 1, 8).setValue(payload.status);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Review record not found' };
+    }
+
+    case 'banners/update': {
+      const sheet = getOrCreateSheet(ss, SHEETS.BANNERS);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.id)) {
+          if (payload.title) sheet.getRange(i + 1, 2).setValue(payload.title);
+          if (payload.subtitle) sheet.getRange(i + 1, 3).setValue(payload.subtitle);
+          if (payload.badge) sheet.getRange(i + 1, 5).setValue(payload.badge);
+          if (payload.link) sheet.getRange(i + 1, 6).setValue(payload.link);
+          if (payload.img) sheet.getRange(i + 1, 7).setValue(payload.img);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Banner record not found' };
     }
 
     case 'orders/update_status': {

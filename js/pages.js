@@ -1179,13 +1179,22 @@ const PAGES = {
         
         <h2 class="fw-bold mb-3"><i class="bi bi-shield-check text-emerald me-2"></i>অর্ডার প্রসেস ও অর্ডার ইনফো পেজ</h2>
         
-        <!-- Online Payment 5% Discount Alert Banner -->
-        <div class="alert alert-success d-flex align-items-center gap-2 p-3 rounded-4 mb-4 shadow-sm border-emerald/50 bg-emerald/10">
-          <i class="bi bi-stars fs-3 text-emerald"></i>
-          <div class="text-xs">
-            <strong>বিশেষ সুবিধা:</strong> বিকাশ, নগদ, রকেট বা ব্যাংক পেমেন্টে অর্ডার করলে আপনি পাচ্ছেন <strong>তাৎক্ষণিক ৫% মূল্যছাড়!</strong> এবং ২০০০৳ বেশি কেনাকাটায় সারা দেশে ডেলিভারি সম্পূর্ণ ফ্রি!
+        <!-- Customer vs Wholesaler Alert Banner -->
+        ${((typeof STORE !== 'undefined' && STORE.auth && STORE.auth.wholesaler !== null) || STORE.cart.items.some(i => i.isWholesale)) ? `
+          <div class="alert alert-warning d-flex align-items-center gap-2 p-3 rounded-4 mb-4 shadow-sm border-warning/50 bg-warning/10 text-white">
+            <i class="bi bi-shop fs-3 text-warning"></i>
+            <div class="text-xs">
+              <strong class="text-warning">হোলসেলার অর্ডার মোড:</strong> আপনি বিশেষ পাইকারি (Wholesale) মূল্যে অর্ডার করছেন। পাইকারি মূল্যে অতিরিক্ত অনলাইন পেমেন্ট ছাড় বা ফ্রি ডেলিভারি প্রযোজ্য নয়।
+            </div>
           </div>
-        </div>
+        ` : `
+          <div class="alert alert-success d-flex align-items-center gap-2 p-3 rounded-4 mb-4 shadow-sm border-emerald/50 bg-emerald/10">
+            <i class="bi bi-stars fs-3 text-emerald"></i>
+            <div class="text-xs">
+              <strong>কাস্টমার সুবিধা:</strong> বিকাশ, নগদ, রকেট বা ব্যাংক পেমেন্টে অর্ডার করলে পাচ্ছেন <strong>তাৎক্ষণিক ৫% মূল্যছাড়!</strong> এবং ২০০০৳ বেশি কেনাকাটায় সারা দেশে ডেলিভারি সম্পূর্ণ ফ্রি!
+            </div>
+          </div>
+        `}
 
         <div class="row g-4">
           
@@ -1463,6 +1472,8 @@ const PAGES = {
   },
 
   updateCheckoutCalculations() {
+    const items = STORE.cart.items;
+    const isWholesaler = (typeof STORE !== 'undefined' && STORE.auth && STORE.auth.wholesaler !== null) || items.some(i => i.isWholesale);
     const subtotal = STORE.cart.getSubtotal();
     
     // Determine delivery charge
@@ -1470,13 +1481,27 @@ const PAGES = {
     if (document.getElementById('zoneCumilla')?.checked) deliveryCharge = CONFIG.deliveryCumilla;
     if (document.getElementById('zoneDhaka')?.checked) deliveryCharge = CONFIG.deliveryDhaka;
 
-    // Free delivery check (> 2000 BDT)
-    const isFreeDelivery = subtotal >= CONFIG.freeDeliveryThreshold;
-    if (isFreeDelivery) deliveryCharge = 0;
+    // Check payment method for discount
+    const checkedPayment = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'COD';
+    const isOnline = checkedPayment !== 'COD';
 
-    // Check payment method for 5% discount
-    const isOnline = ['bKash', 'Nagad', 'Rocket', 'Bank'].some(m => document.getElementById(`pay${m}`)?.checked);
-    const onlineDiscount = isOnline ? Math.round(subtotal * (CONFIG.onlineDiscountPercent / 100)) : 0;
+    let isFreeDelivery = false;
+    let onlineDiscount = 0;
+
+    if (isWholesaler) {
+      // Wholesaler: NO discount (neither free delivery for 2000+ nor online payment 5%)
+      isFreeDelivery = false;
+      onlineDiscount = 0;
+    } else {
+      // Customer: 2000+ free delivery AND 5% online discount for bKash/Nagad/Rocket/Bank
+      isFreeDelivery = subtotal >= CONFIG.freeDeliveryThreshold;
+      if (isFreeDelivery) {
+        deliveryCharge = 0;
+      }
+      if (isOnline) {
+        onlineDiscount = Math.round(subtotal * (CONFIG.onlineDiscountPercent / 100 || 0.05));
+      }
+    }
 
     const grandTotal = Math.max(0, subtotal - onlineDiscount + deliveryCharge);
 

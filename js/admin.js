@@ -528,15 +528,32 @@ const ADMIN = {
                     <td class="fw-bold text-truncate" style="max-width: 180px;" title="${p.name}">${p.name}</td>
                     <td><span class="badge bg-slate-800 text-emerald">${p.category}</span></td>
                     <td>${p.brand || 'China Brand'}</td>
-                    <td>${CONFIG.currency}${(Number(p.buyingPrice) || 0).toLocaleString()}</td>
-                    <td class="text-emerald fw-bold">${CONFIG.currency}${(Number(p.sellingPrice) || 0).toLocaleString()}</td>
                     <td>
-                      <span class="badge ${p.stock > 5 ? 'bg-success' : (p.stock > 0 ? 'bg-warning text-dark' : 'bg-danger')}">
-                        ${p.stock}
+                      <span class="badge bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer px-2 py-1" 
+                            onclick="ADMIN.inlineEditProduct('${p.sku}', 'buyingPrice', ${p.buyingPrice})" title="ক্লিক করে ক্রয়মূল্য এডিট করুন">
+                        ৳${(Number(p.buyingPrice) || 0).toLocaleString()} <i class="bi bi-pencil-fill ms-1 text-[9px] text-muted"></i>
                       </span>
                     </td>
-                    <td>${CONFIG.currency}${(Number(p.wholesalePrice) || 0).toLocaleString()}</td>
-                    <td class="text-end">
+                    <td>
+                      <span class="badge bg-slate-800 text-emerald border border-emerald/40 cursor-pointer px-2 py-1 fw-bold" 
+                            onclick="ADMIN.inlineEditProduct('${p.sku}', 'sellingPrice', ${p.sellingPrice})" title="ক্লিক করে বিক্রয়মূল্য এডিট করুন">
+                        ৳${(Number(p.sellingPrice) || 0).toLocaleString()} <i class="bi bi-pencil-fill ms-1 text-[9px]"></i>
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge ${p.stock > 5 ? 'bg-success' : (p.stock > 0 ? 'bg-warning text-dark' : 'bg-danger')} cursor-pointer px-2 py-1 fw-bold" 
+                            onclick="ADMIN.inlineEditProduct('${p.sku}', 'stock', ${p.stock})" title="ক্লিক করে স্টক এডিট করুন">
+                        ${p.stock} পিস <i class="bi bi-pencil-fill ms-1 text-[9px]"></i>
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge bg-slate-800 text-warning border border-warning/40 cursor-pointer px-2 py-1 fw-bold" 
+                            onclick="ADMIN.inlineEditProduct('${p.sku}', 'wholesalePrice', ${p.wholesalePrice || 0})" title="ক্লিক করে হোলসেল রেট এডিট করুন">
+                        ৳${(Number(p.wholesalePrice) || 0).toLocaleString()} <i class="bi bi-pencil-fill ms-1 text-[9px]"></i>
+                      </span>
+                    </td>
+                    <td class="text-end text-nowrap">
+                      <button class="btn btn-xs btn-outline-info me-1" onclick="ADMIN.openEditProductModal('${p.sku}')" title="প্রোডাক্ট এডিট"><i class="bi bi-pencil-square"></i></button>
                       <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteProduct('${p.sku}')" title="ডিলিট"><i class="bi bi-trash"></i></button>
                     </td>
                   </tr>
@@ -867,7 +884,8 @@ const ADMIN = {
                           <option value="Returned" ${o.status==='Returned'?'selected':''}>Returned</option>
                         </select>
                       </td>
-                      <td class="text-end">
+                      <td class="text-end text-nowrap">
+                        <button class="btn btn-xs btn-outline-info me-1" onclick="ADMIN.openEditOrderModal('${o.orderId}')" title="অর্ডার এডিট"><i class="bi bi-pencil-square"></i></button>
                         <button class="btn btn-xs btn-outline-warning me-1" onclick="ADMIN.openVoucher('${o.orderId}')" title="চালান ভাউচার"><i class="bi bi-receipt"></i></button>
                         <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteOrder('${o.orderId}')" title="মুছুন"><i class="bi bi-trash"></i></button>
                       </td>
@@ -1491,8 +1509,9 @@ const ADMIN = {
                     <td><span class="badge bg-slate-800 text-info">${b.origin || 'Global'}</span></td>
                     <td><span class="badge bg-emerald/20 text-emerald fw-bold">${b.count || 0} টি</span></td>
                     <td><span class="badge bg-success">Active</span></td>
-                    <td class="text-end">
-                      <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteBrand('${b.id}')"><i class="bi bi-trash"></i></button>
+                    <td class="text-end text-nowrap">
+                      <button class="btn btn-xs btn-outline-info me-1" onclick="ADMIN.openEditBrandModal('${b.id}')" title="এডিট"><i class="bi bi-pencil-square"></i></button>
+                      <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteBrand('${b.id}')" title="মুছুন"><i class="bi bi-trash"></i></button>
                     </td>
                   </tr>
                 `).join('')}
@@ -1632,7 +1651,8 @@ const ADMIN = {
                     <td class="text-emerald fw-bold">${CONFIG.currency}${(Number(c.totalSpent) || 0).toLocaleString()}</td>
                     <td><span class="badge ${c.status==='VIP'?'bg-primary':'bg-success'}">${c.status || 'Regular'}</span></td>
                     <td>${c.lastOrder || 'সম্প্রতি'}</td>
-                    <td class="text-end">
+                    <td class="text-end text-nowrap">
+                      <button class="btn btn-xs btn-outline-warning me-1" onclick="ADMIN.openEditCustomerModal('${c.id || c.phone}')" title="এডিট"><i class="bi bi-pencil-square"></i></button>
                       <button class="btn btn-xs btn-outline-info me-1" onclick="ADMIN.openCustomerCheckModal('${c.phone}')" title="প্রোফাইল"><i class="bi bi-eye"></i></button>
                       <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteCustomer('${c.id}', '${c.phone}')" title="মুছুন"><i class="bi bi-trash"></i></button>
                     </td>
@@ -1770,8 +1790,9 @@ const ADMIN = {
                     <td><span class="badge bg-slate-800 text-warning">${w.tradeLicense || 'Verified'}</span></td>
                     <td class="text-emerald fw-bold">${CONFIG.currency}${(Number(w.totalSpent) || 0).toLocaleString()}</td>
                     <td><span class="badge bg-success">Approved</span></td>
-                    <td class="text-end">
-                      <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteWholesaler('${w.id}')"><i class="bi bi-trash"></i></button>
+                    <td class="text-end text-nowrap">
+                      <button class="btn btn-xs btn-outline-info me-1" onclick="ADMIN.openEditWholesalerModal('${w.id}')" title="এডিট"><i class="bi bi-pencil-square"></i></button>
+                      <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteWholesaler('${w.id}')" title="মুছুন"><i class="bi bi-trash"></i></button>
                     </td>
                   </tr>
                 `).join('')}
@@ -1912,8 +1933,9 @@ const ADMIN = {
                     <td>${CONFIG.currency}${(Number(b.unitPrice) || 0).toLocaleString()}</td>
                     <td class="text-amber fw-bold">${CONFIG.currency}${(Number(b.totalAmount) || 0).toLocaleString()}</td>
                     <td><span class="badge bg-success">${b.status || 'Received'}</span></td>
-                    <td class="text-end">
-                      <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteBuying('${b.id}')"><i class="bi bi-trash"></i></button>
+                    <td class="text-end text-nowrap">
+                      <button class="btn btn-xs btn-outline-info me-1" onclick="ADMIN.openEditBuyingModal('${b.id}')" title="এডিট"><i class="bi bi-pencil-square"></i></button>
+                      <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteBuying('${b.id}')" title="মুছুন"><i class="bi bi-trash"></i></button>
                     </td>
                   </tr>
                 `).join('')}
@@ -2085,8 +2107,9 @@ const ADMIN = {
                     <td class="text-danger fw-bold fs-6">${CONFIG.currency}${(Number(c.amount) || 0).toLocaleString()}</td>
                     <td>${c.paidBy || 'Admin'}</td>
                     <td><span class="badge bg-success">Paid</span></td>
-                    <td class="text-end">
-                      <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteCost('${c.id}')"><i class="bi bi-trash"></i></button>
+                    <td class="text-end text-nowrap">
+                      <button class="btn btn-xs btn-outline-info me-1" onclick="ADMIN.openEditCostModal('${c.id}')" title="এডিট"><i class="bi bi-pencil-square"></i></button>
+                      <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteCost('${c.id}')" title="মুছুন"><i class="bi bi-trash"></i></button>
                     </td>
                   </tr>
                 `).join('')}
@@ -2247,8 +2270,9 @@ const ADMIN = {
                     <td>${i.sourcePurpose}</td>
                     <td><span class="badge bg-slate-800 text-warning">${i.shareTerms}</span></td>
                     <td><span class="badge bg-success">Active</span></td>
-                    <td class="text-end">
-                      <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteInvest('${i.id}')"><i class="bi bi-trash"></i></button>
+                    <td class="text-end text-nowrap">
+                      <button class="btn btn-xs btn-outline-info me-1" onclick="ADMIN.openEditInvestModal('${i.id}')" title="এডিট"><i class="bi bi-pencil-square"></i></button>
+                      <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteInvest('${i.id}')" title="মুছুন"><i class="bi bi-trash"></i></button>
                     </td>
                   </tr>
                 `).join('')}
@@ -2407,8 +2431,9 @@ const ADMIN = {
                     <td><span class="badge ${w.role.includes('Admin') ? 'bg-primary' : 'bg-warning text-dark'}">${w.role}</span></td>
                     <td>${w.joinDate}</td>
                     <td><span class="badge bg-success">Active</span></td>
-                    <td class="text-end">
-                      <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteWorker('${w.id}')"><i class="bi bi-trash"></i></button>
+                    <td class="text-end text-nowrap">
+                      <button class="btn btn-xs btn-outline-info me-1" onclick="ADMIN.openEditWorkerModal('${w.id}')" title="এডিট"><i class="bi bi-pencil-square"></i></button>
+                      <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteWorker('${w.id}')" title="মুছুন"><i class="bi bi-trash"></i></button>
                     </td>
                   </tr>
                 `).join('')}
@@ -2549,8 +2574,9 @@ const ADMIN = {
                     <td class="text-warning">${'★'.repeat(r.rating || 5)} (${r.rating}/৫)</td>
                     <td class="text-slate-300" style="max-width: 250px;">${r.comment}</td>
                     <td><span class="badge bg-success">${r.status || 'Approved'}</span></td>
-                    <td class="text-end">
-                      <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteReview('${r.id}')"><i class="bi bi-trash"></i></button>
+                    <td class="text-end text-nowrap">
+                      <button class="btn btn-xs btn-outline-info me-1" onclick="ADMIN.openEditReviewModal('${r.id}')" title="এডিট"><i class="bi bi-pencil-square"></i></button>
+                      <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteReview('${r.id}')" title="মুছুন"><i class="bi bi-trash"></i></button>
                     </td>
                   </tr>
                 `).join('')}
@@ -2609,6 +2635,7 @@ const ADMIN = {
                   <p class="text-xs text-muted mb-2 text-truncate">${b.subtitle || ''}</p>
                   <div class="d-flex justify-content-between align-items-center pt-2 border-top border-slate-800">
                     <span class="text-xs text-emerald"><i class="bi bi-link me-1"></i>${b.link || '#/products'}</span>
+                    <button class="btn btn-xs btn-outline-info me-1" onclick="ADMIN.openEditBannerModal('${b.id}')" title="এডিট"><i class="bi bi-pencil-square"></i></button>
                     <button class="btn btn-xs btn-outline-danger" onclick="ADMIN.deleteBanner('${b.id}')"><i class="bi bi-trash"></i></button>
                   </div>
                 </div>
@@ -2958,6 +2985,764 @@ const ADMIN = {
     if (!q) return;
     window.location.hash = `#/track?orderId=${encodeURIComponent(q)}`;
   }
+,
+// ==============================================================
+  // ONCLICK INLINE EDIT & ALL LIST EDIT MODALS (USER REQUIREMENT)
+  // ==============================================================
+  inlineEditProduct(sku, field, currentVal) {
+    const p = API.getProductBySku(sku);
+    const fieldLabels = {
+      sellingPrice: 'বিক্রয়মূল্য (৳)',
+      stock: 'স্টক সংখ্যা (পিস)',
+      buyingPrice: 'ক্রয়মূল্য (৳)',
+      wholesalePrice: 'হোলসেল রেট (৳)'
+    };
+    const label = fieldLabels[field] || field;
+    const modalHtml = `
+      <div class="modal fade show" id="inlineEditModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
+            <div class="modal-header border-slate-800">
+              <h6 class="modal-title fw-bold text-emerald"><i class="bi bi-pencil-square me-2"></i>${label} পরিবর্তন</h6>
+              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('inlineEditModal').remove()"></button>
+            </div>
+            <form onsubmit="ADMIN.handleInlineEditSubmit(event, '${sku}', '${field}')">
+              <div class="modal-body p-3">
+                <div class="text-xs text-muted mb-2">${p ? p.name : ''} <br><span class="font-monospace text-info">${sku}</span></div>
+                <label class="form-label text-xs fw-bold">নতুন ${label} লিখুন *</label>
+                <input type="number" id="inline-edit-val" class="form-control bg-slate-950 text-white border-slate-700 fw-bold fs-6" value="${currentVal}" step="any" required autofocus />
+              </div>
+              <div class="modal-footer border-slate-800 p-2">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('inlineEditModal').remove()">বাতিল</button>
+                <button type="submit" class="btn btn-emerald btn-sm px-3 fw-bold">সংরক্ষণ করুন</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('inlineEditModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    document.getElementById('inline-edit-val')?.focus();
+  },
+
+  async handleInlineEditSubmit(e, sku, field) {
+    e.preventDefault();
+    const val = parseFloat(document.getElementById('inline-edit-val')?.value);
+    if (isNaN(val)) return;
+
+    await API.call('products/update_inline', { sku, field, value: val });
+    document.getElementById('inlineEditModal')?.remove();
+    STORE.toast('success', 'সফলভাবে সংরক্ষিত!', `${sku}-এর তথ্য সফলভাবে আপডেট হয়েছে।`);
+    await this.switchTab('products');
+  },
+
+  // 1. Edit Product Modal (Columns A to R)
+  openEditProductModal(sku) {
+    const p = API.getProductBySku(sku);
+    if (!p) { STORE.toast('error', 'প্রোডাক্ট পাওয়া যায়নি'); return; }
+
+    const modalHtml = `
+      <div class="modal fade show" id="editProductModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
+            <div class="modal-header border-slate-800">
+              <h5 class="modal-title fw-bold text-emerald"><i class="bi bi-pencil-square me-2"></i>প্রোডাক্ট এডিট করুন (${p.sku})</h5>
+              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('editProductModal').remove()"></button>
+            </div>
+            <div class="modal-body p-4">
+              <form onsubmit="ADMIN.handleEditProductSubmit(event, '${p.sku}')">
+                <div class="row g-3">
+                  <div class="col-6"><label class="form-label text-xs fw-bold">B: প্রোডাক্টের নাম *</label><input type="text" id="ep-name" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${(p.name||'').replace(/"/g, '&quot;')}" required /></div>
+                  <div class="col-6"><label class="form-label text-xs fw-bold">F: ব্র্যান্ড</label><input type="text" id="ep-brand" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${p.brand||'China Brand'}" /></div>
+
+                  <div class="col-4"><label class="form-label text-xs fw-bold">C: ক্যাটাগরি *</label><input type="text" id="ep-cat" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${p.category||'General'}" required /></div>
+                  <div class="col-4"><label class="form-label text-xs fw-bold">D: সাব-ক্যাটাগরি</label><input type="text" id="ep-subcat" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${p.subCategory||''}" /></div>
+                  <div class="col-4"><label class="form-label text-xs fw-bold">E: চাইল্ড-ক্যাটাগরি</label><input type="text" id="ep-childcat" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${p.childCategory||''}" /></div>
+
+                  <div class="col-3"><label class="form-label text-xs fw-bold">G: ক্রয়মূল্য ৳</label><input type="number" id="ep-buy" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${p.buyingPrice||0}" required /></div>
+                  <div class="col-3"><label class="form-label text-xs fw-bold">H: বিক্রয়মূল্য ৳ *</label><input type="number" id="ep-sell" class="form-control form-control-sm bg-slate-950 text-white border-slate-700 text-emerald fw-bold" value="${p.sellingPrice||0}" required /></div>
+                  <div class="col-3"><label class="form-label text-xs fw-bold">I: স্টক সংখ্যা *</label><input type="number" id="ep-stock" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${p.stock||0}" required /></div>
+                  <div class="col-3"><label class="form-label text-xs fw-bold">K: হোলসেল রেট ৳</label><input type="number" id="ep-ws" class="form-control form-control-sm bg-slate-950 text-white border-slate-700 text-warning fw-bold" value="${p.wholesalePrice||0}" /></div>
+
+                  <div class="col-4"><label class="form-label text-xs fw-bold">J: পূর্বের মূল্য (Original) ৳</label><input type="number" id="ep-orig" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${p.originalPrice||0}" /></div>
+                  <div class="col-4"><label class="form-label text-xs fw-bold">L: মিনিমাম অর্ডার (MOQ)</label><input type="text" id="ep-moq" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${p.minOrderQ||'1 Pcs'}" /></div>
+                  <div class="col-4"><label class="form-label text-xs fw-bold">M: ছবির লিংক (কমা দিয়ে একাধিক)</label><input type="text" id="ep-images" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${Array.isArray(p.images)?p.images.join(', '):(p.primaryImage||'')}" /></div>
+
+                  <div class="col-12"><label class="form-label text-xs fw-bold">N: বিস্তারিত বিবরণ (Description)</label><textarea id="ep-desc" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" rows="3">${p.description||''}</textarea></div>
+                  <div class="col-12"><label class="form-label text-xs fw-bold">O: স্পেসিফিকেশন (Specification)</label><textarea id="ep-spec" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" rows="2">${p.specification||''}</textarea></div>
+
+                  <div class="col-4"><label class="form-label text-xs fw-bold">P: অন্যান্য (Others)</label><input type="text" id="ep-others" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${p.others||''}" /></div>
+                  <div class="col-4"><label class="form-label text-xs fw-bold">Q: কালার (Color)</label><input type="text" id="ep-color" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${p.color||'Default'}" /></div>
+                  <div class="col-4"><label class="form-label text-xs fw-bold">R: সাইজ (Size)</label><input type="text" id="ep-size" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${p.size||'Standard'}" /></div>
+                </div>
+                <div class="modal-footer border-slate-800 p-3 mt-3">
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('editProductModal').remove()">বাতিল</button>
+                  <button type="submit" class="btn btn-emerald btn-sm px-4 fw-bold">পরিবর্তন সেভ করুন</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('editProductModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  },
+
+  async handleEditProductSubmit(e, sku) {
+    e.preventDefault();
+    const imgsRaw = document.getElementById('ep-images').value;
+    const imgs = imgsRaw.split(',').map(s=>s.trim()).filter(Boolean);
+
+    const updated = {
+      sku: sku,
+      name: document.getElementById('ep-name').value.trim(),
+      category: document.getElementById('ep-cat').value.trim(),
+      subCategory: document.getElementById('ep-subcat').value.trim(),
+      childCategory: document.getElementById('ep-childcat').value.trim(),
+      brand: document.getElementById('ep-brand').value.trim(),
+      buyingPrice: parseFloat(document.getElementById('ep-buy').value) || 0,
+      sellingPrice: parseFloat(document.getElementById('ep-sell').value) || 0,
+      stock: parseInt(document.getElementById('ep-stock').value, 10) || 0,
+      originalPrice: parseFloat(document.getElementById('ep-orig').value) || 0,
+      wholesalePrice: parseFloat(document.getElementById('ep-ws').value) || 0,
+      minOrderQ: document.getElementById('ep-moq').value.trim(),
+      images: imgs,
+      primaryImage: imgs[0] || '',
+      description: document.getElementById('ep-desc').value.trim(),
+      specification: document.getElementById('ep-spec').value.trim(),
+      others: document.getElementById('ep-others').value.trim(),
+      color: document.getElementById('ep-color').value.trim(),
+      size: document.getElementById('ep-size').value.trim(),
+      inStock: (parseInt(document.getElementById('ep-stock').value, 10) || 0) > 0
+    };
+
+    await API.call('products/update', updated);
+    document.getElementById('editProductModal')?.remove();
+    STORE.toast('success', 'প্রোডাক্ট আপডেট সম্পন্ন!', `${sku} সফলভাবে এডিট হয়েছে।`);
+    await this.switchTab('products');
+  },
+
+  // 2. Edit Order Modal
+  async openEditOrderModal(orderId) {
+    const res = await API.call('orders/list');
+    const order = (res.data && res.data.items || []).find(o => o.orderId === orderId);
+    if (!order) { STORE.toast('error', 'অর্ডার পাওয়া যায়নি'); return; }
+
+    const modalHtml = `
+      <div class="modal fade show" id="editOrderModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
+            <div class="modal-header border-slate-800">
+              <h5 class="modal-title fw-bold text-emerald"><i class="bi bi-pencil-square me-2"></i>অর্ডার এডিট (${order.orderId})</h5>
+              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('editOrderModal').remove()"></button>
+            </div>
+            <form onsubmit="ADMIN.handleEditOrderSubmit(event, '${order.orderId}')">
+              <div class="modal-body p-4 space-y-3">
+                <div><label class="form-label text-xs fw-bold">গ্রাহকের নাম</label><input type="text" id="eo-name" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${order.customerName||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">মোবাইল নম্বর</label><input type="tel" id="eo-phone" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${order.phone||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">ঠিকানা</label><textarea id="eo-addr" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" rows="2">${order.address||''}</textarea></div>
+                <div class="row g-2">
+                  <div class="col-6"><label class="form-label text-xs fw-bold">সর্বমোট টাকা ৳</label><input type="number" id="eo-total" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${order.totalAmount||0}" required /></div>
+                  <div class="col-6"><label class="form-label text-xs fw-bold">ডেলিভারি চার্জ ৳</label><input type="number" id="eo-del" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${order.deliveryCharge||0}" /></div>
+                </div>
+                <div class="row g-2">
+                  <div class="col-6">
+                    <label class="form-label text-xs fw-bold">স্ট্যাটাস</label>
+                    <select id="eo-status" class="form-select form-select-sm bg-slate-950 text-white border-slate-700">
+                      ${['Pending','Confirmed','Shipped','Delivered','Cancelled','Returned'].map(s => `<option value="${s}" ${order.status===s?'selected':''}>${s}</option>`).join('')}
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label text-xs fw-bold">পেমেন্ট মেথড</label>
+                    <select id="eo-pay" class="form-select form-select-sm bg-slate-950 text-white border-slate-700">
+                      ${['COD','bKash','Nagad','Rocket','Bank'].map(p => `<option value="${p}" ${order.paymentMethod===p?'selected':''}>${p}</option>`).join('')}
+                    </select>
+                  </div>
+                </div>
+                <div><label class="form-label text-xs fw-bold">TrxID / পেমেন্ট রেফারেন্স</label><input type="text" id="eo-trx" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${order.trxId||''}" /></div>
+              </div>
+              <div class="modal-footer border-slate-800 p-3">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('editOrderModal').remove()">বাতিল</button>
+                <button type="submit" class="btn btn-emerald btn-sm px-4 fw-bold">সেভ করুন</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('editOrderModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  },
+
+  async handleEditOrderSubmit(e, orderId) {
+    e.preventDefault();
+    const updated = {
+      orderId: orderId,
+      customerName: document.getElementById('eo-name').value.trim(),
+      phone: document.getElementById('eo-phone').value.trim(),
+      address: document.getElementById('eo-addr').value.trim(),
+      totalAmount: parseFloat(document.getElementById('eo-total').value) || 0,
+      deliveryCharge: parseFloat(document.getElementById('eo-del').value) || 0,
+      status: document.getElementById('eo-status').value,
+      paymentMethod: document.getElementById('eo-pay').value,
+      trxId: document.getElementById('eo-trx').value.trim()
+    };
+    await API.call('orders/update', updated);
+    document.getElementById('editOrderModal')?.remove();
+    STORE.toast('success', 'অর্ডার আপডেট হয়েছে!', orderId);
+    await this.switchTab('orders');
+  },
+
+  // 3. Edit Customer Modal
+  async openEditCustomerModal(idOrPhone) {
+    const res = await API.call('customers/list');
+    const cust = (res.data && res.data.items || []).find(c => c.id === idOrPhone || c.phone === idOrPhone);
+    if (!cust) { STORE.toast('error', 'গ্রাহক তথ্য পাওয়া যায়নি'); return; }
+
+    const modalHtml = `
+      <div class="modal fade show" id="editCustomerModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
+            <div class="modal-header border-slate-800">
+              <h5 class="modal-title fw-bold text-emerald">গ্রাহক তথ্য এডিট (${cust.name})</h5>
+              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('editCustomerModal').remove()"></button>
+            </div>
+            <form onsubmit="ADMIN.handleEditCustomerSubmit(event, '${cust.id || cust.phone}')">
+              <div class="modal-body p-4 space-y-3">
+                <div><label class="form-label text-xs fw-bold">নাম *</label><input type="text" id="ec-name" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${cust.name||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">মোবাইল নম্বর *</label><input type="tel" id="ec-phone" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${cust.phone||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">ইমেইল</label><input type="email" id="ec-email" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${cust.email||''}" /></div>
+                <div><label class="form-label text-xs fw-bold">ঠিকানা</label><textarea id="ec-addr" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" rows="2">${cust.address||''}</textarea></div>
+                <div>
+                  <label class="form-label text-xs fw-bold">কাস্টমার স্ট্যাটাস</label>
+                  <select id="ec-status" class="form-select form-select-sm bg-slate-950 text-white border-slate-700">
+                    <option value="Regular" ${cust.status==='Regular'?'selected':''}>Regular</option>
+                    <option value="VIP" ${cust.status==='VIP'?'selected':''}>VIP (স্পেশাল গ্রাহক)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer border-slate-800 p-3">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('editCustomerModal').remove()">বাতিল</button>
+                <button type="submit" class="btn btn-emerald btn-sm px-4 fw-bold">সেভ করুন</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('editCustomerModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  },
+
+  async handleEditCustomerSubmit(e, id) {
+    e.preventDefault();
+    const updated = {
+      id: id,
+      name: document.getElementById('ec-name').value.trim(),
+      phone: document.getElementById('ec-phone').value.trim(),
+      email: document.getElementById('ec-email').value.trim(),
+      address: document.getElementById('ec-addr').value.trim(),
+      status: document.getElementById('ec-status').value
+    };
+    await API.call('customers/update', updated);
+    document.getElementById('editCustomerModal')?.remove();
+    STORE.toast('success', 'গ্রাহক তথ্য আপডেট হয়েছে!', updated.name);
+    await this.switchTab('customers');
+  },
+
+  // 4. Edit Wholesaler Modal
+  async openEditWholesalerModal(id) {
+    const res = await API.call('wholesalers/list');
+    const ws = (res.data && res.data.items || []).find(w => w.id === id);
+    if (!ws) { STORE.toast('error', 'হোলসেলার পাওয়া যায়নি'); return; }
+
+    const modalHtml = `
+      <div class="modal fade show" id="editWholesalerModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
+            <div class="modal-header border-slate-800">
+              <h5 class="modal-title fw-bold text-amber">হোলসেলার এডিট (${ws.shopName})</h5>
+              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('editWholesalerModal').remove()"></button>
+            </div>
+            <form onsubmit="ADMIN.handleEditWholesalerSubmit(event, '${ws.id}')">
+              <div class="modal-body p-4 space-y-3">
+                <div><label class="form-label text-xs fw-bold">দোকানের নাম *</label><input type="text" id="ews-shop" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${ws.shopName||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">মালিকের নাম *</label><input type="text" id="ews-owner" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${ws.ownerName||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">মোবাইল নম্বর *</label><input type="tel" id="ews-phone" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${ws.phone||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">ইমেইল</label><input type="email" id="ews-email" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${ws.email||''}" /></div>
+                <div><label class="form-label text-xs fw-bold">জেলা</label><input type="text" id="ews-district" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${ws.district||''}" /></div>
+                <div><label class="form-label text-xs fw-bold">ট্রেড লাইসেন্স</label><input type="text" id="ews-trade" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${ws.tradeLicense||''}" /></div>
+                <div>
+                  <label class="form-label text-xs fw-bold">স্ট্যাটাস</label>
+                  <select id="ews-status" class="form-select form-select-sm bg-slate-950 text-white border-slate-700">
+                    <option value="Approved" ${ws.status==='Approved'?'selected':''}>Approved (অনুমোদিত)</option>
+                    <option value="Pending" ${ws.status==='Pending'?'selected':''}>Pending (অপেক্ষমান)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer border-slate-800 p-3">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('editWholesalerModal').remove()">বাতিল</button>
+                <button type="submit" class="btn btn-amber btn-sm px-4 fw-bold text-dark">সেভ করুন</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('editWholesalerModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  },
+
+  async handleEditWholesalerSubmit(e, id) {
+    e.preventDefault();
+    const updated = {
+      id: id,
+      shopName: document.getElementById('ews-shop').value.trim(),
+      ownerName: document.getElementById('ews-owner').value.trim(),
+      phone: document.getElementById('ews-phone').value.trim(),
+      email: document.getElementById('ews-email').value.trim(),
+      district: document.getElementById('ews-district').value.trim(),
+      tradeLicense: document.getElementById('ews-trade').value.trim(),
+      status: document.getElementById('ews-status').value
+    };
+    await API.call('wholesalers/update', updated);
+    document.getElementById('editWholesalerModal')?.remove();
+    STORE.toast('success', 'হোলসেলার আপডেট সম্পন্ন!', updated.shopName);
+    await this.switchTab('wholesalers');
+  },
+
+  // 5. Edit Buying Record Modal
+  async openEditBuyingModal(id) {
+    const res = await API.call('buying/list');
+    const b = (res.data && res.data.items || []).find(item => item.id === id);
+    if (!b) { STORE.toast('error', 'ক্রয় রেকর্ড পাওয়া যায়নি'); return; }
+
+    const modalHtml = `
+      <div class="modal fade show" id="editBuyingModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
+            <div class="modal-header border-slate-800">
+              <h5 class="modal-title fw-bold text-emerald">ক্রয় চালান এডিট (${b.invoiceNo})</h5>
+              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('editBuyingModal').remove()"></button>
+            </div>
+            <form onsubmit="ADMIN.handleEditBuyingSubmit(event, '${b.id}')">
+              <div class="modal-body p-4 space-y-3">
+                <div><label class="form-label text-xs fw-bold">ইনভয়েস # *</label><input type="text" id="eb-inv" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${b.invoiceNo||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">সাপ্লায়ার নাম *</label><input type="text" id="eb-sup" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${b.supplier||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">পণ্যের নাম *</label><input type="text" id="eb-name" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${b.productName||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">SKU</label><input type="text" id="eb-sku" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${b.sku||''}" /></div>
+                <div class="row g-2">
+                  <div class="col-6"><label class="form-label text-xs fw-bold">পরিমাণ (Qty) *</label><input type="number" id="eb-qty" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${b.qty||1}" required /></div>
+                  <div class="col-6"><label class="form-label text-xs fw-bold">একক দর ৳ *</label><input type="number" id="eb-price" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${b.unitPrice||0}" required /></div>
+                </div>
+                <div><label class="form-label text-xs fw-bold">তারিখ</label><input type="date" id="eb-date" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${b.date||''}" /></div>
+              </div>
+              <div class="modal-footer border-slate-800 p-3">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('editBuyingModal').remove()">বাতিল</button>
+                <button type="submit" class="btn btn-emerald btn-sm px-4 fw-bold">সেভ করুন</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('editBuyingModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  },
+
+  async handleEditBuyingSubmit(e, id) {
+    e.preventDefault();
+    const qty = parseInt(document.getElementById('eb-qty').value, 10) || 1;
+    const unitPrice = parseFloat(document.getElementById('eb-price').value) || 0;
+    const updated = {
+      id: id,
+      invoiceNo: document.getElementById('eb-inv').value.trim(),
+      supplier: document.getElementById('eb-sup').value.trim(),
+      productName: document.getElementById('eb-name').value.trim(),
+      sku: document.getElementById('eb-sku').value.trim(),
+      qty: qty,
+      unitPrice: unitPrice,
+      totalAmount: qty * unitPrice,
+      date: document.getElementById('eb-date').value
+    };
+    await API.call('buying/update', updated);
+    document.getElementById('editBuyingModal')?.remove();
+    STORE.toast('success', 'ক্রয় রেকর্ড আপডেট হয়েছে!', updated.invoiceNo);
+    await this.switchTab('buying');
+  },
+
+  // 6. Edit Cost Modal
+  async openEditCostModal(id) {
+    const res = await API.call('costs/list');
+    const c = (res.data && res.data.items || []).find(item => item.id === id);
+    if (!c) { STORE.toast('error', 'খরচের রেকর্ড পাওয়া যায়নি'); return; }
+
+    const modalHtml = `
+      <div class="modal fade show" id="editCostModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
+            <div class="modal-header border-slate-800">
+              <h5 class="modal-title fw-bold text-danger">খরচের হিসাব এডিট</h5>
+              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('editCostModal').remove()"></button>
+            </div>
+            <form onsubmit="ADMIN.handleEditCostSubmit(event, '${c.id}')">
+              <div class="modal-body p-4 space-y-3">
+                <div><label class="form-label text-xs fw-bold">ক্যাটাগরি</label><input type="text" id="ecost-cat" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${c.category||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">বিবরণ *</label><input type="text" id="ecost-desc" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${c.description||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">টাকার পরিমাণ ৳ *</label><input type="number" id="ecost-amount" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${c.amount||0}" required /></div>
+                <div><label class="form-label text-xs fw-bold">পরিশোধকারী (Paid By)</label><input type="text" id="ecost-paidby" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${c.paidBy||'Admin'}" /></div>
+                <div><label class="form-label text-xs fw-bold">তারিখ</label><input type="date" id="ecost-date" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${c.date||''}" /></div>
+              </div>
+              <div class="modal-footer border-slate-800 p-3">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('editCostModal').remove()">বাতিল</button>
+                <button type="submit" class="btn btn-danger btn-sm px-4 fw-bold">সেভ করুন</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('editCostModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  },
+
+  async handleEditCostSubmit(e, id) {
+    e.preventDefault();
+    const updated = {
+      id: id,
+      category: document.getElementById('ecost-cat').value.trim(),
+      description: document.getElementById('ecost-desc').value.trim(),
+      amount: parseFloat(document.getElementById('ecost-amount').value) || 0,
+      paidBy: document.getElementById('ecost-paidby').value.trim(),
+      date: document.getElementById('ecost-date').value
+    };
+    await API.call('costs/update', updated);
+    document.getElementById('editCostModal')?.remove();
+    STORE.toast('success', 'খরচ আপডেট সম্পন্ন!', `${updated.amount}৳`);
+    await this.switchTab('costs');
+  },
+
+  // 7. Edit Invest Modal
+  async openEditInvestModal(id) {
+    const res = await API.call('invest/list');
+    const inv = (res.data && res.data.items || []).find(item => item.id === id);
+    if (!inv) { STORE.toast('error', 'বিনিয়োগ রেকর্ড পাওয়া যায়নি'); return; }
+
+    const modalHtml = `
+      <div class="modal fade show" id="editInvestModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
+            <div class="modal-header border-slate-800">
+              <h5 class="modal-title fw-bold text-info">বিনিয়োগ রেকর্ড এডিট</h5>
+              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('editInvestModal').remove()"></button>
+            </div>
+            <form onsubmit="ADMIN.handleEditInvestSubmit(event, '${inv.id}')">
+              <div class="modal-body p-4 space-y-3">
+                <div><label class="form-label text-xs fw-bold">বিনিয়োগকারীর নাম *</label><input type="text" id="einv-name" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${inv.investorName||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">মোবাইল</label><input type="tel" id="einv-phone" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${inv.phone||''}" /></div>
+                <div><label class="form-label text-xs fw-bold">বিনিয়োগের পরিমাণ ৳ *</label><input type="number" id="einv-amount" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${inv.amount||0}" required /></div>
+                <div><label class="form-label text-xs fw-bold">উদ্দেশ্য / ক্ষেত্র</label><input type="text" id="einv-purpose" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${inv.sourcePurpose||''}" /></div>
+                <div><label class="form-label text-xs fw-bold">লভ্যাংশ শর্তাবলী</label><input type="text" id="einv-terms" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${inv.shareTerms||''}" /></div>
+                <div><label class="form-label text-xs fw-bold">তারিখ</label><input type="date" id="einv-date" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${inv.date||''}" /></div>
+              </div>
+              <div class="modal-footer border-slate-800 p-3">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('editInvestModal').remove()">বাতিল</button>
+                <button type="submit" class="btn btn-info btn-sm px-4 fw-bold">সেভ করুন</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('editInvestModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  },
+
+  async handleEditInvestSubmit(e, id) {
+    e.preventDefault();
+    const updated = {
+      id: id,
+      investorName: document.getElementById('einv-name').value.trim(),
+      phone: document.getElementById('einv-phone').value.trim(),
+      amount: parseFloat(document.getElementById('einv-amount').value) || 0,
+      sourcePurpose: document.getElementById('einv-purpose').value.trim(),
+      shareTerms: document.getElementById('einv-terms').value.trim(),
+      date: document.getElementById('einv-date').value
+    };
+    await API.call('invest/update', updated);
+    document.getElementById('editInvestModal')?.remove();
+    STORE.toast('success', 'বিনিয়োগ রেকর্ড আপডেট সম্পন্ন!', updated.investorName);
+    await this.switchTab('invest');
+  },
+
+  // 8. Edit Worker Modal
+  async openEditWorkerModal(id) {
+    const res = await API.call('workers/list');
+    const w = (res.data && res.data.items || []).find(item => item.id === id);
+    if (!w) { STORE.toast('error', 'কর্মী রেকর্ড পাওয়া যায়নি'); return; }
+
+    const modalHtml = `
+      <div class="modal fade show" id="editWorkerModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
+            <div class="modal-header border-slate-800">
+              <h5 class="modal-title fw-bold text-primary">কর্মী তথ্য এডিট (${w.name})</h5>
+              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('editWorkerModal').remove()"></button>
+            </div>
+            <form onsubmit="ADMIN.handleEditWorkerSubmit(event, '${w.id}')">
+              <div class="modal-body p-4 space-y-3">
+                <div><label class="form-label text-xs fw-bold">নাম *</label><input type="text" id="ewrk-name" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${w.name||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">মোবাইল *</label><input type="tel" id="ewrk-phone" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${w.phone||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">ইমেইল</label><input type="email" id="ewrk-email" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${w.email||''}" /></div>
+                <div>
+                  <label class="form-label text-xs fw-bold">রোল / পদবী</label>
+                  <select id="ewrk-role" class="form-select form-select-sm bg-slate-950 text-white border-slate-700">
+                    <option value="Admin" ${w.role==='Admin'?'selected':''}>Admin (মাস্টার এডমিন)</option>
+                    <option value="Manager" ${w.role==='Manager'?'selected':''}>Manager (অপারেশন ম্যানেজার)</option>
+                    <option value="Worker" ${w.role==='Worker'?'selected':''}>Worker (প্যাকার ও কর্মী)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer border-slate-800 p-3">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('editWorkerModal').remove()">বাতিল</button>
+                <button type="submit" class="btn btn-primary btn-sm px-4 fw-bold">সেভ করুন</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('editWorkerModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  },
+
+  async handleEditWorkerSubmit(e, id) {
+    e.preventDefault();
+    const updated = {
+      id: id,
+      name: document.getElementById('ewrk-name').value.trim(),
+      phone: document.getElementById('ewrk-phone').value.trim(),
+      email: document.getElementById('ewrk-email').value.trim(),
+      role: document.getElementById('ewrk-role').value
+    };
+    await API.call('workers/update', updated);
+    document.getElementById('editWorkerModal')?.remove();
+    STORE.toast('success', 'কর্মী তথ্য আপডেট সম্পন্ন!', updated.name);
+    await this.switchTab('workers');
+  },
+
+  // 9. Edit Brand Modal
+  async openEditBrandModal(id) {
+    const res = await API.call('brands/list');
+    const b = (res.data && res.data.items || []).find(item => item.id === id);
+    if (!b) { STORE.toast('error', 'ব্র্যান্ড পাওয়া যায়নি'); return; }
+
+    const modalHtml = `
+      <div class="modal fade show" id="editBrandModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
+            <div class="modal-header border-slate-800">
+              <h5 class="modal-title fw-bold text-emerald">ব্র্যান্ড এডিট (${b.name})</h5>
+              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('editBrandModal').remove()"></button>
+            </div>
+            <form onsubmit="ADMIN.handleEditBrandSubmit(event, '${b.id}')">
+              <div class="modal-body p-4 space-y-3">
+                <div><label class="form-label text-xs fw-bold">ব্র্যান্ডের নাম *</label><input type="text" id="ebr-name" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${b.name||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">উৎস / দেশ (Origin)</label><input type="text" id="ebr-origin" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${b.origin||'Global'}" /></div>
+                <div><label class="form-label text-xs fw-bold">লোগো ইমেজ লিংক</label><input type="url" id="ebr-logo" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${b.logo||''}" /></div>
+              </div>
+              <div class="modal-footer border-slate-800 p-3">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('editBrandModal').remove()">বাতিল</button>
+                <button type="submit" class="btn btn-emerald btn-sm px-4 fw-bold">সেভ করুন</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('editBrandModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  },
+
+  async handleEditBrandSubmit(e, id) {
+    e.preventDefault();
+    const updated = {
+      id: id,
+      name: document.getElementById('ebr-name').value.trim(),
+      origin: document.getElementById('ebr-origin').value.trim(),
+      logo: document.getElementById('ebr-logo').value.trim()
+    };
+    await API.call('brands/update', updated);
+    document.getElementById('editBrandModal')?.remove();
+    STORE.toast('success', 'ব্র্যান্ড আপডেট সম্পন্ন!', updated.name);
+    await this.switchTab('brands');
+  },
+
+  // 10. Edit Category Modal
+  async openEditCategoryModal(id) {
+    const res = await API.call('categories/list');
+    const cat = (res.data && res.data.items || []).find(c => c.id === id);
+    if (!cat) { STORE.toast('error', 'ক্যাটাগরি পাওয়া যায়নি'); return; }
+
+    const modalHtml = `
+      <div class="modal fade show" id="editCategoryModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
+            <div class="modal-header border-slate-800">
+              <h5 class="modal-title fw-bold text-emerald">ক্যাটাগরি এডিট (${cat.name})</h5>
+              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('editCategoryModal').remove()"></button>
+            </div>
+            <form onsubmit="ADMIN.handleEditCategorySubmit(event, '${cat.id}')">
+              <div class="modal-body p-4 space-y-3">
+                <div><label class="form-label text-xs fw-bold">নাম (English) *</label><input type="text" id="ecat-name" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${cat.name||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">বাংলা নাম</label><input type="text" id="ecat-namebn" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${cat.nameBn||''}" /></div>
+                <div><label class="form-label text-xs fw-bold">আইকন ক্লাস</label><input type="text" id="ecat-icon" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${cat.icon||'bi-tag'}" /></div>
+                <div><label class="form-label text-xs fw-bold">সাব-ক্যাটাগরি (কমা দিয়ে লিখুন)</label><input type="text" id="ecat-subs" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${Array.isArray(cat.subCategories)?cat.subCategories.join(', '):''}" /></div>
+              </div>
+              <div class="modal-footer border-slate-800 p-3">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('editCategoryModal').remove()">বাতিল</button>
+                <button type="submit" class="btn btn-emerald btn-sm px-4 fw-bold">সেভ করুন</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('editCategoryModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  },
+
+  async handleEditCategorySubmit(e, id) {
+    e.preventDefault();
+    const updated = {
+      id: id,
+      name: document.getElementById('ecat-name').value.trim(),
+      nameBn: document.getElementById('ecat-namebn').value.trim(),
+      icon: document.getElementById('ecat-icon').value.trim(),
+      subCategories: document.getElementById('ecat-subs').value.split(',').map(s=>s.trim()).filter(Boolean)
+    };
+    await API.call('categories/update', updated);
+    document.getElementById('editCategoryModal')?.remove();
+    STORE.toast('success', 'ক্যাটাগরি আপডেট সম্পন্ন!', updated.name);
+    await this.switchTab('categories_tree');
+  },
+
+  // 11. Edit Review Modal
+  async openEditReviewModal(id) {
+    const res = await API.call('reviews/list');
+    const r = (res.data && res.data.items || []).find(item => String(item.id) === String(id));
+    if (!r) { STORE.toast('error', 'রিভিউ পাওয়া যায়নি'); return; }
+
+    const modalHtml = `
+      <div class="modal fade show" id="editReviewModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
+            <div class="modal-header border-slate-800">
+              <h5 class="modal-title fw-bold text-warning">রিভিউ এডিট ও অনুমোদন</h5>
+              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('editReviewModal').remove()"></button>
+            </div>
+            <form onsubmit="ADMIN.handleEditReviewSubmit(event, '${r.id}')">
+              <div class="modal-body p-4 space-y-3">
+                <div><label class="form-label text-xs fw-bold">গ্রাহকের নাম</label><input type="text" id="er-cust" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${r.customerName||''}" required /></div>
+                <div>
+                  <label class="form-label text-xs fw-bold">রেটিং</label>
+                  <select id="er-rating" class="form-select form-select-sm bg-slate-950 text-warning border-slate-700">
+                    <option value="5" ${r.rating===5?'selected':''}>★★★★★ ৫ স্টার</option>
+                    <option value="4" ${r.rating===4?'selected':''}>★★★★☆ ৪ স্টার</option>
+                    <option value="3" ${r.rating===3?'selected':''}>★★★☆☆ ৩ স্টার</option>
+                    <option value="2" ${r.rating===2?'selected':''}>★★☆☆☆ ২ স্টার</option>
+                    <option value="1" ${r.rating===1?'selected':''}>★☆☆☆☆ ১ স্টার</option>
+                  </select>
+                </div>
+                <div><label class="form-label text-xs fw-bold">মতামত / কমেন্ট</label><textarea id="er-comment" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" rows="3">${r.comment||''}</textarea></div>
+                <div>
+                  <label class="form-label text-xs fw-bold">স্ট্যাটাস</label>
+                  <select id="er-status" class="form-select form-select-sm bg-slate-950 text-white border-slate-700">
+                    <option value="Approved" ${r.status==='Approved'?'selected':''}>Approved (সাইটে লাইভ প্রদর্শিত)</option>
+                    <option value="Pending" ${r.status==='Pending'?'selected':''}>Pending (অপেক্ষমান)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer border-slate-800 p-3">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('editReviewModal').remove()">বাতিল</button>
+                <button type="submit" class="btn btn-warning btn-sm px-4 fw-bold text-dark">সেভ করুন</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('editReviewModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  },
+
+  async handleEditReviewSubmit(e, id) {
+    e.preventDefault();
+    const updated = {
+      id: id,
+      customerName: document.getElementById('er-cust').value.trim(),
+      rating: parseInt(document.getElementById('er-rating').value, 10) || 5,
+      comment: document.getElementById('er-comment').value.trim(),
+      status: document.getElementById('er-status').value
+    };
+    await API.call('reviews/update', updated);
+    document.getElementById('editReviewModal')?.remove();
+    STORE.toast('success', 'রিভিউ আপডেট সম্পন্ন!', 'Approved');
+    await this.switchTab('reviews');
+  },
+
+  // 12. Edit Banner Modal
+  async openEditBannerModal(id) {
+    const res = await API.call('banners/list');
+    const b = (res.data || []).find(item => String(item.id) === String(id));
+    if (!b) { STORE.toast('error', 'ব্যানার পাওয়া যায়নি'); return; }
+
+    const modalHtml = `
+      <div class="modal fade show" id="editBannerModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
+            <div class="modal-header border-slate-800">
+              <h5 class="modal-title fw-bold text-emerald">ব্যানার স্লাইড এডিট</h5>
+              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('editBannerModal').remove()"></button>
+            </div>
+            <form onsubmit="ADMIN.handleEditBannerSubmit(event, '${b.id}')">
+              <div class="modal-body p-4 space-y-3">
+                <div><label class="form-label text-xs fw-bold">শিরোনাম *</label><input type="text" id="eban-title" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${b.title||''}" required /></div>
+                <div><label class="form-label text-xs fw-bold">সাবটাইটেল</label><input type="text" id="eban-sub" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${b.subtitle||''}" /></div>
+                <div><label class="form-label text-xs fw-bold">ব্যাজ টেক্সট</label><input type="text" id="eban-badge" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${b.badge||''}" /></div>
+                <div><label class="form-label text-xs fw-bold">লিংক URL</label><input type="text" id="eban-link" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${b.link||'#/products'}" /></div>
+                <div><label class="form-label text-xs fw-bold">ছবির URL</label><input type="url" id="eban-img" class="form-control form-control-sm bg-slate-950 text-white border-slate-700" value="${b.img||''}" /></div>
+              </div>
+              <div class="modal-footer border-slate-800 p-3">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('editBannerModal').remove()">বাতিল</button>
+                <button type="submit" class="btn btn-emerald btn-sm px-4 fw-bold">সেভ করুন</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('editBannerModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  },
+
+  async handleEditBannerSubmit(e, id) {
+    e.preventDefault();
+    const updated = {
+      id: id,
+      title: document.getElementById('eban-title').value.trim(),
+      subtitle: document.getElementById('eban-sub').value.trim(),
+      badge: document.getElementById('eban-badge').value.trim(),
+      link: document.getElementById('eban-link').value.trim(),
+      img: document.getElementById('eban-img').value.trim()
+    };
+    await API.call('banners/update', updated);
+    document.getElementById('editBannerModal')?.remove();
+    STORE.toast('success', 'ব্যানার আপডেট সম্পন্ন!', updated.title);
+    await this.switchTab('banners');
+  },
 };
 
 window.ADMIN = ADMIN;

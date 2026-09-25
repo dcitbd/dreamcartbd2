@@ -2411,6 +2411,43 @@ const API = {
         return { success: false, message: 'প্রোডাক্টটি খুঁজে পাওয়া যায়নি।' };
       }
 
+      
+      case 'products/update': {
+        const products = this.getStorage(this.STORAGE_KEYS.PRODUCTS, this.SEED_PRODUCTS);
+        const index = products.findIndex(p => p.sku === payload.sku || p.id === payload.sku);
+        if (index !== -1) {
+          products[index] = { ...products[index], ...payload };
+          this.setStorage(this.STORAGE_KEYS.PRODUCTS, products);
+          this.syncToAppsScript('products/update', payload);
+          return { success: true, data: products[index] };
+        }
+        return { success: false, message: 'প্রোডাক্ট পাওয়া যায়নি' };
+      }
+
+      case 'orders/update': {
+        const orders = this.getStorage(this.STORAGE_KEYS.ORDERS, []);
+        const index = orders.findIndex(o => o.orderId === payload.orderId);
+        if (index !== -1) {
+          orders[index] = { ...orders[index], ...payload };
+          this.setStorage(this.STORAGE_KEYS.ORDERS, orders);
+          this.syncToAppsScript('orders/update', payload);
+          return { success: true, data: orders[index] };
+        }
+        return { success: false, message: 'অর্ডার পাওয়া যায়নি' };
+      }
+
+      case 'reviews/update': {
+        const reviews = this.getStorage(this.STORAGE_KEYS.REVIEWS, []);
+        const index = reviews.findIndex(r => String(r.id) === String(payload.id));
+        if (index !== -1) {
+          reviews[index] = { ...reviews[index], ...payload };
+          this.setStorage(this.STORAGE_KEYS.REVIEWS, reviews);
+          this.syncToAppsScript('reviews/update', payload);
+          return { success: true, data: reviews[index] };
+        }
+        return { success: false, message: 'রিভিউ পাওয়া যায়নি' };
+      }
+
       case 'products/update_inline': {
         const products = this.getStorage(this.STORAGE_KEYS.PRODUCTS, this.SEED_PRODUCTS);
         const index = products.findIndex(p => p.sku === payload.sku || p.id === payload.sku);
