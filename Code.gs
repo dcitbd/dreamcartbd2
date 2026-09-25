@@ -10,6 +10,7 @@
  */
 
 const SPREADSHEET_ID = "1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g";
+const FALLBACK_SPREADSHEET_ID = "1W4k4HP1MBuHfdU7AkPHPf_P-huHATEpIbGhJQDRtpH4";
 const OWNER_EMAIL = "jainal.dcitbd@gmail.com";
 const SUPPORT_EMAIL = "saiful05333@gmail.com";
 
@@ -122,14 +123,30 @@ function getOrCreateSheet(ss, sheetName, headers) {
   return sheet;
 }
 
+
+function parseNum(val, defVal) {
+  if (val === undefined || val === null || val === '') return defVal || 0;
+  if (typeof val === 'number') return isNaN(val) ? (defVal || 0) : val;
+  var cleaned = String(val).replace(/[^0-9.-]/g, '');
+  var num = parseFloat(cleaned);
+  return isNaN(num) ? (defVal || 0) : num;
+}
+
 function handleAction(action, payload) {
   let ss = null;
   try {
-    if (SPREADSHEET_ID && SPREADSHEET_ID.trim() !== '') {
+    if (typeof SPREADSHEET_ID !== 'undefined' && SPREADSHEET_ID && SPREADSHEET_ID.trim() !== '') {
       ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     }
   } catch (e) {
-    console.warn('Could not open spreadsheet by ID: ' + e);
+    console.warn('Could not open primary spreadsheet by ID: ' + e);
+  }
+  if (!ss && typeof FALLBACK_SPREADSHEET_ID !== 'undefined' && FALLBACK_SPREADSHEET_ID) {
+    try {
+      ss = SpreadsheetApp.openById(FALLBACK_SPREADSHEET_ID);
+    } catch (e) {
+      console.warn('Could not open fallback spreadsheet by ID: ' + e);
+    }
   }
   if (!ss) {
     try {
@@ -179,54 +196,90 @@ function handleAction(action, payload) {
       const lastRow = sheet.getLastRow();
       if (lastRow <= 1) return { success: true, data: { items: [], total: 0 } };
 
-      // Read only the used 18 columns (A-R) to avoid loading excess memory/redundant columns
-      const range = sheet.getRange(1, 1, lastRow, 18);
-      const data = range.getValues();
+      // Read columns 1 to 18 (A to R) safely
+      const numCols = Math.min(18, sheet.getLastColumn() || 18);
+      const data = sheet.getRange(1, 1, lastRow, numCols).getValues();
 
       const items = [];
       for (let i = 1; i < data.length; i++) {
         const row = data[i];
-        const name = String(row[1] || '').trim();
-        const rawSku = String(row[0] || '').trim();
+        const colA = String(row[0] !== undefined && row[0] !== null ? row[0] : '').trim();
+        const colB = String(row[1] !== undefined && row[1] !== null ? row[1] : '').trim();
 
-        // Skip truly blank rows
-        if (!name && !rawSku) continue;
-        if (!name) continue;
+        // Skip completely blank rows
+        if (!colA && !colB) continue;
 
-        const sku = rawSku || ('DCB-' + (1000 + i));
-        const buyingPrice = parseFloat(row[6]) || 0;
-        const sellingPrice = parseFloat(row[7]) || 0;
-        const stock = parseInt(row[8], 10) || 0;
-        const originalPrice = parseFloat(row[9]) || (sellingPrice > 0 ? Math.round(sellingPrice * 1.3) : 0);
-        const wholesalePrice = parseFloat(row[10]) || (sellingPrice > 0 ? Math.round(sellingPrice * 0.85) : 0);
-        const discountPercent = (originalPrice > sellingPrice && originalPrice > 0)
-          ? Math.round(((originalPrice - sellingPrice) / originalPrice) * 100)
+        let sku = colA;
+        let name = colB;
+        if (!name && colA) {
+          name = colA;
+          sku = 'PRD-' + (1000 + i);
+        } else if (!sku && colB) {
+          sku = 'PRD-' + (1000 + i);
+        }
+
+        // Clean prices & stock using parseNum helper
+        const bp = parseNum(row[6], 0);
+        const sp = parseNum(row[7], 0);
+        const stock = parseInt(parseNum(row[8], 10), 10);
+        const op = parseNum(row[9], (sp > 0 ? Math.round(sp * 1.3) : 0));
+        const wp = parseNum(row[10], (sp > 0 ? Math.round(sp * 0.85) : 0));
+        const discountPercent = (op > sp && op > 0)
+          ? Math.round(((op - sp) / op) * 100)
           : 0;
 
+        // Image parsing
         const rawImgs = String(row[12] || '').trim();
-        const imageList = rawImgs ? rawImgs.split(',').map(s => s.trim()).filter(Boolean) : [];
-        const primaryImage = imageList[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=80';
+        let imageList = [];
+        if (rawImgs) {
+          const parts = rawImgs.split(",").map(s => s.trim());
+          for (let k = 0; k < parts.length; k++) {
+            const pUrl = parts[k].trim();
+            if (pUrl && (pUrl.indexOf('http') === 0 || pUrl.indexOf('//') === 0 || pUrl.indexOf('data:') === 0)) {
+              imageList.push(pUrl);
+            }
+          }
+        }
+        const primaryImage = imageList.length > 0 ? imageList[0] : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=80';
+
+        // Categorization & normalization
+        let rawCat = String(row[2] || 'General').trim();
+        let cat = rawCat;
+        if (/watch|jewel|ring|necklace|earring/i.test(rawCat)) cat = 'Watches & Jewellery';
+        else if (/health|beauty|massage|nebulizer|blood|trimmer|pedicure|water bag|attar/i.test(rawCat)) cat = 'Health & Beauty';
+        else if (/stationery|craft|file|holder|office/i.test(rawCat)) cat = 'Stationery & Office';
+        else if (/computer|laptop|mouse|audio|speaker|wearable|gadget|electronic/i.test(rawCat)) cat = 'Gadgets & Electronics';
+        else if (/gas|cook|kitchen|bottle|bedding|bath|home/i.test(rawCat)) cat = 'Home & Kitchen';
+        else if (/tool|outdoor|torch|light|led/i.test(rawCat)) cat = 'Tools & Outdoor';
+        else if (/modhu|honey|grocer|organic/i.test(rawCat)) cat = 'Organic & Groceries';
+        else if (/bag|travel|fashion|mask|motor|shoe/i.test(rawCat)) cat = 'Fashion, Travel & Auto';
+
+        // Text content (compact summaries for the full 1600 catalog so response is lightweight & lightning-fast)
+        const fullDesc = String(row[13] || '').trim();
+        const fullSpec = String(row[14] || '').trim();
+        const fullOthers = String(row[15] || '').trim();
 
         items.push({
           id: sku,
           sku: sku,
           articleNo: sku,
           name: name,
-          category: String(row[2] || 'General').trim(),
+          category: cat,
+          rawCategory: rawCat,
           subCategory: String(row[3] || '').trim(),
           childCategory: String(row[4] || '').trim(),
           brand: String(row[5] || 'China Brand').trim(),
-          buyingPrice: buyingPrice,
-          sellingPrice: sellingPrice,
+          buyingPrice: bp,
+          sellingPrice: sp,
           stock: stock,
-          originalPrice: originalPrice,
-          wholesalePrice: wholesalePrice,
+          originalPrice: op,
+          wholesalePrice: wp,
           minOrderQ: String(row[11] || '1 Pcs').trim(),
           primaryImage: primaryImage,
-          images: imageList.length > 0 ? imageList : [primaryImage],
-          description: String(row[13] || '').trim(),
-          specification: String(row[14] || '').trim(),
-          others: String(row[15] || '').trim(),
+          images: imageList.length > 0 ? imageList.slice(0, 3) : [primaryImage],
+          description: fullDesc.length > 280 ? (fullDesc.substring(0, 280) + '...') : fullDesc,
+          specification: fullSpec.length > 200 ? (fullSpec.substring(0, 200) + '...') : fullSpec,
+          others: fullOthers.length > 180 ? (fullOthers.substring(0, 180) + '...') : fullOthers,
           color: String(row[16] || 'Default').trim(),
           size: String(row[17] || 'Standard').trim(),
           discountPercent: discountPercent,

@@ -1037,74 +1037,105 @@ const API = {
     try {
       localStorage.setItem(key, JSON.stringify(data));
     } catch (e) {
-      console.warn(`[Storage Notice] localStorage quota exceeded for ${key}. Stored safely in-memory without crashing:`, e);
-      // Attempt to clean old cache items to free up space
+      console.warn(`[Storage Notice] localStorage quota exceeded for ${key}. Storing safe compact format:`, e);
       try {
-        localStorage.removeItem('dcbd_temp_cache');
-        localStorage.removeItem('dcbd_old_products');
-      } catch (cleanErr) {}
+        if (Array.isArray(data) && data.length > 50) {
+          const compact = data.map(p => ({
+            id: p.id, sku: p.sku, articleNo: p.articleNo, name: p.name,
+            category: p.category, subCategory: p.subCategory, childCategory: p.childCategory,
+            brand: p.brand, buyingPrice: p.buyingPrice, sellingPrice: p.sellingPrice,
+            stock: p.stock, originalPrice: p.originalPrice, wholesalePrice: p.wholesalePrice,
+            minOrderQ: p.minOrderQ, primaryImage: p.primaryImage,
+            discountPercent: p.discountPercent, inStock: p.inStock, status: p.status
+          }));
+          localStorage.setItem(key, JSON.stringify(compact));
+        }
+      } catch (compactErr) {
+        console.warn('[Storage Notice] Stored safely in-memory.');
+      }
     }
   },
 
-  // Normalize and parse raw row into product
   rowToProduct(row, index = 0) {
     if (!row || row.length === 0) return null;
     const c = CONFIG.productColumns;
+    
+    const colA = String(row[c.A_sku] !== undefined && row[c.A_sku] !== null ? row[c.A_sku] : '').trim();
+    const colB = String(row[c.B_name] !== undefined && row[c.B_name] !== null ? row[c.B_name] : '').trim();
+    if (!colA && !colB) return null;
+
+    let sku = colA;
+    let name = colB;
+    if (!name && colA) {
+      name = colA;
+      sku = 'PRD-' + (1000 + index);
+    } else if (!sku && colB) {
+      sku = 'PRD-' + (1000 + index);
+    }
+
     const imagesRaw = row[c.M_images] || '';
-    const imageList = String(imagesRaw).split(',').map(s => s.trim()).filter(Boolean);
+    const imageList = String(imagesRaw).split(",").map(s => s.trim()).map(s => s.trim()).filter(s => s.startsWith('http') || s.startsWith('//') || s.startsWith('data:'));
     const primaryImage = imageList[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=80';
     
-    const sellingPrice = parseFloat(row[c.H_sellingPrice]) || 0;
-    const originalPrice = parseFloat(row[c.J_originalPrice]) || (sellingPrice * 1.3);
-    const buyingPrice = parseFloat(row[c.G_buyingPrice]) || 0;
-    const wholesalePrice = parseFloat(row[c.K_wholesalePrice]) || (sellingPrice * 0.85);
-    const stock = parseInt(row[c.I_stock], 10) || 10;
-    const minOrderQ = row[c.L_minOrderQ] || '1 Pcs';
+    // Clean price helper
+    const cleanNum = (v, d = 0) => {
+      if (v === undefined || v === null || v === '') return d;
+      if (typeof v === 'number') return isNaN(v) ? d : v;
+      const n = parseFloat(String(v).replace(/[^0-9.-]/g, ''));
+      return isNaN(n) ? d : n;
+    };
+
+    const sellingPrice = cleanNum(row[c.H_sellingPrice], 0);
+    const originalPrice = cleanNum(row[c.J_originalPrice], sellingPrice > 0 ? Math.round(sellingPrice * 1.3) : 0);
+    const buyingPrice = cleanNum(row[c.G_buyingPrice], 0);
+    const wholesalePrice = cleanNum(row[c.K_wholesalePrice], sellingPrice > 0 ? Math.round(sellingPrice * 0.85) : 0);
+    const stock = parseInt(cleanNum(row[c.I_stock], 10), 10);
+    const minOrderQ = String(row[c.L_minOrderQ] || '1 Pcs').trim();
     
     const discountPercent = (originalPrice > sellingPrice && originalPrice > 0)
       ? Math.round(((originalPrice - sellingPrice) / originalPrice) * 100) 
       : 0;
 
-    let cat = String(row[c.C_category] || 'General');
-    if (/watch|jewel|ring|necklace|earring/i.test(cat)) cat = 'Watches & Jewellery';
-    else if (/health|beauty|massage|nebulizer|blood|trimmer|pedicure|water bag|attar/i.test(cat)) cat = 'Health & Beauty';
-    else if (/stationery|craft|file|holder|office/i.test(cat)) cat = 'Stationery & Office';
-    else if (/computer|laptop|mouse|audio|speaker|wearable/i.test(cat)) cat = 'Gadgets & Electronics';
-    else if (/gas|cook|kitchen|bottle|bedding|bath/i.test(cat)) cat = 'Home & Kitchen';
-    else if (/tool|outdoor|torch|light|led/i.test(cat)) cat = 'Tools & Outdoor';
-    else if (/modhu|honey|grocer|organic/i.test(cat)) cat = 'Organic & Groceries';
-    else if (/bag|travel|fashion|mask|motor|shoe/i.test(cat)) cat = 'Fashion, Travel & Auto';
+    let rawCat = String(row[c.C_category] || 'General').trim();
+    let cat = rawCat;
+    if (/watch|jewel|ring|necklace|earring/i.test(rawCat)) cat = 'Watches & Jewellery';
+    else if (/health|beauty|massage|nebulizer|blood|trimmer|pedicure|water bag|attar/i.test(rawCat)) cat = 'Health & Beauty';
+    else if (/stationery|craft|file|holder|office/i.test(rawCat)) cat = 'Stationery & Office';
+    else if (/computer|laptop|mouse|audio|speaker|wearable|gadget|electronic/i.test(rawCat)) cat = 'Gadgets & Electronics';
+    else if (/gas|cook|kitchen|bottle|bedding|bath|home/i.test(rawCat)) cat = 'Home & Kitchen';
+    else if (/tool|outdoor|torch|light|led/i.test(rawCat)) cat = 'Tools & Outdoor';
+    else if (/modhu|honey|grocer|organic/i.test(rawCat)) cat = 'Organic & Groceries';
+    else if (/bag|travel|fashion|mask|motor|shoe/i.test(rawCat)) cat = 'Fashion, Travel & Auto';
 
     return {
-      id: String(row[c.A_sku] || ('PRD-' + (1000 + index))),
-      sku: String(row[c.A_sku] || ('PRD-' + (1000 + index))),
-      articleNo: String(row[c.A_sku] || ('ART-' + (1000 + index))),
-      name: String(row[c.B_name] || 'Unnamed Product'),
+      id: sku,
+      sku: sku,
+      articleNo: sku,
+      name: name,
       category: cat,
-      rawCategory: String(row[c.C_category] || 'General'),
-      subCategory: String(row[c.D_subCategory] || ''),
-      childCategory: String(row[c.E_childCategory] || ''),
-      brand: String(row[c.F_brand] || 'China Brand'),
+      rawCategory: rawCat,
+      subCategory: String(row[c.D_subCategory] || '').trim(),
+      childCategory: String(row[c.E_childCategory] || '').trim(),
+      brand: String(row[c.F_brand] || 'China Brand').trim(),
       buyingPrice: buyingPrice,
       sellingPrice: sellingPrice,
       stock: stock,
       originalPrice: originalPrice,
       wholesalePrice: wholesalePrice,
       minOrderQ: minOrderQ,
-      images: imageList.slice(0, 2),
+      images: imageList.slice(0, 3),
       primaryImage: primaryImage,
-      description: String(row[c.N_description] || '').slice(0, 260),
+      description: String(row[c.N_description] || '').slice(0, 280),
       specification: String(row[c.O_specification] || '').slice(0, 200),
       others: String(row[c.P_others] || '').slice(0, 180),
-      color: String(row[c.Q_color] || 'Default'),
-      size: String(row[c.R_size] || 'Standard'),
+      color: String(row[c.Q_color] || 'Default').trim(),
+      size: String(row[c.R_size] || 'Standard').trim(),
       discountPercent: discountPercent,
       inStock: stock > 0,
       status: 'active'
     };
   },
 
-  // Live Sync directly from Google Sheet with redirect protection to prevent CORS errors
   async fetchLiveSheetData(force = false) {
     if (this._syncPromise && !force) return this._syncPromise;
 
@@ -1509,7 +1540,7 @@ const API = {
 
   async call(action, payload = {}) {
     this.initSeedData();
-    if (action === 'products/list' && !this._sheetLoaded) {
+    if ((action === 'products/list' || action === 'products/get_by_category' || action === 'categories/tree') && !this._sheetLoaded) {
       // If we only have seed/fallback data, wait up to 5000ms for live sync to finish
       const cached = this.getStorage(this.STORAGE_KEYS.PRODUCTS, []);
       const timeout = (cached && cached.length > 33) ? 1200 : 5000;
@@ -2031,14 +2062,27 @@ const API = {
       // Group products by 8 distinct categories for Home Page Grid-6
       case 'products/get_by_category': {
         const products = this.getStorage(this.STORAGE_KEYS.PRODUCTS, this.SEED_PRODUCTS);
-        // Display all products from the sheet grouped by category
-        const allCats = [...new Set(products.map(p => p.category || 'General'))];
         
-        const categoryGroups = allCats.map(cat => {
+        // Defined order of 8 primary categories
+        const primaryOrder = [
+          'Watches & Jewellery',
+          'Health & Beauty',
+          'Home & Kitchen',
+          'Gadgets & Electronics',
+          'Stationery & Office',
+          'Organic & Groceries',
+          'Tools & Outdoor',
+          'Fashion, Travel & Auto'
+        ];
+
+        const presentCats = [...new Set(products.map(p => p.category || 'General'))];
+        const sortedCats = [...new Set([...primaryOrder, ...presentCats])];
+
+        const categoryGroups = sortedCats.map(cat => {
           const catProducts = products.filter(p => p.category === cat);
           return {
             categoryName: cat,
-            products: catProducts, // All products for this category
+            products: catProducts,
             totalCount: catProducts.length
           };
         }).filter(g => g.products.length > 0);
