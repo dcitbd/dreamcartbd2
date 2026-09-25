@@ -61,9 +61,9 @@ const API = {
     "wholesalePrice": 123.0,
     "minOrderQ": "10  Pcs",
     "images": [
-      "https://img.drz.lazcdn.com/g/kf/S4ab09cc5364240ea8034e02f35e7c13dJ.jpg\\_720x720q80.jpg"
+      "https://img.drz.lazcdn.com/g/kf/S4ab09cc5364240ea8034e02f35e7c13dJ.jpg_720x720q80.jpg"
     ],
-    "primaryImage": "https://img.drz.lazcdn.com/g/kf/S4ab09cc5364240ea8034e02f35e7c13dJ.jpg\\_720x720q80.jpg",
+    "primaryImage": "https://img.drz.lazcdn.com/g/kf/S4ab09cc5364240ea8034e02f35e7c13dJ.jpg_720x720q80.jpg",
     "description": "Dream Cart BD-তে নিয়ে এলো আধুনিক ও স্টাইলিশ Smart Stainless Steel Multifunctional Ring for Couple Mood Feeling Intelligent Temperature Sensitive Rings Waterproof Jewelry। এটি সাধারণ কোনো আংটি নয়, বরং একটি স্মার্ট ও মাল্টিফাংশনাল টেম্পারেচার সেনসিটিভ...",
     "specification": "১. পণ্যের নাম (Product Name): Smart Stainless Steel Multifunctional Ring for Couple ২. পণ্যের ধরন (Product Type): Smart Ring / Temperature Sensitive Ring / Waterproof Jewelry ৩. ম্যাটেরিয়াল...",
     "others": "অন্যান্য তথ্য (Other Information):  কেন Dream Cart BD থেকে এই স্মার্ট কাপল রিং ক্রয় করবেন?  - প্রিমিয়াম কোয়ালিটি ও সঠিক মান নিয়ন্ত্রণ: প্রতিটি Smart Stainless Steel Coupl...",
@@ -90,9 +90,9 @@ const API = {
     "wholesalePrice": 353.0,
     "minOrderQ": "10  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_003020\\_8bf8448e-404f-4530-b52b-4700c4ee6a2a.jpg"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808_003020_8bf8448e-404f-4530-b52b-4700c4ee6a2a.jpg"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_003020\\_8bf8448e-404f-4530-b52b-4700c4ee6a2a.jpg",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808_003020_8bf8448e-404f-4530-b52b-4700c4ee6a2a.jpg",
     "description": "Dream Cart BD নিয়ে এলো অত্যন্ত আকর্ষণীয় এবং ট্রেন্ডি Pretty 925 Sterling Silver Snowflake Crystal Zircon Ear Clips Without Piercing for Women Girls Wedding Party Trendy Jewelry Gift। যাদের কান ফোঁড়ানো নেই, তাদের জন্য এই ইয়ার ক্লিপটি একটি পারফেক্ট ফ্...",
     "specification": "১. পণ্যের নাম (Product Name): Pretty 925 Sterling Silver Snowflake Crystal Zircon Ear Clips Without Piercing ২. পণ্যের ধরন (Product Type): Ear Clips / Non-Pierced Earrings / Jewelry ৩. ম্যাট...",
     "others": "অন্যান্য তথ্য (Other Information):  কেন Dream Cart BD থেকে এই 925 Sterling Silver Snowflake Crystal Zircon Ear Clips ক্রয় করবেন?  - প্রিমিয়াম কোয়ালিটি ও সঠিক মান নিয়ন্ত্র...",
@@ -119,10 +119,10 @@ const API = {
     "wholesalePrice": 765.0,
     "minOrderQ": "5  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_002701\\_429597a1-c660-4f25-acb2-00f32662c451.jpg",
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_002701\\_7695bd5c-caf7-4341-b7ae-4d411ccc7392.png"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808_002701_429597a1-c660-4f25-acb2-00f32662c451.jpg",
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808_002701_7695bd5c-caf7-4341-b7ae-4d411ccc7392.png"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_002701\\_429597a1-c660-4f25-acb2-00f32662c451.jpg",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808_002701_429597a1-c660-4f25-acb2-00f32662c451.jpg",
     "description": "Dream Cart BD-তে নিয়ে এলো মহিলাদের জন্য আকর্ষণীয় ও প্রিমিয়াম ডিজাইনের 925 Sterling Silver Heart Zircon Jewelry Set for Women Adjustable Ring Necklace Earrings Bridal Wedding Gift Set। আপনি যদি নিজের জন্য কিংবা প্রিয়জনকে উপহার দেওয়ার জন্য সুন্দর একটি...",
     "specification": "১. পণ্যের নাম (Product Name): 925 Sterling Silver Heart Zircon Jewelry Set for Women ২. পণ্যের ধরন (Product Type): Jewelry Set / Necklace, Earrings & Ring Set ৩. ম্যাটেরিয়াল (Material): 925...",
     "others": "অন্যান্য তথ্য (Other Information):  কেন Dream Cart BD থেকে এই 925 Sterling Silver Heart Zircon Jewelry Set ক্রয় করবেন?  - প্রিমিয়াম কোয়ালিটি ও সঠিক মান নিয়ন্ত্রণ: প্রতিটি...",
@@ -178,9 +178,9 @@ const API = {
     "wholesalePrice": 215.0,
     "minOrderQ": "10  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_002018\\_4b511ffe-493b-4327-b3af-b1de22dbd1d8.png"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808_002018_4b511ffe-493b-4327-b3af-b1de22dbd1d8.png"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_002018\\_4b511ffe-493b-4327-b3af-b1de22dbd1d8.png",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808_002018_4b511ffe-493b-4327-b3af-b1de22dbd1d8.png",
     "description": "Dream Cart BD-তে নিয়ে এলো মহিলাদের জন্য অত্যন্ত আকর্ষণীয় ও ট্রেন্ডি New Wine SILVER Cherry Gold Color Pendant Necklace For Women Personality Fashion Necklace Wedding Jewelry Birthday Gifts। অনন্য ডিজাইনের এই পেন্ডেন্ট নেকলেসটি আপনার যেকোনো লুকে যোগ ক...",
     "specification": "১. পণ্যের নাম (Product Name): New Wine SILVER Cherry Gold Color Pendant Necklace For Women ২. পণ্যের ধরন (Product Type): Pendant Necklace / Fashion Jewelry / Wedding Jewelry ৩. কালার (Color)...",
     "others": "অন্যান্য তথ্য (Other Information):  কেন Dream Cart BD থেকে এই New Wine SILVER Cherry Gold Color Pendant Necklace ফর উইমেন ক্রয় করবেন?  ১. প্রিমিয়াম কোয়ালিটি ও সঠিক মান নি...",
@@ -265,9 +265,9 @@ const API = {
     "wholesalePrice": 175.0,
     "minOrderQ": "10  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_001029\\_d9fe6c61-e06d-4012-97b4-490221b5110c.png"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808_001029_d9fe6c61-e06d-4012-97b4-490221b5110c.png"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_001029\\_d9fe6c61-e06d-4012-97b4-490221b5110c.png",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808_001029_d9fe6c61-e06d-4012-97b4-490221b5110c.png",
     "description": "Dream Cart BD-তে নিয়ে এলো শারীরিক ক্লান্তি ও পেশির টান দূর করার দারুণ সমাধান Mini Massage Stick Roller – Body Muscle Relax Tool। এটি একটি কার্যকর Handheld Leg, Neck & Back Pain Relief Massager, যা শরীরের বিভিন্ন অংশের পেশি রিল্যাক্স করতে এবং রক্ত সঞ্...",
     "specification": "১. পণ্যের নাম (Product Name): Mini Massage Stick Roller – Body Muscle Relax Tool ",
     "others": "Handheld Leg, Neck & Back Pain Relief Massager ",
@@ -410,9 +410,9 @@ const API = {
     "wholesalePrice": 163.0,
     "minOrderQ": "10  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\\_235210\\_313b2f58-643f-45c6-b39f-73d38b399da9.jpg"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807_235210_313b2f58-643f-45c6-b39f-73d38b399da9.jpg"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\\_235210\\_313b2f58-643f-45c6-b39f-73d38b399da9.jpg",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807_235210_313b2f58-643f-45c6-b39f-73d38b399da9.jpg",
     "description": "Dream Cart BD-তে নিয়ে এলো রান্নার খরচ ও সময় বাঁচানোর এক দারুণ সমাধান Gas Stove Wind Shield 8-Hole Energy Saving Rack ",
     "specification": "Universal Gas Saver Burner Cover (Made in China)। এটি একটি আধুনিক ও কার্যকর গ্যাস সেভার বার্নার কভার যা আপনার রান্নাঘরের কাজের অভিজ্ঞতাকে সহজ ও দ্রুত করবে। এই ইউনিভার্সাল ৮-হোল এনার্জি সেভিং...",
     "others": "১. পণ্যের নাম (Product Name): Gas Stove Wind Shield 8-Hole Energy Saving Rack / Universal Gas Saver Burner Cover ২. পণ্যের ধরন (Product Type): Gas Stove Wind Shield / Ene...",
@@ -526,9 +526,9 @@ const API = {
     "wholesalePrice": 438.0,
     "minOrderQ": "5  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\\_181147\\_cface467-89f2-4395-af69-0d1aa62e472d.jpg"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807_181147_cface467-89f2-4395-af69-0d1aa62e472d.jpg"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\\_181147\\_cface467-89f2-4395-af69-0d1aa62e472d.jpg",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807_181147_cface467-89f2-4395-af69-0d1aa62e472d.jpg",
     "description": "Dream Cart BD-তে নিয়ে এলো প্রিমিয়াম কোয়ালিটির Perfume Sweet Box Attar Combo Pack – 12 Halal Perfume Oils Gift Set for Men & Women। আপনি যদি দীর্ঘস্থায়ী এবং চমৎকার সুবাসের আতর কালেকশন খুঁজে থাকেন, তবে এই ১২টি হালাল পারফিউম অয়েলের কম্বো প্যাকটি আপনার জ...",
     "specification": "১. পণ্যের নাম (Product Name): Perfume Sweet Box Attar Combo Pack – 12 Halal Perfume Oils Gift Set for Men & Women ২. পণ্যের ধরন (Product Type): Attar Combo Pack / Perfume Oil Gift Set ৩. বিশ...",
     "others": "অন্যান্য তথ্য (Other Information):  কেন Dream Cart BD থেকে এই Perfume Sweet Box Attar Combo Pack ক্রয় করবেন?  - প্রিমিয়াম কোয়ালিটি ও মান নিয়ন্ত্রণ: প্রতিটি Attar Combo...",
@@ -555,9 +555,9 @@ const API = {
     "wholesalePrice": 94.0,
     "minOrderQ": "10  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_000643\\_5697dde4-94f7-4b84-a333-6dfa6b0c6814.jpg"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808_000643_5697dde4-94f7-4b84-a333-6dfa6b0c6814.jpg"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_000643\\_5697dde4-94f7-4b84-a333-6dfa6b0c6814.jpg",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808_000643_5697dde4-94f7-4b84-a333-6dfa6b0c6814.jpg",
     "description": "Dream Cart BD-তে নিয়ে এলো সম্পূর্ণ খাঁটি ও বিশুদ্ধ Grameen Honey – 100% Pure Natural Honey ",
     "specification": "Raw Organic Modhu Bangladesh ",
     "others": "Healthy & Fresh। সুস্থ ও সুন্দর জীবনের জন্য ১০০% প্রাকৃতিক মধুর পুষ্টিগুণ অপরিসীম। এটি কোনো কৃত্রিম উপাদান ছাড়া সংগৃহীত একদম র অর্গানিক মধু, যা আপনাকে দেয় খাঁটি মধুর আসল...",
@@ -584,10 +584,10 @@ const API = {
     "wholesalePrice": 150.0,
     "minOrderQ": "10  Pcs",
     "images": [
-      "https://img.drz.lazcdn.com/static/bd/p/399ecbdef27be30de4a79b3286758dcc.jpg\\_720x720q80.jpg\\_.webp",
-      "https://img.drz.lazcdn.com/static/bd/p/28d87afc955afc7a0bff01c2ad1e7750.jpg\\_720x720q80.jpg\\_.webp"
+      "https://img.drz.lazcdn.com/static/bd/p/399ecbdef27be30de4a79b3286758dcc.jpg_720x720q80.jpg_.webp",
+      "https://img.drz.lazcdn.com/static/bd/p/28d87afc955afc7a0bff01c2ad1e7750.jpg_720x720q80.jpg_.webp"
     ],
-    "primaryImage": "https://img.drz.lazcdn.com/static/bd/p/399ecbdef27be30de4a79b3286758dcc.jpg\\_720x720q80.jpg\\_.webp",
+    "primaryImage": "https://img.drz.lazcdn.com/static/bd/p/399ecbdef27be30de4a79b3286758dcc.jpg_720x720q80.jpg_.webp",
     "description": "Powerful Long Range LED Rechargeable Torch Light একটি high-power flashlight, যা Camping, Hiking, Security, Travel ও Emergency ব্যবহারের জন্য উপযোগী। এতে রয়েছে ৩টি Lighting Modes, যা প্রয়োজন অনুযায়ী আলোর mode পরিবর্তনের সুবিধা দেয়। Rechargeable design...",
     "specification": "Product Type: Rechargeable LED Torch Light Light Type: High-Power LED Lighting Modes: 3 Modes Power Source: Rechargeable Battery Light Range: Long Range Illumination Design: Portable & Handh...",
     "others": "কেন এই পণ্যটি বেছে নেবেন?  শক্তিশালী LED আলো অন্ধকার জায়গায় ভালো আলোকসজ্জা দিতে সহায়তা করে প্রয়োজন অনুযায়ী ব্যবহারের জন্য ৩টি লাইটিং মোড রিচার্জেবল হওয়ায় বারবার ব্যবহার ক...",
@@ -614,9 +614,9 @@ const API = {
     "wholesalePrice": 400.0,
     "minOrderQ": "5  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\\_201206\\_48540775-b88d-4bfa-b830-fb6e07164397.png"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807_201206_48540775-b88d-4bfa-b830-fb6e07164397.png"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\\_201206\\_48540775-b88d-4bfa-b830-fb6e07164397.png",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807_201206_48540775-b88d-4bfa-b830-fb6e07164397.png",
     "description": "Dream Cart BD-তে নিয়ে এলো চমৎকার সাউন্ড কোয়ালিটির MK-D10 USB Powered 3D Sound Portable Speaker with Extra Bass। আপনি যদি আপনার কম্পিউটার, ল্যাপটপ, ডেস্কটপ কিংবা টিভির জন্য একটি শক্তিশালী ও কমপ্যাক্ট সাউন্ড সিস্টেম খুঁজে থাকেন, তবে এই 2.0 Stereo Multi...",
     "specification": "১. পণ্যের নাম (Product Name): MK-D10 USB Powered 3D Sound Portable Speaker with Extra Bass ২. মডেল (Model): MK-D10 ৩. পণ্যের ধরন (Product Type): Portable Speaker / 2.0 Stereo Multimedia Spea...",
     "others": "অন্যান্য তথ্য (Other Information):  কেন Dream Cart BD থেকে এই MK-D10 USB Powered 3D Sound Portable Speaker ক্রয় করবেন?  - প্রিমিয়াম সাউন্ড ও সেরা মান: প্রতিটি MK-D10 USB...",
@@ -2883,6 +2883,34 @@ const API = {
     }
   },
 
+  
+  cleanImageUrl(url) {
+    if (!url) return '';
+    let u = String(url).trim();
+    u = u.replace(/\\_/g, '_').replace(/\_/g, '_').replace(/\\&/g, '&').replace(/\&/g, '&').replace(/\\/g, '');
+    u = u.replace(/^[\[\("']+|[\]\)"',;]+$/g, '').trim();
+    u = u.replace(/[\r\n\t]/g, '');
+    if (u.indexOf('drive.google.com') !== -1) {
+      const m = u.match(/\/d\/([a-zA-Z0-9_-]+)/) || u.match(/id=([a-zA-Z0-9_-]+)/);
+      if (m && m[1]) return 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w1000';
+    }
+    return u;
+  },
+
+  parseImageUrls(raw) {
+    if (!raw) return [];
+    const cleaned = String(raw).replace(/\\_/g, '_').replace(/\_/g, '_').replace(/\\&/g, '&').replace(/\&/g, '&').replace(/\\/g, '');
+    const parts = cleaned.split(/[\r\n,;|]+/);
+    const urls = [];
+    for (let i = 0; i < parts.length; i++) {
+      const u = this.cleanImageUrl(parts[i]);
+      if (u && (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('//') || u.startsWith('data:'))) {
+        urls.push(u);
+      }
+    }
+    return urls;
+  },
+
   rowToProduct(row, index = 0) {
     if (!row || row.length === 0) return null;
     const c = CONFIG.productColumns;
@@ -2901,8 +2929,8 @@ const API = {
     }
 
     const imagesRaw = row[c.M_images] || '';
-    const imageList = String(imagesRaw).split(",").map(s => s.trim()).map(s => s.trim()).filter(s => s.startsWith('http') || s.startsWith('//') || s.startsWith('data:'));
-    const primaryImage = imageList[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=80';
+    const imageList = this.parseImageUrls(imagesRaw);
+    const primaryImage = imageList[0] || (CONFIG && CONFIG.fallbackLogoUrl) || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=80';
     
     // Clean price helper
     const cleanNum = (v, d = 0) => {
@@ -2952,9 +2980,9 @@ const API = {
       minOrderQ: minOrderQ,
       images: imageList.slice(0, 3),
       primaryImage: primaryImage,
-      description: String(row[c.N_description] || '').slice(0, 280),
-      specification: String(row[c.O_specification] || '').slice(0, 200),
-      others: String(row[c.P_others] || '').slice(0, 180),
+      description: String(row[c.N_description] || '').trim(),
+      specification: String(row[c.O_specification] || '').trim(),
+      others: String(row[c.P_others] || '').trim(),
       color: String(row[c.Q_color] || 'Default').trim(),
       size: String(row[c.R_size] || 'Standard').trim(),
       discountPercent: discountPercent,
@@ -3170,7 +3198,8 @@ const API = {
 
     // Check if cache needs reset to the clean 33 products from sheet
     const hasOldDummy = Array.isArray(prods) && prods.some(p => p.sku === 'HWT-GT4-01' || p.sku === 'TOR-5000LM-01');
-    if (!Array.isArray(prods) || prods.length < 96 || hasOldDummy) {
+    const hasBrokenImg = Array.isArray(prods) && prods.some(p => p.primaryImage && (p.primaryImage.indexOf('\\_') !== -1 || p.primaryImage.indexOf('\_') !== -1));
+    if (!Array.isArray(prods) || prods.length < 96 || hasOldDummy || hasBrokenImg) {
       const prodsWithArticle = this.SEED_PRODUCTS.map(p => ({ ...p, articleNo: p.articleNo || p.sku }));
       this.setStorage(this.STORAGE_KEYS.PRODUCTS, prodsWithArticle);
       console.log(`[API Init] Initialized ${this.SEED_PRODUCTS.length} sheet products.`);

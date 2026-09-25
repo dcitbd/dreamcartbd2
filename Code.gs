@@ -228,14 +228,19 @@ function handleAction(action, payload) {
           ? Math.round(((op - sp) / op) * 100)
           : 0;
 
-        // Image parsing
+        // Image parsing & cleaning (Supports multi-delimiter, removes backslash escapes, converts Drive links)
         const rawImgs = String(row[12] || '').trim();
         let imageList = [];
         if (rawImgs) {
-          const parts = rawImgs.split(",").map(s => s.trim());
+          const cleaned = rawImgs.replace(/\\_/g, '_').replace(/\_/g, '_').replace(/\\&/g, '&').replace(/\&/g, '&').replace(/\\/g, '');
+          const parts = cleaned.split(/[\r\n,;|]+/);
           for (let k = 0; k < parts.length; k++) {
-            const pUrl = parts[k].trim();
+            let pUrl = parts[k].trim().replace(/^[\[\("']+|[\]\)"',;]+$/g, '').trim();
             if (pUrl && (pUrl.indexOf('http') === 0 || pUrl.indexOf('//') === 0 || pUrl.indexOf('data:') === 0)) {
+              if (pUrl.indexOf('drive.google.com') !== -1) {
+                const m = pUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || pUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                if (m && m[1]) pUrl = 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w1000';
+              }
               imageList.push(pUrl);
             }
           }
@@ -277,9 +282,9 @@ function handleAction(action, payload) {
           minOrderQ: String(row[11] || '1 Pcs').trim(),
           primaryImage: primaryImage,
           images: imageList.length > 0 ? imageList.slice(0, 3) : [primaryImage],
-          description: fullDesc.length > 280 ? (fullDesc.substring(0, 280) + '...') : fullDesc,
-          specification: fullSpec.length > 200 ? (fullSpec.substring(0, 200) + '...') : fullSpec,
-          others: fullOthers.length > 180 ? (fullOthers.substring(0, 180) + '...') : fullOthers,
+          description: fullDesc,
+          specification: fullSpec,
+          others: fullOthers,
           color: String(row[16] || 'Default').trim(),
           size: String(row[17] || 'Standard').trim(),
           discountPercent: discountPercent,

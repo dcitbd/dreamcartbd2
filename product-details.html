@@ -2,11 +2,19 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=./index.html#/products">
-  <title>Dream Cart BD</title>
-  <script>window.location.replace('./index.html#/products');</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>প্রোডাক্ট বিবরণ — Dream Cart BD</title>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const sku = params.get('sku') || params.get('id') || params.get('articleNo') || '';
+    if (sku) {
+      window.location.replace('./index.html#/product/' + encodeURIComponent(sku));
+    } else {
+      window.location.replace('./index.html#/products');
+    }
+  </script>
 </head>
 <body style="background:#030712; color:#fff; font-family:sans-serif; text-align:center; padding-top:20vh;">
-  <p>লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</p>
+  <p>প্রোডাক্ট বিবরণ লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</p>
 </body>
 </html>
