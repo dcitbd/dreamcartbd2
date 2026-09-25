@@ -14,6 +14,9 @@ const PAGES = {
     const catRes = await API.call('products/get_by_category');
     const categoryGroups = (catRes.data && catRes.data.groups) || [];
 
+    const allProdsRes = await API.call('products/list');
+    const allProducts = (allProdsRes.data && allProdsRes.data.items) || [];
+
     return `
       <div class="home-page-container">
         
@@ -122,7 +125,17 @@ const PAGES = {
           </div>
         </section>
 
-        <!-- Category-Wise Product Slider Sections (Requirement 4: 12 pcs per category, slide enabled; Requirement 5: In-stock only) -->
+        <!-- Live Google Sheet Status Banner -->
+        <div class="alert bg-slate-900 border border-emerald/40 text-white rounded-3 p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="spinner-grow spinner-grow-sm text-emerald" role="status"></span>
+            <span class="fw-bold text-sm">গুগল সীট থেকে লাইভ ডেটাবেজ সংযুক্ত</span>
+            <span class="badge bg-emerald text-dark fw-bold">${allProducts.length} টি পণ্য সক্রিয়</span>
+          </div>
+          <a href="#/products" class="btn btn-xs btn-outline-emerald text-xs fw-bold">সব প্রোডাক্ট দেখুন →</a>
+        </div>
+
+        <!-- Category-Wise Product Slider Sections -->
         <section class="category-sections-wrapper space-y-5">
           ${categoryGroups.map((group, idx) => `
             <div class="category-block mb-5">
@@ -133,17 +146,17 @@ const PAGES = {
                   <span class="badge bg-emerald rounded-circle p-2" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">${idx + 1}</span>
                   <div>
                     <h3 class="category-heading mb-0 fw-bold fs-5">${group.categoryName}</h3>
-                    <div class="text-xs text-emerald fw-semibold">${group.totalCount} টি ইন-স্টক প্রোডাক্ট (স্লাইডার ভিউ)</div>
+                    <div class="text-xs text-emerald fw-semibold">${group.totalCount} টি প্রোডাক্ট (স্লাইডার ভিউ)</div>
                   </div>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                   <a href="#/products?category=${encodeURIComponent(group.categoryName)}" class="btn btn-sm btn-outline-success text-nowrap">
-                    See all (${group.totalCount}) <i class="bi bi-arrow-right ms-1"></i>
+                    সকল পণ্য (${group.totalCount}) <i class="bi bi-arrow-right ms-1"></i>
                   </a>
                 </div>
               </div>
 
-              <!-- 12 pcs Interactive Product Slider with Prev/Next Controls (Requirement 4) -->
+              <!-- Product Slider with Prev/Next Controls -->
               <div class="category-slider-wrapper position-relative">
                 <button class="slider-nav-btn prev" onclick="PAGES.scrollSlider('cat-slider-${idx}', -320)" title="পূর্ববর্তী">
                   <i class="bi bi-chevron-left"></i>
@@ -164,6 +177,24 @@ const PAGES = {
 
             </div>
           `).join('')}
+        </section>
+
+        <!-- All Products Direct Grid Section on Home Page -->
+        <section class="all-products-home-section my-5">
+          <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-slate-800">
+            <div>
+              <h3 class="fw-bold mb-0 text-white"><i class="bi bi-grid-3x3-gap-fill text-emerald me-2"></i>সকল প্রোডাক্ট (গুগল সীট থেকে লাইভ)</h3>
+              <p class="text-muted text-xs mb-0">আমাদের স্টোরের সকল ক্যাটাগরির পণ্য এক নজরে</p>
+            </div>
+            <a href="#/products" class="btn btn-sm btn-emerald fw-bold">প্রোডাক্ট পেজে যান <i class="bi bi-arrow-right ms-1"></i></a>
+          </div>
+          <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
+            ${allProducts.map(p => `
+              <div class="col">
+                ${COMPONENTS.renderProductCard(p)}
+              </div>
+            `).join('')}
+          </div>
         </section>
 
         <!-- Wholesale Call to Action Banner -->
@@ -221,7 +252,7 @@ const PAGES = {
     const activeSub = queryParams.subCategory || '';
     const activeChild = queryParams.childCategory || '';
     const activeBrand = queryParams.brand || 'all';
-    const activeStock = queryParams.stock || 'in_stock'; // Requirement 5: in_stock by default
+    const activeStock = queryParams.stock || 'all'; // Default: All products from Google Sheet
     const minPrice = queryParams.minPrice || '';
     const maxPrice = queryParams.maxPrice || '';
     const search = queryParams.search || '';

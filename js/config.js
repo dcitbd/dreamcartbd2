@@ -1,5 +1,5 @@
 /**
- * DREAM CART BD — GLOBAL CONFIGURATION (UPDATED)
+ * DREAM CART BD — GLOBAL CONFIGURATION
  * Google Sheet ID: 1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g
  */
 const CONFIG = {
@@ -63,10 +63,10 @@ const CONFIG = {
     }
   },
   
-  // Official Google Spreadsheet ID
+  // Official Google Spreadsheet ID from Requirement 14
   spreadsheetId: '1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g',
   
-  // Google Drive Storage Folders
+  // Google Drive Storage Folders from Requirement 15
   driveFolders: {
     products: 'https://drive.google.com/drive/folders/1q8rfxni24t6q17wX-82ozjpbVXXR_ntG?usp=drive_link',
     productsId: '1q8rfxni24t6q17wX-82ozjpbVXXR_ntG',
@@ -78,7 +78,7 @@ const CONFIG = {
     settingsId: '1gF0RhJFX-JD4e8vZw2yx2SJ6zD5mf2Vd'
   },
   
-  // Other Marketplace Links
+  // Other Marketplace Links from Requirement 13
   marketplaces: [
     { name: 'WhatsApp ক্যাটালগ', url: 'https://wa.me/c/8801581703822', icon: 'bi-whatsapp', color: '#25D366' },
     { name: 'Facebook পেজ', url: 'https://www.facebook.com/dreamcartbd1', icon: 'bi-facebook', color: '#1877F2' },
@@ -94,10 +94,8 @@ const CONFIG = {
     { name: 'DitchIt অ্যাডভার্টাইজার', url: 'https://ditchit.com/advertiser/jainal-abedin-59224946', icon: 'bi-megaphone', color: '#ec4899' }
   ],
   
-  // Google Sheets Visualization API Endpoints for Live Browser Syncing
+  // Direct Google Sheets Visualization API for Instant Live Browser Syncing
   sheetGvizUrl: 'https://docs.google.com/spreadsheets/d/1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g/gviz/tq?tqx=out:json&sheet=Products',
-  sheetGvizFirstTabUrl: 'https://docs.google.com/spreadsheets/d/1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g/gviz/tq?tqx=out:json',
-  sheetCsvUrl: 'https://docs.google.com/spreadsheets/d/1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g/export?format=csv&gid=0',
   
   // Google Apps Script Web App Deployment URL
   apiBaseUrl: 'https://script.google.com/macros/s/AKfycbznjGoCkjC-4u-KUkm-yaxDKYpUnWvxjXUqjZDP6vZCvQnwfQlupl4_HODMv1oC7CJt/exec',

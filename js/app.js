@@ -36,6 +36,20 @@ const APP = {
     STORE.on('auth_changed', () => this.updateNavbar());
     STORE.on('theme_changed', () => this.updateNavbar());
 
+    // Auto re-render when live products are loaded from Google Sheet
+    window.addEventListener('dcbd_products_synced', () => {
+      const hash = window.location.hash || '';
+      if (!hash || hash === '#/' || hash.startsWith('#/products') || hash.startsWith('#/admin')) {
+        console.log('[App Router] Live Google Sheet products updated, refreshing current view...');
+        this.route();
+      }
+    });
+
+    // Proactively fetch live sheet products
+    if (typeof API !== 'undefined' && API.fetchLiveSheetData) {
+      API.fetchLiveSheetData().catch(() => {});
+    }
+
     // 6. Setup Hash Routing
     window.addEventListener('hashchange', () => this.route());
     await this.route();
@@ -242,17 +256,9 @@ const APP = {
       else if (path === '#/privacy' || path === '#/privecy') {
         content.innerHTML = PAGES.renderPrivacy();
       }
-      // 8b. Generic Login redirect
-      else if (path === '#/login') {
-        content.innerHTML = PAGES.renderCustomerLogin();
-      }
       // 14. Admin Login (Developer background, eye toggle, captcha)
       else if (path === '#/admin/login') {
-        if (typeof ADMIN !== 'undefined' && typeof ADMIN.renderLogin === 'function') {
-          content.innerHTML = ADMIN.renderLogin();
-        } else {
-          content.innerHTML = '<div class="alert alert-warning my-5 text-center">এডমিন মডিউল লোড হচ্ছে... অনুগ্রহ করে রিলোড দিন।</div>';
-        }
+        content.innerHTML = ADMIN.renderLogin();
       }
       // 15. Admin Dashboard (Route guarded by sessionStorage)
       else if (path === '#/admin/dashboard' || path.startsWith('#/admin')) {
@@ -261,15 +267,6 @@ const APP = {
           STORE.toast('error', 'লগইন আবশ্যক!', 'এডমিন প্যানেলে প্রবেশ করতে প্রথমে লগইন করুন।');
           window.location.hash = '#/admin/login';
           return;
-        }
-        if (path === '#/admin/products' || (window.location.pathname || '').toLowerCase().includes('product')) {
-          ADMIN.currentTab = 'products';
-        } else if (path === '#/admin/orders' || (window.location.pathname || '').toLowerCase().includes('order')) {
-          ADMIN.currentTab = 'orders';
-        } else if (path === '#/admin/brands' || (window.location.pathname || '').toLowerCase().includes('brand')) {
-          ADMIN.currentTab = 'brands';
-        } else if (path === '#/admin/categories' || (window.location.pathname || '').toLowerCase().includes('categor')) {
-          ADMIN.currentTab = 'categories_tree';
         }
         content.innerHTML = await ADMIN.renderPortal();
       }

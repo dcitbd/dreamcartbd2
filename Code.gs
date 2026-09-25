@@ -42,9 +42,28 @@ const SHEETS = {
 };
 
 function doGet(e) {
-  const action = (e && e.parameter && e.parameter.action) || 'products/list';
-  const response = handleAction(action, e ? e.parameter : {});
-  return ContentService.createTextOutput(JSON.stringify(response))
+  var action = (e && e.parameter && e.parameter.action) || 'products/list';
+  var payload = {};
+  if (e && e.parameter) {
+    if (e.parameter.payload) {
+      try {
+        payload = JSON.parse(e.parameter.payload);
+      } catch (err) {
+        payload = e.parameter;
+      }
+    } else {
+      payload = e.parameter;
+    }
+  }
+  var response = handleAction(action, payload);
+  var jsonString = JSON.stringify(response);
+
+  // JSONP support for cross-domain browser requests without CORS blocking
+  if (e && e.parameter && e.parameter.callback) {
+    return ContentService.createTextOutput(e.parameter.callback + '(' + jsonString + ')')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(jsonString)
     .setMimeType(ContentService.MimeType.JSON);
 }
 
