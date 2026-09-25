@@ -42,29 +42,42 @@ const SHEETS = {
 };
 
 function doGet(e) {
-  var action = (e && e.parameter && e.parameter.action) || 'products/list';
-  var payload = {};
-  if (e && e.parameter) {
-    if (e.parameter.payload) {
-      try {
-        payload = JSON.parse(e.parameter.payload);
-      } catch (err) {
+  try {
+    var action = (e && e.parameter && e.parameter.action) || 'products/list';
+    var payload = {};
+    if (e && e.parameter) {
+      if (e.parameter.payload) {
+        try {
+          payload = JSON.parse(e.parameter.payload);
+        } catch (err) {
+          payload = e.parameter;
+        }
+      } else {
         payload = e.parameter;
       }
-    } else {
-      payload = e.parameter;
     }
-  }
-  var response = handleAction(action, payload);
-  var jsonString = JSON.stringify(response);
+    var response = handleAction(action, payload);
+    var jsonString = JSON.stringify(response);
 
-  // JSONP support for cross-domain browser requests without CORS blocking
-  if (e && e.parameter && e.parameter.callback) {
-    return ContentService.createTextOutput(e.parameter.callback + '(' + jsonString + ')')
-      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    // JSONP support for cross-domain browser requests without CORS blocking
+    if (e && e.parameter && e.parameter.callback) {
+      var callbackName = String(e.parameter.callback).replace(/[^a-zA-Z0-9_$.]/g, '');
+      return ContentService.createTextOutput(callbackName + '(' + jsonString + ')')
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+    return ContentService.createTextOutput(jsonString)
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    var errObj = { success: false, error: err.toString() };
+    var errString = JSON.stringify(errObj);
+    if (e && e.parameter && e.parameter.callback) {
+      var cb = String(e.parameter.callback).replace(/[^a-zA-Z0-9_$.]/g, '');
+      return ContentService.createTextOutput(cb + '(' + errString + ')')
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+    return ContentService.createTextOutput(errString)
+      .setMimeType(ContentService.MimeType.JSON);
   }
-  return ContentService.createTextOutput(jsonString)
-    .setMimeType(ContentService.MimeType.JSON);
 }
 
 function doPost(e) {
@@ -86,7 +99,17 @@ function doPost(e) {
 }
 
 function getOrCreateSheet(ss, sheetName, headers) {
+  if (!ss) return null;
   let sheet = ss.getSheetByName(sheetName);
+  if (!sheet) {
+    var allSheets = ss.getSheets();
+    for (var i = 0; i < allSheets.length; i++) {
+      if (allSheets[i].getName().trim().toLowerCase() === sheetName.trim().toLowerCase()) {
+        sheet = allSheets[i];
+        break;
+      }
+    }
+  }
   if (!sheet) {
     sheet = ss.insertSheet(sheetName);
     if (headers && headers.length > 0) {
@@ -98,7 +121,22 @@ function getOrCreateSheet(ss, sheetName, headers) {
 }
 
 function handleAction(action, payload) {
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  let ss = null;
+  try {
+    if (SPREADSHEET_ID && SPREADSHEET_ID.trim() !== '') {
+      ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    }
+  } catch (e) {
+    console.warn('Could not open spreadsheet by ID: ' + e);
+  }
+  if (!ss) {
+    try {
+      ss = SpreadsheetApp.getActiveSpreadsheet();
+    } catch (e) {}
+  }
+  if (!ss) {
+    return { success: false, error: 'Cannot access Spreadsheet. Please check SPREADSHEET_ID.' };
+  }
 
   switch (action) {
     // -------------------------------------------------------------
@@ -134,40 +172,92 @@ function handleAction(action, payload) {
         "Brand", "Buying Price", "Selling Price", "Stock", "Original Price",
         "Wholesale Price", "Min Order Qty", "Images", "Description", "Specification", "Others", "Color", "Size"
       ]);
-      const data = sheet.getDataRange().getValues();
-      if (data.length <= 1) return { success: true, data: { items: [], total: 0 } };
+      if (!sheet) return { success: true, data: { items: [], total: 0 } };
+
+      const lastRow = sheet.getLastRow();
+      if (lastRow <= 1) return { success: true, data: { items: [], total: 0 } };
+
+      // Read only the used 18 columns (A-R) to avoid loading excess memory/redundant columns
+      const range = sheet.getRange(1, 1, lastRow, 18);
+      const data = range.getValues();
 
       const items = [];
       for (let i = 1; i < data.length; i++) {
         const row = data[i];
-        if (!row[0] && !row[1]) continue;
+        const name = String(row[1] || '').trim();
+        const rawSku = String(row[0] || '').trim();
+
+        // Skip truly blank rows
+        if (!name && !rawSku) continue;
+        if (!name) continue;
+
+        const sku = rawSku || ('DCB-' + (1000 + i));
+        const buyingPrice = parseFloat(row[6]) || 0;
+        const sellingPrice = parseFloat(row[7]) || 0;
+        const stock = parseInt(row[8], 10) || 0;
+        const originalPrice = parseFloat(row[9]) || (sellingPrice > 0 ? Math.round(sellingPrice * 1.3) : 0);
+        const wholesalePrice = parseFloat(row[10]) || (sellingPrice > 0 ? Math.round(sellingPrice * 0.85) : 0);
+        const discountPercent = (originalPrice > sellingPrice && originalPrice > 0)
+          ? Math.round(((originalPrice - sellingPrice) / originalPrice) * 100)
+          : 0;
+
+        const rawImgs = String(row[12] || '').trim();
+        const imageList = rawImgs ? rawImgs.split(',').map(s => s.trim()).filter(Boolean) : [];
+        const primaryImage = imageList[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=80';
+
         items.push({
-          id: String(row[0] || ''),
-          sku: String(row[0] || ''),
-          articleNo: String(row[0] || ''),
-          name: String(row[1] || ''),
-          category: String(row[2] || 'General'),
-          subCategory: String(row[3] || ''),
-          childCategory: String(row[4] || ''),
-          brand: String(row[5] || 'China Brand'),
-          buyingPrice: parseFloat(row[6]) || 0,
-          sellingPrice: parseFloat(row[7]) || 0,
-          stock: parseInt(row[8]) || 0,
-          originalPrice: parseFloat(row[9]) || 0,
-          wholesalePrice: parseFloat(row[10]) || 0,
-          minOrderQ: String(row[11] || '1 Pcs'),
-          primaryImage: String(row[12] || '').split(',')[0].trim(),
-          images: String(row[12] || '').split(',').map(s => s.trim()).filter(Boolean),
-          description: String(row[13] || ''),
-          specification: String(row[14] || ''),
-          others: String(row[15] || ''),
-          color: String(row[16] || 'Default'),
-          size: String(row[17] || 'Standard'),
-          inStock: (parseInt(row[8]) || 0) > 0,
+          id: sku,
+          sku: sku,
+          articleNo: sku,
+          name: name,
+          category: String(row[2] || 'General').trim(),
+          subCategory: String(row[3] || '').trim(),
+          childCategory: String(row[4] || '').trim(),
+          brand: String(row[5] || 'China Brand').trim(),
+          buyingPrice: buyingPrice,
+          sellingPrice: sellingPrice,
+          stock: stock,
+          originalPrice: originalPrice,
+          wholesalePrice: wholesalePrice,
+          minOrderQ: String(row[11] || '1 Pcs').trim(),
+          primaryImage: primaryImage,
+          images: imageList.length > 0 ? imageList : [primaryImage],
+          description: String(row[13] || '').trim(),
+          specification: String(row[14] || '').trim(),
+          others: String(row[15] || '').trim(),
+          color: String(row[16] || 'Default').trim(),
+          size: String(row[17] || 'Standard').trim(),
+          discountPercent: discountPercent,
+          inStock: stock > 0,
           status: 'active'
         });
       }
-      return { success: true, data: { items: items, total: items.length } };
+
+      let filtered = items;
+      if (payload && payload.category && payload.category !== 'all') {
+        const cat = String(payload.category).toLowerCase();
+        filtered = filtered.filter(p => p.category.toLowerCase() === cat || (p.subCategory && p.subCategory.toLowerCase() === cat));
+      }
+      if (payload && payload.search) {
+        const q = String(payload.search).toLowerCase();
+        filtered = filtered.filter(p => p.name.toLowerCase().indexOf(q) !== -1 || p.sku.toLowerCase().indexOf(q) !== -1);
+      }
+      const total = filtered.length;
+      if (payload && payload.limit && parseInt(payload.limit) > 0) {
+        const limit = parseInt(payload.limit);
+        const offset = parseInt(payload.offset) || 0;
+        filtered = filtered.slice(offset, offset + limit);
+      }
+      return { success: true, data: { items: filtered, total: total } };
+    }
+
+    case 'products/get': {
+      const targetSku = String(payload.sku || payload.id || '').trim();
+      const allRes = handleAction('products/list', {});
+      const items = (allRes.data && allRes.data.items) || [];
+      const prod = items.find(p => p.sku === targetSku || p.id === targetSku);
+      if (prod) return { success: true, data: prod };
+      return { success: false, error: 'Product not found' };
     }
 
     case 'products/add': {

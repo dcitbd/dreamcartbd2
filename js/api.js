@@ -1109,25 +1109,147 @@ const API = {
     if (this._syncPromise && !force) return this._syncPromise;
 
     this._syncPromise = (async () => {
-      console.log('[Google Sheet Sync] Checking live products from Google Sheet & Apps Script...');
+      console.log('[Google Sheet & Apps Script Sync] Fetching all live products...');
 
-      // Method 1: Google Sheet Direct GViz Query with manual redirect protection
-      const sheetGvizUrl = CONFIG.sheetGvizUrl;
-      let isSheetPrivate = false;
-
-      if (sheetGvizUrl) {
+      // -------------------------------------------------------------
+      // Channel 1: Google Apps Script Web App JSONP (Zero CORS Restrictions)
+      // -------------------------------------------------------------
+      if (CONFIG.apiBaseUrl) {
         try {
-          // Use redirect: 'manual' to catch Google Account Login redirect without throwing CORS error
-          const res = await Promise.race([
-            fetch(sheetGvizUrl, { redirect: 'manual' }),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000))
-          ]);
+          const gasResult = await new Promise((resolve, reject) => {
+            const cbName = '__dcbd_gas_cb_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+            const script = document.createElement('script');
+            const timer = setTimeout(() => {
+              cleanup();
+              reject(new Error('Apps Script JSONP Timeout'));
+            }, 7000);
 
-          // If redirected to login, sheet is private (Restricted)
-          if (res.type === 'opaqueredirect' || res.status === 0 || (res.status >= 300 && res.status < 400)) {
-            isSheetPrivate = true;
-            console.warn('[Google Sheet Notice] Google Sheet is currently Restricted/Private. Falling back to Google Apps Script Web App...');
-          } else if (res.ok && res.status === 200) {
+            function cleanup() {
+              clearTimeout(timer);
+              delete window[cbName];
+              if (script.parentNode) script.parentNode.removeChild(script);
+            }
+
+            window[cbName] = (res) => {
+              cleanup();
+              resolve(res);
+            };
+
+            script.onerror = (err) => {
+              cleanup();
+              reject(new Error('Apps Script Script Load Error'));
+            };
+
+            const sep = CONFIG.apiBaseUrl.includes('?') ? '&' : '?';
+            script.src = CONFIG.apiBaseUrl + sep + 'action=products/list&callback=' + cbName + '&_t=' + Date.now();
+            document.head.appendChild(script);
+          });
+
+          if (gasResult && gasResult.success && gasResult.data && Array.isArray(gasResult.data.items) && gasResult.data.items.length > 0) {
+            const items = gasResult.data.items;
+            this.setStorage(this.STORAGE_KEYS.PRODUCTS, items);
+            this._sheetLoaded = true;
+            console.log('[Apps Script Live Sync] Successfully loaded ' + items.length + ' products via Web App.');
+            window.dispatchEvent(new CustomEvent('dcbd_products_synced', { detail: items }));
+            return true;
+          }
+        } catch (e) {
+          console.warn('[Apps Script Live Sync Notice]:', e.message);
+        }
+      }
+
+      // -------------------------------------------------------------
+      // Channel 2: Google Apps Script Direct Fetch (CORS)
+      // -------------------------------------------------------------
+      if (CONFIG.apiBaseUrl) {
+        try {
+          const sep = CONFIG.apiBaseUrl.includes('?') ? '&' : '?';
+          const apiRes = await Promise.race([
+            fetch(CONFIG.apiBaseUrl + sep + 'action=products/list&_t=' + Date.now()),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Apps Script Fetch Timeout')), 6000))
+          ]);
+          if (apiRes.ok) {
+            const result = await apiRes.json();
+            if (result && result.success && result.data && Array.isArray(result.data.items) && result.data.items.length > 0) {
+              const items = result.data.items;
+              this.setStorage(this.STORAGE_KEYS.PRODUCTS, items);
+              this._sheetLoaded = true;
+              console.log('[Apps Script Live Fetch] Successfully loaded ' + items.length + ' products via Web App.');
+              window.dispatchEvent(new CustomEvent('dcbd_products_synced', { detail: items }));
+              return true;
+            }
+          }
+        } catch (e) {
+          console.warn('[Apps Script Fetch Notice]:', e.message);
+        }
+      }
+
+      // -------------------------------------------------------------
+      // Channel 3: Google Sheet Direct GViz Query via JSONP (Zero CORS)
+      // -------------------------------------------------------------
+      const sheetId = CONFIG.spreadsheetId || '1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g';
+      if (sheetId) {
+        try {
+          const gvizResult = await new Promise((resolve, reject) => {
+            const cbName = '__dcbd_gviz_cb_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+            const script = document.createElement('script');
+            const timer = setTimeout(() => {
+              cleanup();
+              reject(new Error('Google Sheet GViz JSONP Timeout'));
+            }, 6000);
+
+            function cleanup() {
+              clearTimeout(timer);
+              delete window[cbName];
+              if (script.parentNode) script.parentNode.removeChild(script);
+            }
+
+            window[cbName] = (json) => {
+              cleanup();
+              resolve(json);
+            };
+
+            script.onerror = (err) => {
+              cleanup();
+              reject(new Error('GViz Script Load Error'));
+            };
+
+            script.src = 'https://docs.google.com/spreadsheets/d/' + sheetId + '/gviz/tq?tqx=responseHandler:' + cbName + '&sheet=Products&_t=' + Date.now();
+            document.head.appendChild(script);
+          });
+
+          if (gvizResult && gvizResult.table && gvizResult.table.rows && gvizResult.table.rows.length > 0) {
+            const sheetProducts = [];
+            gvizResult.table.rows.forEach((r, idx) => {
+              const rawCells = (r.c || []).map(cell => (cell ? (cell.v !== null && cell.v !== undefined ? cell.v : '') : ''));
+              const p = this.rowToProduct(rawCells, idx);
+              if (p && p.name && p.name.trim() !== '') {
+                sheetProducts.push(p);
+              }
+            });
+            if (sheetProducts.length > 0) {
+              this.setStorage(this.STORAGE_KEYS.PRODUCTS, sheetProducts);
+              this._sheetLoaded = true;
+              console.log('[Google Sheet GViz JSONP] Successfully loaded ' + sheetProducts.length + ' products directly from Sheet.');
+              window.dispatchEvent(new CustomEvent('dcbd_products_synced', { detail: sheetProducts }));
+              return true;
+            }
+          }
+        } catch (e) {
+          console.warn('[Google Sheet GViz JSONP Notice]:', e.message);
+        }
+      }
+
+      // -------------------------------------------------------------
+      // Channel 4: Google Sheet Direct Fetch (GViz URL)
+      // -------------------------------------------------------------
+      if (CONFIG.sheetGvizUrl) {
+        try {
+          const res = await Promise.race([
+            fetch(CONFIG.sheetGvizUrl + '&_t=' + Date.now()),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('GViz Fetch Timeout')), 5000))
+          ]);
+          if (res.ok && res.status === 200) {
             const text = await res.text();
             const match = text.match(/google\.visualization\.Query\.setResponse\((.+)\);/s);
             if (match && match[1]) {
@@ -1145,7 +1267,7 @@ const API = {
                 if (sheetProducts.length > 0) {
                   this.setStorage(this.STORAGE_KEYS.PRODUCTS, sheetProducts);
                   this._sheetLoaded = true;
-                  console.log(`[Google Sheet GViz] Successfully loaded ${sheetProducts.length} products directly from Sheet.`);
+                  console.log('[Google Sheet GViz Fetch] Successfully loaded ' + sheetProducts.length + ' products directly from Sheet.');
                   window.dispatchEvent(new CustomEvent('dcbd_products_synced', { detail: sheetProducts }));
                   return true;
                 }
@@ -1153,35 +1275,12 @@ const API = {
             }
           }
         } catch (e) {
-          console.warn('[Google Sheet GViz Notice]:', e.message);
+          console.warn('[Google Sheet GViz Direct Fetch Notice]:', e.message);
         }
       }
 
-      // Method 2: Google Apps Script Web App API (Runs as Owner, can read private sheets)
-      if (CONFIG.apiBaseUrl) {
-        // 2A: Direct fetch to Apps Script
-        try {
-          const apiRes = await Promise.race([
-            fetch(`${CONFIG.apiBaseUrl}?action=products/list`),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 8000))
-          ]);
-          if (apiRes.ok) {
-            const result = await apiRes.json();
-            if (result && result.success && result.data && Array.isArray(result.data.items) && result.data.items.length > 0) {
-              this.setStorage(this.STORAGE_KEYS.PRODUCTS, result.data.items);
-              this._sheetLoaded = true;
-              console.log(`[Apps Script Live] Successfully loaded ${result.data.items.length} products via Web App.`);
-              window.dispatchEvent(new CustomEvent('dcbd_products_synced', { detail: result.data.items }));
-              return true;
-            }
-          }
-        } catch (e) {
-          console.warn('[Apps Script Fetch Notice]:', e.message);
-        }
-      }
-
-      // Method 3: Safe Operating Fallback from cached sheet products
-      console.log(`[Products Fallback] Operating safely with ${this.SEED_PRODUCTS.length} cached sheet products.`);
+      // Fallback
+      console.log('[Products Fallback] Operating with ' + this.SEED_PRODUCTS.length + ' cached sheet products.');
       return false;
     })();
 
@@ -1411,11 +1510,13 @@ const API = {
   async call(action, payload = {}) {
     this.initSeedData();
     if (action === 'products/list' && !this._sheetLoaded) {
-      // Attempt live sync from sheet with short timeout
+      // If we only have seed/fallback data, wait up to 5000ms for live sync to finish
+      const cached = this.getStorage(this.STORAGE_KEYS.PRODUCTS, []);
+      const timeout = (cached && cached.length > 33) ? 1200 : 5000;
       try {
         await Promise.race([
           this.fetchLiveSheetData(),
-          new Promise(r => setTimeout(r, 2000))
+          new Promise(r => setTimeout(r, timeout))
         ]);
       } catch (e) {}
     }
