@@ -876,3 +876,201 @@ input[type="number"], input[type="email"], select {
     display: none !important;
   }
 }
+
+
+/* ===================================================================
+ * ADVANCED TRACKING STEPPER & TIMELINE (Requirement 9)
+ * =================================================================== */
+.tracking-timeline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin: 30px 0;
+  padding: 0 10px;
+}
+.tracking-timeline::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  left: 40px;
+  right: 40px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  z-index: 1;
+}
+.step-item {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  flex: 1;
+}
+.step-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #1e293b;
+  border: 3px solid #334155;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px auto;
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+.step-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  transition: all 0.3s ease;
+}
+.step-item.active .step-icon {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: #34d399;
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.6);
+  transform: scale(1.1);
+}
+.step-item.active .step-text {
+  color: #34d399;
+  font-weight: 700;
+}
+
+/* ===================================================================
+ * SCROLL REVEAL & PRODUCT HOVER ANIMATIONS (Requirement 2 & Visual)
+ * =================================================================== */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.product-card {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  background: rgba(15, 23, 42, 0.75) !important;
+  border: 1px solid rgba(51, 65, 85, 0.7) !important;
+  backdrop-filter: blur(12px);
+}
+.product-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(16, 185, 129, 0.6) !important;
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.7), 0 0 20px rgba(16, 185, 129, 0.25) !important;
+}
+.product-card .card-img-top, .product-card img {
+  transition: transform 0.4s ease;
+}
+.product-card:hover .card-img-top, .product-card:hover img {
+  transform: scale(1.05);
+}
+
+/* POS Search Dropdown Results */
+.pos-search-dropdown {
+  background: #0f172a !important;
+  border: 1px solid #334155 !important;
+}
+.pos-search-item {
+  transition: background 0.15s ease;
+}
+.pos-search-item:hover {
+  background: rgba(30, 41, 59, 0.9) !important;
+}
+
+/* Admin Sidebar Multi-level Menu */
+.admin-sidebar {
+  background: #070d1e !important;
+}
+.admin-menu-header {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  padding-left: 8px;
+}
+.admin-sub-link {
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: #94a3b8;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+.admin-sub-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+.admin-sub-link.active {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.15);
+  font-weight: 700;
+  border-left: 3px solid #10b981;
+}
+
+/* ===================================================================
+ * COMPREHENSIVE PRINT STYLES (Order List & Vouchers - Requirement 9)
+ * =================================================================== */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 12pt !important;
+  }
+  .site-header-wrapper, 
+  .main-navbar, 
+  .top-announcement-bar,
+  .main-footer, 
+  .floating-quick-contacts, 
+  .mobile-drawer, 
+  .admin-sidebar, 
+  .btn-print-hide, 
+  button, 
+  .btn,
+  .toast-container {
+    display: none !important;
+  }
+  .admin-main-content, main, #main-content {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .card {
+    border: 1px solid #cccccc !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+  }
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    color: #000000 !important;
+  }
+  th, td {
+    border: 1px solid #333333 !important;
+    padding: 6px 8px !important;
+    color: #000000 !important;
+    background: #ffffff !important;
+  }
+  th {
+    background: #f1f5f9 !important;
+    font-weight: bold !important;
+  }
+  .badge {
+    border: 1px solid #000000 !important;
+    color: #000000 !important;
+    background: transparent !important;
+  }
+  #printable-voucher-card, #printable-voucher-card * {
+    visibility: visible !important;
+    color: #000000 !important;
+  }
+}

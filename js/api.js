@@ -7,7 +7,7 @@
  */
 
 const API = {
-  STORAGE_KEYS: {
+    STORAGE_KEYS: {
     PRODUCTS: 'dcbd_products_cache',
     CATEGORIES: 'dcbd_categories_cache',
     ORDERS: 'dcbd_orders_cache',
@@ -20,7 +20,8 @@ const API = {
     COSTS: 'dcbd_costs_cache',
     BRANDS: 'dcbd_brands_cache',
     BANNERS: 'dcbd_banners_cache',
-    REVIEWS: 'dcbd_reviews_cache'
+    REVIEWS: 'dcbd_reviews_cache',
+    SETTINGS: 'dcbd_settings_cache'
   },
 
   // Exact 33 products directly from the user's Google Sheet
@@ -41,9 +42,9 @@ const API = {
     "wholesalePrice": 123.0,
     "minOrderQ": "10  Pcs",
     "images": [
-      "https://img.drz.lazcdn.com/g/kf/S4ab09cc5364240ea8034e02f35e7c13dJ.jpg\\_720x720q80.jpg"
+      "https://img.drz.lazcdn.com/g/kf/S4ab09cc5364240ea8034e02f35e7c13dJ.jpg\_720x720q80.jpg"
     ],
-    "primaryImage": "https://img.drz.lazcdn.com/g/kf/S4ab09cc5364240ea8034e02f35e7c13dJ.jpg\\_720x720q80.jpg",
+    "primaryImage": "https://img.drz.lazcdn.com/g/kf/S4ab09cc5364240ea8034e02f35e7c13dJ.jpg\_720x720q80.jpg",
     "description": "Dream Cart BD-তে নিয়ে এলো আধুনিক ও স্টাইলিশ Smart Stainless Steel Multifunctional Ring for Couple Mood Feeling Intelligent Temperature Sensitive Rings Waterproof Jewelry। এটি সাধারণ কোনো আংটি নয়, বরং একটি স্মার্ট ও মাল্টিফাংশনাল টেম্পারেচার সেনসিটিভ...",
     "specification": "১. পণ্যের নাম (Product Name): Smart Stainless Steel Multifunctional Ring for Couple ২. পণ্যের ধরন (Product Type): Smart Ring / Temperature Sensitive Ring / Waterproof Jewelry ৩. ম্যাটেরিয়াল...",
     "others": "অন্যান্য তথ্য (Other Information):  কেন Dream Cart BD থেকে এই স্মার্ট কাপল রিং ক্রয় করবেন?  - প্রিমিয়াম কোয়ালিটি ও সঠিক মান নিয়ন্ত্রণ: প্রতিটি Smart Stainless Steel Coupl...",
@@ -69,9 +70,9 @@ const API = {
     "wholesalePrice": 353.0,
     "minOrderQ": "10  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_003020\\_8bf8448e-404f-4530-b52b-4700c4ee6a2a.jpg"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\_003020\_8bf8448e-404f-4530-b52b-4700c4ee6a2a.jpg"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_003020\\_8bf8448e-404f-4530-b52b-4700c4ee6a2a.jpg",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\_003020\_8bf8448e-404f-4530-b52b-4700c4ee6a2a.jpg",
     "description": "Dream Cart BD নিয়ে এলো অত্যন্ত আকর্ষণীয় এবং ট্রেন্ডি Pretty 925 Sterling Silver Snowflake Crystal Zircon Ear Clips Without Piercing for Women Girls Wedding Party Trendy Jewelry Gift। যাদের কান ফোঁড়ানো নেই, তাদের জন্য এই ইয়ার ক্লিপটি একটি পারফেক্ট ফ্...",
     "specification": "১. পণ্যের নাম (Product Name): Pretty 925 Sterling Silver Snowflake Crystal Zircon Ear Clips Without Piercing ২. পণ্যের ধরন (Product Type): Ear Clips / Non-Pierced Earrings / Jewelry ৩. ম্যাট...",
     "others": "অন্যান্য তথ্য (Other Information):  কেন Dream Cart BD থেকে এই 925 Sterling Silver Snowflake Crystal Zircon Ear Clips ক্রয় করবেন?  - প্রিমিয়াম কোয়ালিটি ও সঠিক মান নিয়ন্ত্র...",
@@ -97,10 +98,10 @@ const API = {
     "wholesalePrice": 765.0,
     "minOrderQ": "5  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_002701\\_429597a1-c660-4f25-acb2-00f32662c451.jpg",
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_002701\\_7695bd5c-caf7-4341-b7ae-4d411ccc7392.png"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\_002701\_429597a1-c660-4f25-acb2-00f32662c451.jpg",
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\_002701\_7695bd5c-caf7-4341-b7ae-4d411ccc7392.png"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_002701\\_429597a1-c660-4f25-acb2-00f32662c451.jpg",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\_002701\_429597a1-c660-4f25-acb2-00f32662c451.jpg",
     "description": "Dream Cart BD-তে নিয়ে এলো মহিলাদের জন্য আকর্ষণীয় ও প্রিমিয়াম ডিজাইনের 925 Sterling Silver Heart Zircon Jewelry Set for Women Adjustable Ring Necklace Earrings Bridal Wedding Gift Set। আপনি যদি নিজের জন্য কিংবা প্রিয়জনকে উপহার দেওয়ার জন্য সুন্দর একটি...",
     "specification": "১. পণ্যের নাম (Product Name): 925 Sterling Silver Heart Zircon Jewelry Set for Women ২. পণ্যের ধরন (Product Type): Jewelry Set / Necklace, Earrings & Ring Set ৩. ম্যাটেরিয়াল (Material): 925...",
     "others": "অন্যান্য তথ্য (Other Information):  কেন Dream Cart BD থেকে এই 925 Sterling Silver Heart Zircon Jewelry Set ক্রয় করবেন?  - প্রিমিয়াম কোয়ালিটি ও সঠিক মান নিয়ন্ত্রণ: প্রতিটি...",
@@ -154,9 +155,9 @@ const API = {
     "wholesalePrice": 215.0,
     "minOrderQ": "10  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_002018\\_4b511ffe-493b-4327-b3af-b1de22dbd1d8.png"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\_002018\_4b511ffe-493b-4327-b3af-b1de22dbd1d8.png"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_002018\\_4b511ffe-493b-4327-b3af-b1de22dbd1d8.png",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\_002018\_4b511ffe-493b-4327-b3af-b1de22dbd1d8.png",
     "description": "Dream Cart BD-তে নিয়ে এলো মহিলাদের জন্য অত্যন্ত আকর্ষণীয় ও ট্রেন্ডি New Wine SILVER Cherry Gold Color Pendant Necklace For Women Personality Fashion Necklace Wedding Jewelry Birthday Gifts। অনন্য ডিজাইনের এই পেন্ডেন্ট নেকলেসটি আপনার যেকোনো লুকে যোগ ক...",
     "specification": "১. পণ্যের নাম (Product Name): New Wine SILVER Cherry Gold Color Pendant Necklace For Women ২. পণ্যের ধরন (Product Type): Pendant Necklace / Fashion Jewelry / Wedding Jewelry ৩. কালার (Color)...",
     "others": "অন্যান্য তথ্য (Other Information):  কেন Dream Cart BD থেকে এই New Wine SILVER Cherry Gold Color Pendant Necklace ফর উইমেন ক্রয় করবেন?  ১. প্রিমিয়াম কোয়ালিটি ও সঠিক মান নি...",
@@ -238,9 +239,9 @@ const API = {
     "wholesalePrice": 175.0,
     "minOrderQ": "10  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_001029\\_d9fe6c61-e06d-4012-97b4-490221b5110c.png"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\_001029\_d9fe6c61-e06d-4012-97b4-490221b5110c.png"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_001029\\_d9fe6c61-e06d-4012-97b4-490221b5110c.png",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\_001029\_d9fe6c61-e06d-4012-97b4-490221b5110c.png",
     "description": "Dream Cart BD-তে নিয়ে এলো শারীরিক ক্লান্তি ও পেশির টান দূর করার দারুণ সমাধান Mini Massage Stick Roller – Body Muscle Relax Tool। এটি একটি কার্যকর Handheld Leg, Neck & Back Pain Relief Massager, যা শরীরের বিভিন্ন অংশের পেশি রিল্যাক্স করতে এবং রক্ত সঞ্...",
     "specification": "১. পণ্যের নাম (Product Name): Mini Massage Stick Roller – Body Muscle Relax Tool ",
     "others": "Handheld Leg, Neck & Back Pain Relief Massager ",
@@ -378,9 +379,9 @@ const API = {
     "wholesalePrice": 163.0,
     "minOrderQ": "10  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\\_235210\\_313b2f58-643f-45c6-b39f-73d38b399da9.jpg"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\_235210\_313b2f58-643f-45c6-b39f-73d38b399da9.jpg"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\\_235210\\_313b2f58-643f-45c6-b39f-73d38b399da9.jpg",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\_235210\_313b2f58-643f-45c6-b39f-73d38b399da9.jpg",
     "description": "Dream Cart BD-তে নিয়ে এলো রান্নার খরচ ও সময় বাঁচানোর এক দারুণ সমাধান Gas Stove Wind Shield 8-Hole Energy Saving Rack ",
     "specification": "Universal Gas Saver Burner Cover (Made in China)। এটি একটি আধুনিক ও কার্যকর গ্যাস সেভার বার্নার কভার যা আপনার রান্নাঘরের কাজের অভিজ্ঞতাকে সহজ ও দ্রুত করবে। এই ইউনিভার্সাল ৮-হোল এনার্জি সেভিং...",
     "others": "১. পণ্যের নাম (Product Name): Gas Stove Wind Shield 8-Hole Energy Saving Rack / Universal Gas Saver Burner Cover ২. পণ্যের ধরন (Product Type): Gas Stove Wind Shield / Ene...",
@@ -490,9 +491,9 @@ const API = {
     "wholesalePrice": 438.0,
     "minOrderQ": "5  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\\_181147\\_cface467-89f2-4395-af69-0d1aa62e472d.jpg"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\_181147\_cface467-89f2-4395-af69-0d1aa62e472d.jpg"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\\_181147\\_cface467-89f2-4395-af69-0d1aa62e472d.jpg",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\_181147\_cface467-89f2-4395-af69-0d1aa62e472d.jpg",
     "description": "Dream Cart BD-তে নিয়ে এলো প্রিমিয়াম কোয়ালিটির Perfume Sweet Box Attar Combo Pack – 12 Halal Perfume Oils Gift Set for Men & Women। আপনি যদি দীর্ঘস্থায়ী এবং চমৎকার সুবাসের আতর কালেকশন খুঁজে থাকেন, তবে এই ১২টি হালাল পারফিউম অয়েলের কম্বো প্যাকটি আপনার জ...",
     "specification": "১. পণ্যের নাম (Product Name): Perfume Sweet Box Attar Combo Pack – 12 Halal Perfume Oils Gift Set for Men & Women ২. পণ্যের ধরন (Product Type): Attar Combo Pack / Perfume Oil Gift Set ৩. বিশ...",
     "others": "অন্যান্য তথ্য (Other Information):  কেন Dream Cart BD থেকে এই Perfume Sweet Box Attar Combo Pack ক্রয় করবেন?  - প্রিমিয়াম কোয়ালিটি ও মান নিয়ন্ত্রণ: প্রতিটি Attar Combo...",
@@ -518,9 +519,9 @@ const API = {
     "wholesalePrice": 94.0,
     "minOrderQ": "10  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_000643\\_5697dde4-94f7-4b84-a333-6dfa6b0c6814.jpg"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\_000643\_5697dde4-94f7-4b84-a333-6dfa6b0c6814.jpg"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\\_000643\\_5697dde4-94f7-4b84-a333-6dfa6b0c6814.jpg",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260808\_000643\_5697dde4-94f7-4b84-a333-6dfa6b0c6814.jpg",
     "description": "Dream Cart BD-তে নিয়ে এলো সম্পূর্ণ খাঁটি ও বিশুদ্ধ Grameen Honey – 100% Pure Natural Honey ",
     "specification": "Raw Organic Modhu Bangladesh ",
     "others": "Healthy & Fresh। সুস্থ ও সুন্দর জীবনের জন্য ১০০% প্রাকৃতিক মধুর পুষ্টিগুণ অপরিসীম। এটি কোনো কৃত্রিম উপাদান ছাড়া সংগৃহীত একদম র অর্গানিক মধু, যা আপনাকে দেয় খাঁটি মধুর আসল...",
@@ -546,10 +547,10 @@ const API = {
     "wholesalePrice": 150.0,
     "minOrderQ": "10  Pcs",
     "images": [
-      "https://img.drz.lazcdn.com/static/bd/p/399ecbdef27be30de4a79b3286758dcc.jpg\\_720x720q80.jpg\\_.webp",
-      "https://img.drz.lazcdn.com/static/bd/p/28d87afc955afc7a0bff01c2ad1e7750.jpg\\_720x720q80.jpg\\_.webp"
+      "https://img.drz.lazcdn.com/static/bd/p/399ecbdef27be30de4a79b3286758dcc.jpg\_720x720q80.jpg\_.webp",
+      "https://img.drz.lazcdn.com/static/bd/p/28d87afc955afc7a0bff01c2ad1e7750.jpg\_720x720q80.jpg\_.webp"
     ],
-    "primaryImage": "https://img.drz.lazcdn.com/static/bd/p/399ecbdef27be30de4a79b3286758dcc.jpg\\_720x720q80.jpg\\_.webp",
+    "primaryImage": "https://img.drz.lazcdn.com/static/bd/p/399ecbdef27be30de4a79b3286758dcc.jpg\_720x720q80.jpg\_.webp",
     "description": "Powerful Long Range LED Rechargeable Torch Light একটি high-power flashlight, যা Camping, Hiking, Security, Travel ও Emergency ব্যবহারের জন্য উপযোগী। এতে রয়েছে ৩টি Lighting Modes, যা প্রয়োজন অনুযায়ী আলোর mode পরিবর্তনের সুবিধা দেয়। Rechargeable design...",
     "specification": "Product Type: Rechargeable LED Torch Light Light Type: High-Power LED Lighting Modes: 3 Modes Power Source: Rechargeable Battery Light Range: Long Range Illumination Design: Portable & Handh...",
     "others": "কেন এই পণ্যটি বেছে নেবেন?  শক্তিশালী LED আলো অন্ধকার জায়গায় ভালো আলোকসজ্জা দিতে সহায়তা করে প্রয়োজন অনুযায়ী ব্যবহারের জন্য ৩টি লাইটিং মোড রিচার্জেবল হওয়ায় বারবার ব্যবহার ক...",
@@ -575,9 +576,9 @@ const API = {
     "wholesalePrice": 400.0,
     "minOrderQ": "5  Pcs",
     "images": [
-      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\\_201206\\_48540775-b88d-4bfa-b830-fb6e07164397.png"
+      "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\_201206\_48540775-b88d-4bfa-b830-fb6e07164397.png"
     ],
-    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\\_201206\\_48540775-b88d-4bfa-b830-fb6e07164397.png",
+    "primaryImage": "https://packly-local.s3.ap-southeast-1.amazonaws.com/media/20260807\_201206\_48540775-b88d-4bfa-b830-fb6e07164397.png",
     "description": "Dream Cart BD-তে নিয়ে এলো চমৎকার সাউন্ড কোয়ালিটির MK-D10 USB Powered 3D Sound Portable Speaker with Extra Bass। আপনি যদি আপনার কম্পিউটার, ল্যাপটপ, ডেস্কটপ কিংবা টিভির জন্য একটি শক্তিশালী ও কমপ্যাক্ট সাউন্ড সিস্টেম খুঁজে থাকেন, তবে এই 2.0 Stereo Multi...",
     "specification": "১. পণ্যের নাম (Product Name): MK-D10 USB Powered 3D Sound Portable Speaker with Extra Bass ২. মডেল (Model): MK-D10 ৩. পণ্যের ধরন (Product Type): Portable Speaker / 2.0 Stereo Multimedia Spea...",
     "others": "অন্যান্য তথ্য (Other Information):  কেন Dream Cart BD থেকে এই MK-D10 USB Powered 3D Sound Portable Speaker ক্রয় করবেন?  - প্রিমিয়াম সাউন্ড ও সেরা মান: প্রতিটি MK-D10 USB...",
@@ -1025,6 +1026,7 @@ const API = {
     return {
       id: String(row[c.A_sku] || ('PRD-' + (1000 + index))),
       sku: String(row[c.A_sku] || ('PRD-' + (1000 + index))),
+      articleNo: String(row[c.A_sku] || ('ART-' + (1000 + index))),
       name: String(row[c.B_name] || 'Unnamed Product'),
       category: cat,
       rawCategory: String(row[c.C_category] || 'General'),
@@ -1132,7 +1134,8 @@ const API = {
     // Check if cache needs reset to the clean 33 products from sheet
     const hasOldDummy = Array.isArray(prods) && prods.some(p => p.sku === 'HWT-GT4-01' || p.sku === 'TOR-5000LM-01');
     if (!Array.isArray(prods) || prods.length < 30 || hasOldDummy) {
-      this.setStorage(this.STORAGE_KEYS.PRODUCTS, this.SEED_PRODUCTS);
+      const prodsWithArticle = this.SEED_PRODUCTS.map(p => ({ ...p, articleNo: p.articleNo || p.sku }));
+      this.setStorage(this.STORAGE_KEYS.PRODUCTS, prodsWithArticle);
       console.log(`[API Init] Initialized ${this.SEED_PRODUCTS.length} sheet products.`);
     } else {
       this._memory[this.STORAGE_KEYS.PRODUCTS] = prods;
@@ -1195,10 +1198,125 @@ const API = {
         }
       ];
       this.setStorage(this.STORAGE_KEYS.ORDERS, demoOrders);
+    // 4. Seed Categories (Hierarchical with count & subcategories)
+    if (!this.getStorage(this.STORAGE_KEYS.CATEGORIES, []).length) {
+      const demoCategories = [
+        { id: 'CAT-01', name: 'Watches & Jewellery', nameBn: 'ঘড়ি ও জুয়েলারি', icon: 'bi-watch', subCategories: ['Smart Watches', 'Luxury Watches', 'Silver Jewelry', 'Couple Rings'], count: 12, status: 'Active' },
+        { id: 'CAT-02', name: 'Gadgets & Electronics', nameBn: 'গ্যাজেট ও ইলেকট্রনিক্স', icon: 'bi-laptop', subCategories: ['Smart Watch', 'Speakers', 'Audio', 'Accessories'], count: 8, status: 'Active' },
+        { id: 'CAT-03', name: 'Tools & Outdoor', nameBn: 'টুলস ও আউটডোর', icon: 'bi-flashlight', subCategories: ['LED Torches', 'Flashlights', 'Tactical Lights'], count: 5, status: 'Active' },
+        { id: 'CAT-04', name: 'Health & Beauty', nameBn: 'স্বাস্থ্য ও রূপচর্চা', icon: 'bi-heart-pulse', subCategories: ['Blood Glucose Kit', 'Attar & Perfume', 'Personal Care'], count: 4, status: 'Active' },
+        { id: 'CAT-05', name: 'Stationery & Office', nameBn: 'স্টেশনারি ও অফিস ফাইল', icon: 'bi-folder', subCategories: ['File Holders', 'Desk Organizers', 'Magazine Racks'], count: 3, status: 'Active' },
+        { id: 'CAT-06', name: 'Organic & Groceries', nameBn: 'অর্গানিক ও খাদ্যপণ্য', icon: 'bi-egg-fried', subCategories: ['Pure Honey', 'Maca Powder', 'Herbal'], count: 2, status: 'Active' },
+        { id: 'CAT-07', name: 'Fashion, Travel & Auto', nameBn: 'ফ্যাশন ও ট্রাভেল', icon: 'bi-bag-check', subCategories: ['Card Wallets', 'Travel Bags', 'Accessories'], count: 2, status: 'Active' },
+        { id: 'CAT-08', name: 'Home & Kitchen', nameBn: 'হোম ও কিচেন', icon: 'bi-house', subCategories: ['Kitchenware', 'Storage'], count: 2, status: 'Active' }
+      ];
+      this.setStorage(this.STORAGE_KEYS.CATEGORIES, demoCategories);
+    }
+
+    // 5. Seed Brands
+    if (!this.getStorage(this.STORAGE_KEYS.BRANDS, []).length) {
+      const demoBrands = [
+        { id: 'BRD-01', name: 'Huawei', origin: 'Global / China', logo: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=100', count: 6, status: 'Active' },
+        { id: 'BRD-02', name: 'OnePlus', origin: 'Global', logo: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100', count: 4, status: 'Active' },
+        { id: 'BRD-03', name: 'Amazfit', origin: 'Global', logo: 'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=100', count: 5, status: 'Active' },
+        { id: 'BRD-04', name: 'Xiaomi', origin: 'China', logo: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=100', count: 7, status: 'Active' },
+        { id: 'BRD-05', name: 'Realme', origin: 'Global', logo: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100', count: 3, status: 'Active' },
+        { id: 'BRD-06', name: 'Haylou', origin: 'Global', logo: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=100', count: 4, status: 'Active' },
+        { id: 'BRD-07', name: 'QCY', origin: 'China', logo: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=100', count: 3, status: 'Active' },
+        { id: 'BRD-08', name: 'China Direct Import', origin: 'China / Dubai', logo: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=100', count: 18, status: 'Active' }
+      ];
+      this.setStorage(this.STORAGE_KEYS.BRANDS, demoBrands);
+    }
+
+    // 6. Seed Customers
+    if (!this.getStorage(this.STORAGE_KEYS.CUSTOMERS, []).length) {
+      const demoCust = [
+        { id: 'CUST-1001', name: 'আব্দুল করিম', phone: '01815592089', email: 'karim@gmail.com', address: 'কান্দিরপাড়, কুমিল্লা', totalOrders: 4, totalSpent: 6850, status: 'VIP', lastOrder: '2026-09-24' },
+        { id: 'CUST-1002', name: 'মো: কামাল হোসেন', phone: '01715879111', email: 'kamal@gmail.com', address: 'মিরপুর ১০, ঢাকা', totalOrders: 2, totalSpent: 3500, status: 'Regular', lastOrder: '2026-09-23' },
+        { id: 'CUST-1003', name: 'ফারজানা ইয়াসমিন', phone: '01912345678', email: 'farzana@yahoo.com', address: 'চকবাজার, চট্টগ্রাম', totalOrders: 1, totalSpent: 1250, status: 'New', lastOrder: '2026-09-22' },
+        { id: 'CUST-1004', name: 'তানভীর আহমেদ', phone: '01688997711', email: 'tanvir@gmail.com', address: 'উত্তরা সেক্টর ৭, ঢাকা', totalOrders: 5, totalSpent: 11400, status: 'VIP', lastOrder: '2026-09-24' }
+      ];
+      this.setStorage(this.STORAGE_KEYS.CUSTOMERS, demoCust);
+    }
+
+    // 7. Seed Wholesalers
+    if (!this.getStorage(this.STORAGE_KEYS.WHOLESALERS, []).length) {
+      const demoWs = [
+        { id: 'WS-201', shopName: 'সাগর ইলেকট্রনিক্স অ্যান্ড গ্যাজেট', ownerName: 'মো: জয়নাল আবেদীন', phone: '01581703822', email: 'sagor@dcitbd.online', district: 'কক্সবাজার (মহেশখালী)', tradeLicense: 'TR-CXB-9981', totalOrders: 8, totalSpent: 48500, status: 'Approved' },
+        { id: 'WS-202', shopName: 'কুমিল্লা ডিজিটাল মার্কেট', ownerName: 'আরিফুল ইসলাম', phone: '01819283746', email: 'arif.comilla@gmail.com', district: 'কুমিল্লা (সদর দক্ষিণ)', tradeLicense: 'TR-CUM-4412', totalOrders: 5, totalSpent: 32000, status: 'Approved' },
+        { id: 'WS-203', shopName: 'ঢাকা গ্যাজেট হাব', ownerName: 'সাইফুল ইসলাম', phone: '01711223344', email: 'saiful05333@gmail.com', district: 'ঢাকা (মিরপুর)', tradeLicense: 'TR-DHK-5521', totalOrders: 11, totalSpent: 75200, status: 'Approved' }
+      ];
+      this.setStorage(this.STORAGE_KEYS.WHOLESALERS, demoWs);
+    }
+
+    // 8. Seed Buying (ক্রয় রেকর্ড)
+    if (!this.getStorage(this.STORAGE_KEYS.BUYING, []).length) {
+      const demoBuying = [
+        { id: 'BUY-801', invoiceNo: 'INV-CH-441', supplier: 'AliExpress Direct Import Co.', productName: 'Smart Stainless Steel Couple Ring', sku: 'Chi-Ali-000001', qty: 50, unitPrice: 98, totalAmount: 4900, date: '2026-09-18', status: 'Received' },
+        { id: 'BUY-802', invoiceNo: 'INV-CH-442', supplier: 'Shenzhen Gadgets Wholesaler', productName: '925 Sterling Silver Heart Zircon Set', sku: 'Chi-Ali-000003', qty: 30, unitPrice: 320, totalAmount: 9600, date: '2026-09-20', status: 'Received' },
+        { id: 'BUY-803', invoiceNo: 'INV-BD-109', supplier: 'Medical Express Bangladesh', productName: 'WISTER Blood Glucose Monitoring System', sku: 'LM-DCB-00023', qty: 25, unitPrice: 850, totalAmount: 21250, date: '2026-09-22', status: 'Received' },
+        { id: 'BUY-804', invoiceNo: 'INV-BD-110', supplier: 'Chittagong Organic Store', productName: 'গ্রামীন খাঁটি প্রাকৃতিক মধু (১০০% পিওর)', sku: 'Chi-Ali-000010', qty: 40, unitPrice: 380, totalAmount: 15200, date: '2026-09-23', status: 'Received' }
+      ];
+      this.setStorage(this.STORAGE_KEYS.BUYING, demoBuying);
+    }
+
+    // 9. Seed Costs (ব্যবসায়িক খরচ)
+    if (!this.getStorage(this.STORAGE_KEYS.COSTS, []).length) {
+      const demoCosts = [
+        { id: 'CST-401', category: 'অফিস ও শপ ভাড়া', description: 'চৌধুরী প্লাজা, পদুয়ার বাজার শপ ভাড়া', amount: 8000, date: '2026-09-01', paidBy: 'Jainal Abedin', status: 'Paid' },
+        { id: 'CST-402', category: 'প্যাকেজিং ও বক্সিং', description: 'বাবল র্যাপ, সিকিউরিটি টেপ ও কুরিয়ার বক্স ক্রয়', amount: 2500, date: '2026-09-15', paidBy: 'J.A. Sagor', status: 'Paid' },
+        { id: 'CST-403', category: 'কুরিয়ার ও ডেলিভারি পেমেন্ট', description: 'Steadfast & RedX কুরিয়ার প্রিপেইড চার্জ', amount: 3200, date: '2026-09-20', paidBy: 'Jainal Abedin', status: 'Paid' },
+        { id: 'CST-404', category: 'মার্কেটিং ও ফেসবুক অ্যাডস', description: 'Meta Ads ক্যাম্পেইন বাজেট (সেপ্টেম্বর)', amount: 4500, date: '2026-09-22', paidBy: 'Dream Career IT', status: 'Paid' }
+      ];
+      this.setStorage(this.STORAGE_KEYS.COSTS, demoCosts);
+    }
+
+    // 10. Seed Invest (বিনিয়োগ)
+    if (!this.getStorage(this.STORAGE_KEYS.INVEST, []).length) {
+      const demoInvest = [
+        { id: 'INV-301', investorName: 'জয়নাল আবেদীন (CEO)', phone: '01581703822', amount: 150000, date: '2026-01-10', sourcePurpose: 'মূলধনী বিনিয়োগ ও চায়না সরাসরি ইমপোর্ট', shareTerms: 'কোম্পানি ওনার ইকুইটি', status: 'Active' },
+        { id: 'INV-302', investorName: 'সাইফুল ইসলাম', phone: '01818273838', amount: 100000, date: '2026-04-15', sourcePurpose: 'ইনভেন্টরি পণ্য ও কুরিয়ার অপারেশন বিস্তার', shareTerms: '২০% নিট মুনাফা বণ্টন', status: 'Active' }
+      ];
+      this.setStorage(this.STORAGE_KEYS.INVEST, demoInvest);
+    }
+
+    // 11. Seed Admin / Workers
+    if (!this.getStorage(this.STORAGE_KEYS.WORKERS, []).length) {
+      const demoWorkers = [
+        { id: 'WRK-101', name: 'Jainal Abedin (J.A. Sagor)', email: 'jainal.dcitbd@gmail.com', phone: '01581703822', role: 'Super Admin', status: 'Active', joinDate: '2026-01-01' },
+        { id: 'WRK-102', name: 'Saiful Islam', email: 'saiful05333@gmail.com', phone: '01818273838', role: 'Branch Manager', status: 'Active', joinDate: '2026-03-15' },
+        { id: 'WRK-103', name: 'Kamrul Hasan', email: 'kamrul.dcbd@gmail.com', phone: '01879653143', role: 'Order Processor', status: 'Active', joinDate: '2026-06-01' },
+        { id: 'WRK-104', name: 'Nazmul Huda', email: 'nazmul.dcbd@gmail.com', phone: '01911223344', role: 'Inventory Worker', status: 'Active', joinDate: '2026-07-20' }
+      ];
+      this.setStorage(this.STORAGE_KEYS.WORKERS, demoWorkers);
+    }
+
+    // 12. Seed Reviews
+    if (!this.getStorage(this.STORAGE_KEYS.REVIEWS, []).length) {
+      const demoReviews = [
+        { id: 'REV-501', customerName: 'মাহমুদুল হাসান', productSku: 'Chi-Ali-000001', productName: 'Smart Stainless Steel Couple Ring', rating: 5, comment: 'অসাধারণ আংটি! টেম্পারেচার অনুযায়ী রঙ পরিবর্তন চমৎকার কাজ করে। প্যাকেজিংও সুন্দর ছিল।', date: '২০২৬-০৯-২২', status: 'Approved' },
+        { id: 'REV-502', customerName: 'সুলতানা রাজিয়া', productSku: 'Chi-Ali-000002', productName: '925 Sterling Silver Snowflake Ear Clip', rating: 5, comment: 'কান ফোঁড়ানো ছাড়াই এত সুন্দর কানের দুল পরা যায় ভাবিনি! অনেক ধন্যবাদ Dream Cart BD-কে।', date: '২০২৬-০৯-২৩', status: 'Approved' },
+        { id: 'REV-503', customerName: 'মো: জাহিদ হোসেন', productSku: 'LM-DCB-00023', productName: 'WISTER Blood Glucose Monitoring System', rating: 5, comment: 'বাবার ডায়াবেটিস মাপার জন্য নিয়েছিলাম। রিডিং একদম পারফেক্ট ও দ্রুত। ১ দিনের মধ্যেই ডেলিভারি পেয়েছি।', date: '২০২৬-০৯-২৪', status: 'Approved' }
+      ];
+      this.setStorage(this.STORAGE_KEYS.REVIEWS, demoReviews);
+    }
+
     }
   },
 
-  // Master Unified Call Handler
+  // Asynchronous Background Sync to Google Apps Script Web App
+  syncToAppsScript(action, payload = {}) {
+    if (!CONFIG.apiBaseUrl) return;
+    try {
+      fetch(CONFIG.apiBaseUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, payload })
+      }).catch(err => console.warn('[Google Sheet Sync Warning]', err));
+    } catch (e) {}
+  },
+
   async call(action, payload = {}) {
     this.initSeedData();
     return this.localEngine(action, payload);
@@ -1207,6 +1325,478 @@ const API = {
   // High-Speed Local Engine with 33 Real Sheet Products
   async localEngine(action, payload) {
     switch (action) {
+      // ==============================================================
+      // 1. CATEGORIES CRUD
+      // ==============================================================
+      case 'categories/list': {
+        const cats = this.getStorage(this.STORAGE_KEYS.CATEGORIES, []);
+        return { success: true, data: { items: cats, total: cats.length } };
+      }
+      case 'categories/add': {
+        const cats = this.getStorage(this.STORAGE_KEYS.CATEGORIES, []);
+        const newCat = {
+          id: 'CAT-' + String(Date.now()).slice(-4),
+          name: payload.name || 'নতুন ক্যাটাগরি',
+          nameBn: payload.nameBn || payload.name || 'নতুন ক্যাটাগরি',
+          icon: payload.icon || 'bi-tag',
+          subCategories: Array.isArray(payload.subCategories) ? payload.subCategories : (payload.subCategories ? String(payload.subCategories).split(',').map(s=>s.trim()).filter(Boolean) : []),
+          count: parseInt(payload.count) || 0,
+          status: 'Active'
+        };
+        cats.unshift(newCat);
+        this.setStorage(this.STORAGE_KEYS.CATEGORIES, cats);
+        this.syncToAppsScript('categories/add', newCat);
+        return { success: true, data: newCat };
+      }
+      case 'categories/update': {
+        let cats = this.getStorage(this.STORAGE_KEYS.CATEGORIES, []);
+        const idx = cats.findIndex(c => c.id === payload.id || c.name === payload.id);
+        if (idx !== -1) {
+          cats[idx] = { ...cats[idx], ...payload };
+          this.setStorage(this.STORAGE_KEYS.CATEGORIES, cats);
+          this.syncToAppsScript('categories/update', cats[idx]);
+          return { success: true, data: cats[idx] };
+        }
+        return { success: false, error: 'Category not found' };
+      }
+      case 'categories/delete': {
+        let cats = this.getStorage(this.STORAGE_KEYS.CATEGORIES, []);
+        cats = cats.filter(c => c.id !== payload.id && c.name !== payload.id);
+        this.setStorage(this.STORAGE_KEYS.CATEGORIES, cats);
+        this.syncToAppsScript('categories/delete', { id: payload.id });
+        return { success: true };
+      }
+
+      // ==============================================================
+      // 2. BRANDS CRUD
+      // ==============================================================
+      case 'brands/list': {
+        const brands = this.getStorage(this.STORAGE_KEYS.BRANDS, []);
+        return { success: true, data: { items: brands, total: brands.length } };
+      }
+      case 'brands/add': {
+        const brands = this.getStorage(this.STORAGE_KEYS.BRANDS, []);
+        const newBrand = {
+          id: 'BRD-' + String(Date.now()).slice(-4),
+          name: payload.name || 'ব্র্যান্ড',
+          origin: payload.origin || 'Global',
+          logo: payload.logo || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=100',
+          count: parseInt(payload.count) || 0,
+          status: payload.status || 'Active'
+        };
+        brands.unshift(newBrand);
+        this.setStorage(this.STORAGE_KEYS.BRANDS, brands);
+        this.syncToAppsScript('brands/add', newBrand);
+        return { success: true, data: newBrand };
+      }
+      case 'brands/update': {
+        let brands = this.getStorage(this.STORAGE_KEYS.BRANDS, []);
+        const idx = brands.findIndex(b => b.id === payload.id || b.name === payload.id);
+        if (idx !== -1) {
+          brands[idx] = { ...brands[idx], ...payload };
+          this.setStorage(this.STORAGE_KEYS.BRANDS, brands);
+          this.syncToAppsScript('brands/update', brands[idx]);
+          return { success: true, data: brands[idx] };
+        }
+        return { success: false, error: 'Brand not found' };
+      }
+      case 'brands/delete': {
+        let brands = this.getStorage(this.STORAGE_KEYS.BRANDS, []);
+        brands = brands.filter(b => b.id !== payload.id && b.name !== payload.id);
+        this.setStorage(this.STORAGE_KEYS.BRANDS, brands);
+        this.syncToAppsScript('brands/delete', { id: payload.id });
+        return { success: true };
+      }
+
+      // ==============================================================
+      // 3. BANNERS CRUD
+      // ==============================================================
+      case 'banners/list': {
+        const banners = this.getStorage(this.STORAGE_KEYS.BANNERS, []);
+        return { success: true, data: banners };
+      }
+      case 'banners/add': {
+        const banners = this.getStorage(this.STORAGE_KEYS.BANNERS, []);
+        const newBanner = {
+          id: Date.now(),
+          title: payload.title || 'নতুন আকর্ষণীয় অফার',
+          subtitle: payload.subtitle || '',
+          bg: payload.bg || 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
+          badge: payload.badge || 'স্পেশাল ডিল',
+          link: payload.link || '#/products',
+          img: payload.img || payload.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500',
+          status: payload.status || 'Active'
+        };
+        banners.unshift(newBanner);
+        this.setStorage(this.STORAGE_KEYS.BANNERS, banners);
+        this.syncToAppsScript('banners/add', newBanner);
+        return { success: true, data: newBanner };
+      }
+      case 'banners/update': {
+        let banners = this.getStorage(this.STORAGE_KEYS.BANNERS, []);
+        const idx = banners.findIndex(b => b.id == payload.id);
+        if (idx !== -1) {
+          banners[idx] = { ...banners[idx], ...payload };
+          this.setStorage(this.STORAGE_KEYS.BANNERS, banners);
+          this.syncToAppsScript('banners/update', banners[idx]);
+          return { success: true, data: banners[idx] };
+        }
+        return { success: false, error: 'Banner not found' };
+      }
+      case 'banners/delete': {
+        let banners = this.getStorage(this.STORAGE_KEYS.BANNERS, []);
+        banners = banners.filter(b => b.id != payload.id);
+        this.setStorage(this.STORAGE_KEYS.BANNERS, banners);
+        this.syncToAppsScript('banners/delete', { id: payload.id });
+        return { success: true };
+      }
+
+      // ==============================================================
+      // 4. CUSTOMERS CRUD
+      // ==============================================================
+      case 'customers/list': {
+        let customers = this.getStorage(this.STORAGE_KEYS.CUSTOMERS, []);
+        // Synthesize from order list as requested in Requirement 12
+        const orders = this.getStorage(this.STORAGE_KEYS.ORDERS, []);
+        const map = new Map();
+        customers.forEach(c => map.set(c.phone, c));
+        orders.forEach(o => {
+          const ph = o.phone || o.customerPhone;
+          if (!ph) return;
+          if (!map.has(ph)) {
+            map.set(ph, {
+              id: 'CUST-' + ph.slice(-4),
+              name: o.customerName || 'সম্মানিত গ্রাহক',
+              phone: ph,
+              address: o.address || 'বাংলাদেশ',
+              totalOrders: 1,
+              totalSpent: Number(o.totalAmount) || 0,
+              status: 'Regular',
+              lastOrder: o.date || '২০২৬-০৯-২৪'
+            });
+          } else {
+            const existing = map.get(ph);
+            existing.totalOrders = (existing.totalOrders || 1) + 1;
+            existing.totalSpent = (existing.totalSpent || 0) + (Number(o.totalAmount) || 0);
+            if (existing.totalSpent > 5000 || existing.totalOrders >= 3) existing.status = 'VIP';
+          }
+        });
+        const combined = Array.from(map.values());
+        return { success: true, data: { items: combined, total: combined.length } };
+      }
+      case 'customers/add': {
+        const custs = this.getStorage(this.STORAGE_KEYS.CUSTOMERS, []);
+        const newCust = {
+          id: 'CUST-' + String(Date.now()).slice(-4),
+          name: payload.name || 'গ্রাহক',
+          phone: payload.phone || '',
+          email: payload.email || '',
+          address: payload.address || '',
+          totalOrders: parseInt(payload.totalOrders) || 0,
+          totalSpent: parseFloat(payload.totalSpent) || 0,
+          status: payload.status || 'New',
+          lastOrder: new Date().toLocaleDateString('bn-BD')
+        };
+        custs.unshift(newCust);
+        this.setStorage(this.STORAGE_KEYS.CUSTOMERS, custs);
+        this.syncToAppsScript('customers/add', newCust);
+        return { success: true, data: newCust };
+      }
+      case 'customers/update': {
+        let custs = this.getStorage(this.STORAGE_KEYS.CUSTOMERS, []);
+        const idx = custs.findIndex(c => c.id === payload.id || c.phone === payload.phone);
+        if (idx !== -1) {
+          custs[idx] = { ...custs[idx], ...payload };
+          this.setStorage(this.STORAGE_KEYS.CUSTOMERS, custs);
+          this.syncToAppsScript('customers/update', custs[idx]);
+          return { success: true, data: custs[idx] };
+        }
+        return { success: false, error: 'Customer not found' };
+      }
+      case 'customers/delete': {
+        let custs = this.getStorage(this.STORAGE_KEYS.CUSTOMERS, []);
+        custs = custs.filter(c => c.id !== payload.id && c.phone !== payload.phone);
+        this.setStorage(this.STORAGE_KEYS.CUSTOMERS, custs);
+        this.syncToAppsScript('customers/delete', { id: payload.id, phone: payload.phone });
+        return { success: true };
+      }
+
+      // ==============================================================
+      // 5. WHOLESALERS CRUD
+      // ==============================================================
+      case 'wholesalers/list': {
+        const ws = this.getStorage(this.STORAGE_KEYS.WHOLESALERS, []);
+        return { success: true, data: { items: ws, total: ws.length } };
+      }
+      case 'wholesalers/add': {
+        const ws = this.getStorage(this.STORAGE_KEYS.WHOLESALERS, []);
+        const newWs = {
+          id: 'WS-' + String(Date.now()).slice(-4),
+          shopName: payload.shopName || 'হোলসেল শপ',
+          ownerName: payload.ownerName || 'স্বত্বাধিকারী',
+          phone: payload.phone || '',
+          email: payload.email || '',
+          district: payload.district || 'ঢাকা',
+          tradeLicense: payload.tradeLicense || 'TR-2026',
+          totalOrders: parseInt(payload.totalOrders) || 0,
+          totalSpent: parseFloat(payload.totalSpent) || 0,
+          status: payload.status || 'Approved'
+        };
+        ws.unshift(newWs);
+        this.setStorage(this.STORAGE_KEYS.WHOLESALERS, ws);
+        this.syncToAppsScript('wholesalers/add', newWs);
+        return { success: true, data: newWs };
+      }
+      case 'wholesalers/update': {
+        let ws = this.getStorage(this.STORAGE_KEYS.WHOLESALERS, []);
+        const idx = ws.findIndex(w => w.id === payload.id || w.phone === payload.phone);
+        if (idx !== -1) {
+          ws[idx] = { ...ws[idx], ...payload };
+          this.setStorage(this.STORAGE_KEYS.WHOLESALERS, ws);
+          this.syncToAppsScript('wholesalers/update', ws[idx]);
+          return { success: true, data: ws[idx] };
+        }
+        return { success: false, error: 'Wholesaler not found' };
+      }
+      case 'wholesalers/delete': {
+        let ws = this.getStorage(this.STORAGE_KEYS.WHOLESALERS, []);
+        ws = ws.filter(w => w.id !== payload.id && w.phone !== payload.phone);
+        this.setStorage(this.STORAGE_KEYS.WHOLESALERS, ws);
+        this.syncToAppsScript('wholesalers/delete', { id: payload.id });
+        return { success: true };
+      }
+
+      // ==============================================================
+      // 6. BUYING (ক্রয়) CRUD
+      // ==============================================================
+      case 'buying/list': {
+        const buying = this.getStorage(this.STORAGE_KEYS.BUYING, []);
+        return { success: true, data: { items: buying, total: buying.length } };
+      }
+      case 'buying/add': {
+        const buying = this.getStorage(this.STORAGE_KEYS.BUYING, []);
+        const total = (Number(payload.qty) || 1) * (Number(payload.unitPrice) || 0);
+        const newBuy = {
+          id: 'BUY-' + String(Date.now()).slice(-4),
+          invoiceNo: payload.invoiceNo || ('INV-' + Math.floor(1000 + Math.random()*9000)),
+          supplier: payload.supplier || 'China Direct Importer',
+          productName: payload.productName || 'পণ্য',
+          sku: payload.sku || '',
+          qty: parseInt(payload.qty) || 1,
+          unitPrice: parseFloat(payload.unitPrice) || 0,
+          totalAmount: total,
+          date: payload.date || new Date().toISOString().slice(0, 10),
+          status: payload.status || 'Received'
+        };
+        buying.unshift(newBuy);
+        this.setStorage(this.STORAGE_KEYS.BUYING, buying);
+        this.syncToAppsScript('buying/add', newBuy);
+        return { success: true, data: newBuy };
+      }
+      case 'buying/update': {
+        let buying = this.getStorage(this.STORAGE_KEYS.BUYING, []);
+        const idx = buying.findIndex(b => b.id === payload.id);
+        if (idx !== -1) {
+          const total = (Number(payload.qty) || buying[idx].qty) * (Number(payload.unitPrice) || buying[idx].unitPrice);
+          buying[idx] = { ...buying[idx], ...payload, totalAmount: total };
+          this.setStorage(this.STORAGE_KEYS.BUYING, buying);
+          this.syncToAppsScript('buying/update', buying[idx]);
+          return { success: true, data: buying[idx] };
+        }
+        return { success: false, error: 'Buying item not found' };
+      }
+      case 'buying/delete': {
+        let buying = this.getStorage(this.STORAGE_KEYS.BUYING, []);
+        buying = buying.filter(b => b.id !== payload.id);
+        this.setStorage(this.STORAGE_KEYS.BUYING, buying);
+        this.syncToAppsScript('buying/delete', { id: payload.id });
+        return { success: true };
+      }
+
+      // ==============================================================
+      // 7. COSTS (খরচ) CRUD
+      // ==============================================================
+      case 'costs/list': {
+        const costs = this.getStorage(this.STORAGE_KEYS.COSTS, []);
+        return { success: true, data: { items: costs, total: costs.length } };
+      }
+      case 'costs/add': {
+        const costs = this.getStorage(this.STORAGE_KEYS.COSTS, []);
+        const newCost = {
+          id: 'CST-' + String(Date.now()).slice(-4),
+          category: payload.category || 'Office Expense',
+          description: payload.description || 'বিবিধ খরচ',
+          amount: parseFloat(payload.amount) || 0,
+          date: payload.date || new Date().toISOString().slice(0, 10),
+          paidBy: payload.paidBy || 'Jainal Abedin',
+          status: 'Paid'
+        };
+        costs.unshift(newCost);
+        this.setStorage(this.STORAGE_KEYS.COSTS, costs);
+        this.syncToAppsScript('costs/add', newCost);
+        return { success: true, data: newCost };
+      }
+      case 'costs/update': {
+        let costs = this.getStorage(this.STORAGE_KEYS.COSTS, []);
+        const idx = costs.findIndex(c => c.id === payload.id);
+        if (idx !== -1) {
+          costs[idx] = { ...costs[idx], ...payload };
+          this.setStorage(this.STORAGE_KEYS.COSTS, costs);
+          this.syncToAppsScript('costs/update', costs[idx]);
+          return { success: true, data: costs[idx] };
+        }
+        return { success: false, error: 'Cost item not found' };
+      }
+      case 'costs/delete': {
+        let costs = this.getStorage(this.STORAGE_KEYS.COSTS, []);
+        costs = costs.filter(c => c.id !== payload.id);
+        this.setStorage(this.STORAGE_KEYS.COSTS, costs);
+        this.syncToAppsScript('costs/delete', { id: payload.id });
+        return { success: true };
+      }
+
+      // ==============================================================
+      // 8. INVEST (বিনিয়োগ) CRUD
+      // ==============================================================
+      case 'invest/list': {
+        const invest = this.getStorage(this.STORAGE_KEYS.INVEST, []);
+        return { success: true, data: { items: invest, total: invest.length } };
+      }
+      case 'invest/add': {
+        const invest = this.getStorage(this.STORAGE_KEYS.INVEST, []);
+        const newInv = {
+          id: 'INV-' + String(Date.now()).slice(-4),
+          investorName: payload.investorName || 'ইনভেস্টর',
+          phone: payload.phone || '',
+          amount: parseFloat(payload.amount) || 0,
+          date: payload.date || new Date().toISOString().slice(0, 10),
+          sourcePurpose: payload.sourcePurpose || 'ইনভেন্টরি স্টক বৃদ্ধি',
+          shareTerms: payload.shareTerms || 'মাসিক লভ্যাংশ',
+          status: payload.status || 'Active'
+        };
+        invest.unshift(newInv);
+        this.setStorage(this.STORAGE_KEYS.INVEST, invest);
+        this.syncToAppsScript('invest/add', newInv);
+        return { success: true, data: newInv };
+      }
+      case 'invest/update': {
+        let invest = this.getStorage(this.STORAGE_KEYS.INVEST, []);
+        const idx = invest.findIndex(i => i.id === payload.id);
+        if (idx !== -1) {
+          invest[idx] = { ...invest[idx], ...payload };
+          this.setStorage(this.STORAGE_KEYS.INVEST, invest);
+          this.syncToAppsScript('invest/update', invest[idx]);
+          return { success: true, data: invest[idx] };
+        }
+        return { success: false, error: 'Invest record not found' };
+      }
+      case 'invest/delete': {
+        let invest = this.getStorage(this.STORAGE_KEYS.INVEST, []);
+        invest = invest.filter(i => i.id !== payload.id);
+        this.setStorage(this.STORAGE_KEYS.INVEST, invest);
+        this.syncToAppsScript('invest/delete', { id: payload.id });
+        return { success: true };
+      }
+
+      // ==============================================================
+      // 9. WORKERS & ADMINS CRUD
+      // ==============================================================
+      case 'workers/list': {
+        const workers = this.getStorage(this.STORAGE_KEYS.WORKERS, []);
+        return { success: true, data: { items: workers, total: workers.length } };
+      }
+      case 'workers/add': {
+        const workers = this.getStorage(this.STORAGE_KEYS.WORKERS, []);
+        const newWorker = {
+          id: 'WRK-' + String(Date.now()).slice(-4),
+          name: payload.name || 'কর্মী / এডমিন',
+          email: payload.email || '',
+          phone: payload.phone || '',
+          role: payload.role || 'Order Processor',
+          status: payload.status || 'Active',
+          joinDate: payload.joinDate || new Date().toISOString().slice(0, 10)
+        };
+        workers.unshift(newWorker);
+        this.setStorage(this.STORAGE_KEYS.WORKERS, workers);
+        this.syncToAppsScript('workers/add', newWorker);
+        return { success: true, data: newWorker };
+      }
+      case 'workers/update': {
+        let workers = this.getStorage(this.STORAGE_KEYS.WORKERS, []);
+        const idx = workers.findIndex(w => w.id === payload.id || w.email === payload.email);
+        if (idx !== -1) {
+          workers[idx] = { ...workers[idx], ...payload };
+          this.setStorage(this.STORAGE_KEYS.WORKERS, workers);
+          this.syncToAppsScript('workers/update', workers[idx]);
+          return { success: true, data: workers[idx] };
+        }
+        return { success: false, error: 'Worker not found' };
+      }
+      case 'workers/delete': {
+        let workers = this.getStorage(this.STORAGE_KEYS.WORKERS, []);
+        workers = workers.filter(w => w.id !== payload.id && w.email !== payload.email);
+        this.setStorage(this.STORAGE_KEYS.WORKERS, workers);
+        this.syncToAppsScript('workers/delete', { id: payload.id });
+        return { success: true };
+      }
+
+      // ==============================================================
+      // 10. REVIEWS CRUD (Directly connected to website & sheet)
+      // ==============================================================
+      case 'reviews/list': {
+        const reviews = this.getStorage(this.STORAGE_KEYS.REVIEWS, []);
+        return { success: true, data: { items: reviews, total: reviews.length } };
+      }
+      case 'reviews/add': {
+        const reviews = this.getStorage(this.STORAGE_KEYS.REVIEWS, []);
+        const newRev = {
+          id: 'REV-' + String(Date.now()).slice(-4),
+          customerName: payload.customerName || 'গ্রাহক',
+          productSku: payload.productSku || '',
+          productName: payload.productName || 'পণ্য',
+          rating: parseInt(payload.rating) || 5,
+          comment: payload.comment || 'দারুণ প্রোডাক্ট! দ্রুত ডেলিভারি পেয়েছি।',
+          date: new Date().toLocaleDateString('bn-BD'),
+          status: payload.status || 'Approved'
+        };
+        reviews.unshift(newRev);
+        this.setStorage(this.STORAGE_KEYS.REVIEWS, reviews);
+        this.syncToAppsScript('reviews/add', newRev);
+        return { success: true, data: newRev };
+      }
+      case 'reviews/update_status': {
+        let reviews = this.getStorage(this.STORAGE_KEYS.REVIEWS, []);
+        const idx = reviews.findIndex(r => r.id === payload.id);
+        if (idx !== -1) {
+          reviews[idx].status = payload.status;
+          this.setStorage(this.STORAGE_KEYS.REVIEWS, reviews);
+          this.syncToAppsScript('reviews/update_status', { id: payload.id, status: payload.status });
+          return { success: true, data: reviews[idx] };
+        }
+        return { success: false, error: 'Review not found' };
+      }
+      case 'reviews/delete': {
+        let reviews = this.getStorage(this.STORAGE_KEYS.REVIEWS, []);
+        reviews = reviews.filter(r => r.id !== payload.id);
+        this.setStorage(this.STORAGE_KEYS.REVIEWS, reviews);
+        this.syncToAppsScript('reviews/delete', { id: payload.id });
+        return { success: true };
+      }
+
+      // ==============================================================
+      // 11. SETTINGS CRUD
+      // ==============================================================
+      case 'settings/get': {
+        const settings = this.getStorage(this.STORAGE_KEYS.SETTINGS, null);
+        return { success: true, data: settings || CONFIG };
+      }
+      case 'settings/update': {
+        this.setStorage(this.STORAGE_KEYS.SETTINGS, payload);
+        Object.assign(CONFIG, payload);
+        this.syncToAppsScript('settings/update', payload);
+        return { success: true, data: payload };
+      }
+
       case 'products/list': {
         const products = this.getStorage(this.STORAGE_KEYS.PRODUCTS, this.SEED_PRODUCTS);
         let filtered = [...products];
@@ -1229,8 +1819,9 @@ const API = {
           filtered = filtered.filter(p => 
             p.name.toLowerCase().includes(q) || 
             p.sku.toLowerCase().includes(q) || 
-            p.category.toLowerCase().includes(q) ||
-            p.brand.toLowerCase().includes(q)
+            (p.articleNo && p.articleNo.toLowerCase().includes(q)) ||
+            (p.category && p.category.toLowerCase().includes(q)) ||
+            (p.brand && p.brand.toLowerCase().includes(q))
           );
         }
         return { success: true, data: { items: filtered, total: filtered.length } };

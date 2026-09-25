@@ -52,10 +52,17 @@ const APP = {
 
   updateNavbar() {
     const navMount = document.getElementById('navbar-mount') || document.getElementById('header-container');
-    if (navMount) {
-      navMount.innerHTML = COMPONENTS.renderNavbar();
-      this.wireNavbarActions();
+    if (!navMount) return;
+
+    const hash = window.location.hash || '';
+    if (hash.startsWith('#/admin')) {
+      // Hide public shopping navbar in Admin Panel to prevent duplicate headers
+      navMount.innerHTML = '';
+      return;
     }
+
+    navMount.innerHTML = COMPONENTS.renderNavbar();
+    this.wireNavbarActions();
   },
 
   wireNavbarActions() {
@@ -141,6 +148,7 @@ const APP = {
     if (!content) return;
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.updateNavbar();
 
     let rawHash = window.location.hash;
     if (!rawHash || rawHash === '#/' || rawHash === '#') {

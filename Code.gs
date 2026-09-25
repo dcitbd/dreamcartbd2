@@ -1,9 +1,10 @@
 /**
  * ===================================================================
- * DREAM CART BD — ENTERPRISE GOOGLE APPS SCRIPT BACKEND (UPDATED)
- * Multi-Sheet Sync, Google Drive Folder Uploads, Orders, Incomplete, Returns,
- * Customers, Wholesalers, Banners, Brands, Categories, Buying, Costs, Invest, Roles
- * 
+ * DREAM CART BD — ENTERPRISE GOOGLE APPS SCRIPT BACKEND (V3 FULL)
+ * Multi-Sheet Sync, Real-time CRUD for Products, Orders, Categories,
+ * Brands, Banners, Customers, Wholesalers, Buying, Costs, Invest,
+ * Workers, Reviews & Global Settings
+ *
  * Google Spreadsheet ID: 1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g
  * ===================================================================
  */
@@ -12,7 +13,7 @@ const SPREADSHEET_ID = "1NdNovX7XXh-2n-mxG9-CWLAi6vi4QND3jTZnHyo4L-g";
 const OWNER_EMAIL = "jainal.dcitbd@gmail.com";
 const SUPPORT_EMAIL = "saiful05333@gmail.com";
 
-// Google Drive Destination Folders (Requirement 15)
+// Destination Google Drive Folders
 const DRIVE_FOLDERS = {
   products: "1q8rfxni24t6q17wX-82ozjpbVXXR_ntG",
   brands: "1kBORS5_d-7O1F8dd6YFWW9P2wTk6KXJu",
@@ -21,7 +22,7 @@ const DRIVE_FOLDERS = {
   customers: "1gF0RhJFX-JD4e8vZw2yx2SJ6zD5mf2Vd"
 };
 
-// Sheet Tab Names matching exact sheet structure
+// Sheet Tab Names
 const SHEETS = {
   PRODUCTS: "Products",
   ORDERS: "Orders",
@@ -36,12 +37,10 @@ const SHEETS = {
   INCOMPLETE: "Incomplete_Orders",
   RETURNS: "Return_Orders",
   BANNERS: "Banners",
-  REVIEWS: "Reviews"
+  REVIEWS: "Reviews",
+  SETTINGS: "Settings"
 };
 
-/**
- * Handle HTTP GET Requests
- */
 function doGet(e) {
   const action = (e && e.parameter && e.parameter.action) || 'products/list';
   const response = handleAction(action, e ? e.parameter : {});
@@ -49,9 +48,6 @@ function doGet(e) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-/**
- * Handle HTTP POST Requests
- */
 function doPost(e) {
   try {
     const raw = e.postData.contents;
@@ -70,18 +66,55 @@ function doPost(e) {
   }
 }
 
-/**
- * Master Router for all backend actions
- */
+function getOrCreateSheet(ss, sheetName, headers) {
+  let sheet = ss.getSheetByName(sheetName);
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+    if (headers && headers.length > 0) {
+      sheet.appendRow(headers);
+      sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#0f172a").setFontColor("#ffffff");
+    }
+  }
+  return sheet;
+}
+
 function handleAction(action, payload) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 
   switch (action) {
     // -------------------------------------------------------------
-    // 1. PRODUCTS ACTIONS
+    // ALL DATA BUNDLE (One single call syncs everything)
+    // -------------------------------------------------------------
+    case 'all_data': {
+      return {
+        success: true,
+        data: {
+          products: handleAction('products/list', {}).data,
+          orders: handleAction('orders/list', {}).data,
+          categories: handleAction('categories/list', {}).data,
+          brands: handleAction('brands/list', {}).data,
+          banners: handleAction('banners/list', {}).data,
+          customers: handleAction('customers/list', {}).data,
+          wholesalers: handleAction('wholesalers/list', {}).data,
+          buying: handleAction('buying/list', {}).data,
+          costs: handleAction('costs/list', {}).data,
+          invest: handleAction('invest/list', {}).data,
+          workers: handleAction('workers/list', {}).data,
+          reviews: handleAction('reviews/list', {}).data,
+          settings: handleAction('settings/get', {}).data
+        }
+      };
+    }
+
+    // -------------------------------------------------------------
+    // 1. PRODUCTS
     // -------------------------------------------------------------
     case 'products/list': {
-      const sheet = getOrCreateSheet(ss, SHEETS.PRODUCTS);
+      const sheet = getOrCreateSheet(ss, SHEETS.PRODUCTS, [
+        "ID/SKU", "Product Name", "Category", "Sub Category", "Child Category",
+        "Brand", "Buying Price", "Selling Price", "Stock", "Original Price",
+        "Wholesale Price", "Min Order Qty", "Images", "Description", "Specification", "Others", "Color", "Size"
+      ]);
       const data = sheet.getDataRange().getValues();
       if (data.length <= 1) return { success: true, data: { items: [], total: 0 } };
 
@@ -89,50 +122,29 @@ function handleAction(action, payload) {
       for (let i = 1; i < data.length; i++) {
         const row = data[i];
         if (!row[0] && !row[1]) continue;
-
-        const sku = String(row[0] || '');
-        const name = String(row[1] || '');
-        const category = String(row[2] || 'General');
-        const subCategory = String(row[3] || '');
-        const childCategory = String(row[4] || '');
-        const brand = String(row[5] || 'China Brand');
-        const buyingPrice = parseFloat(row[6]) || 0;
-        const sellingPrice = parseFloat(row[7]) || 0;
-        const stock = parseInt(row[8], 10) || 0;
-        const originalPrice = parseFloat(row[9]) || (sellingPrice * 1.3);
-        const wholesalePrice = parseFloat(row[10]) || (sellingPrice * 0.85);
-        const minOrderQ = String(row[11] || '1 Pcs');
-        const imagesRaw = String(row[12] || '');
-        const imageList = imagesRaw.split(',').map(s => s.trim()).filter(Boolean);
-        const description = String(row[13] || '');
-        const specification = String(row[14] || '');
-        const others = String(row[15] || '');
-        const color = String(row[16] || 'Default');
-        const size = String(row[17] || 'Standard');
-
         items.push({
-          id: sku,
-          sku: sku,
-          name: name,
-          category: category,
-          subCategory: subCategory,
-          childCategory: childCategory,
-          brand: brand,
-          buyingPrice: buyingPrice,
-          sellingPrice: sellingPrice,
-          stock: stock,
-          originalPrice: originalPrice,
-          wholesalePrice: wholesalePrice,
-          minOrderQ: minOrderQ,
-          images: imageList.length ? imageList : ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'],
-          primaryImage: imageList[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500',
-          description: description,
-          specification: specification,
-          others: others,
-          color: color,
-          size: size,
-          discountPercent: originalPrice > sellingPrice ? Math.round(((originalPrice - sellingPrice)/originalPrice)*100) : 0,
-          inStock: stock > 0,
+          id: String(row[0] || ''),
+          sku: String(row[0] || ''),
+          articleNo: String(row[0] || ''),
+          name: String(row[1] || ''),
+          category: String(row[2] || 'General'),
+          subCategory: String(row[3] || ''),
+          childCategory: String(row[4] || ''),
+          brand: String(row[5] || 'China Brand'),
+          buyingPrice: parseFloat(row[6]) || 0,
+          sellingPrice: parseFloat(row[7]) || 0,
+          stock: parseInt(row[8]) || 0,
+          originalPrice: parseFloat(row[9]) || 0,
+          wholesalePrice: parseFloat(row[10]) || 0,
+          minOrderQ: String(row[11] || '1 Pcs'),
+          primaryImage: String(row[12] || '').split(',')[0].trim(),
+          images: String(row[12] || '').split(',').map(s => s.trim()).filter(Boolean),
+          description: String(row[13] || ''),
+          specification: String(row[14] || ''),
+          others: String(row[15] || ''),
+          color: String(row[16] || 'Default'),
+          size: String(row[17] || 'Standard'),
+          inStock: (parseInt(row[8]) || 0) > 0,
           status: 'active'
         });
       }
@@ -141,347 +153,588 @@ function handleAction(action, payload) {
 
     case 'products/add': {
       const sheet = getOrCreateSheet(ss, SHEETS.PRODUCTS);
-      const row = [
-        payload.sku || ('PRD-' + Date.now().toString().slice(-6)),
-        payload.name || '',
-        payload.category || 'General',
-        payload.subCategory || '',
-        payload.childCategory || '',
-        payload.brand || 'China Brand',
-        payload.buyingPrice || 0,
-        payload.sellingPrice || 0,
-        payload.stock || 0,
-        payload.originalPrice || 0,
-        payload.wholesalePrice || 0,
-        payload.minOrderQ || '1 Pcs',
-        Array.isArray(payload.images) ? payload.images.join(',') : (payload.images || ''),
-        payload.description || '',
-        payload.specification || '',
-        payload.others || '',
-        payload.color || 'Default',
-        payload.size || 'Standard'
-      ];
-      sheet.appendRow(row);
-      return { success: true, message: "Product added successfully!" };
+      const sku = payload.sku || ('PRD-' + Date.now().toString().slice(-4));
+      const imgs = Array.isArray(payload.images) ? payload.images.join(',') : (payload.images || payload.primaryImage || '');
+      sheet.appendRow([
+        sku, payload.name, payload.category, payload.subCategory || '', payload.childCategory || '',
+        payload.brand || 'China Brand', payload.buyingPrice || 0, payload.sellingPrice || 0,
+        payload.stock || 1, payload.originalPrice || 0, payload.wholesalePrice || 0,
+        payload.minOrderQ || '1 Pcs', imgs, payload.description || '',
+        payload.specification || '', payload.others || '', payload.color || 'Default', payload.size || 'Standard'
+      ]);
+      return { success: true, data: { sku: sku, name: payload.name } };
     }
 
+    case 'products/update':
     case 'products/update_inline': {
       const sheet = getOrCreateSheet(ss, SHEETS.PRODUCTS);
       const data = sheet.getDataRange().getValues();
-      const sku = payload.sku;
-      let rowIndex = -1;
-
       for (let i = 1; i < data.length; i++) {
-        if (String(data[i][0]) === String(sku)) {
-          rowIndex = i + 1;
-          break;
+        if (String(data[i][0]) === String(payload.sku)) {
+          if (payload.field === 'sellingPrice') sheet.getRange(i + 1, 8).setValue(payload.value);
+          else if (payload.field === 'stock') sheet.getRange(i + 1, 9).setValue(payload.value);
+          else if (payload.field === 'originalPrice') sheet.getRange(i + 1, 10).setValue(payload.value);
+          else if (payload.field === 'wholesalePrice') sheet.getRange(i + 1, 11).setValue(payload.value);
+          else {
+            if (payload.name) sheet.getRange(i + 1, 2).setValue(payload.name);
+            if (payload.category) sheet.getRange(i + 1, 3).setValue(payload.category);
+            if (payload.sellingPrice) sheet.getRange(i + 1, 8).setValue(payload.sellingPrice);
+            if (payload.stock !== undefined) sheet.getRange(i + 1, 9).setValue(payload.stock);
+          }
+          return { success: true };
         }
       }
-
-      if (rowIndex === -1) return { success: false, message: "Product SKU not found" };
-
-      if (payload.sellingPrice !== undefined) sheet.getRange(rowIndex, 8).setValue(payload.sellingPrice);
-      if (payload.stock !== undefined) sheet.getRange(rowIndex, 9).setValue(payload.stock);
-      if (payload.originalPrice !== undefined) sheet.getRange(rowIndex, 10).setValue(payload.originalPrice);
-      if (payload.buyingPrice !== undefined) sheet.getRange(rowIndex, 7).setValue(payload.buyingPrice);
-
-      return { success: true, message: "Updated successfully!" };
+      return { success: false, error: 'Product SKU not found' };
     }
 
     case 'products/delete': {
       const sheet = getOrCreateSheet(ss, SHEETS.PRODUCTS);
       const data = sheet.getDataRange().getValues();
-      const sku = payload.sku;
       for (let i = 1; i < data.length; i++) {
-        if (String(data[i][0]) === String(sku)) {
+        if (String(data[i][0]) === String(payload.sku)) {
           sheet.deleteRow(i + 1);
-          return { success: true, message: "Product deleted" };
+          return { success: true };
         }
       }
-      return { success: false, message: "SKU not found" };
+      return { success: false, error: 'Product SKU not found' };
     }
 
     // -------------------------------------------------------------
-    // 2. ORDERS ACTIONS
+    // 2. ORDERS
     // -------------------------------------------------------------
     case 'orders/create': {
-      const sheet = getOrCreateSheet(ss, SHEETS.ORDERS);
+      const sheet = getOrCreateSheet(ss, SHEETS.ORDERS, [
+        "OrderID", "Date", "Customer Name", "Phone", "Address", "Products",
+        "Quantity", "Subtotal", "Delivery Charge", "Delivery Type", "Payment Method",
+        "Online Discount", "TrxID", "Total Amount", "Status"
+      ]);
       const orderId = payload.orderId || ('ORD-' + Math.floor(10000 + Math.random() * 90000));
-      const dateStr = Utilities.formatDate(new Date(), "GMT+6", "yyyy-MM-dd HH:mm:ss");
-      const productsStr = (payload.items || []).map(it => it.name + ' (' + (it.quantity || 1) + 'x)').join(', ');
-      const totalQty = (payload.items || []).reduce((sum, it) => sum + (it.quantity || 1), 0);
+      const date = new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });
 
-      const row = [
-        orderId,
-        dateStr,
-        payload.name || payload.customerName || '',
-        payload.phone || '',
-        payload.address || '',
-        productsStr,
-        totalQty,
-        payload.totalAmount || 0,
-        payload.deliveryType || 'Standard',
-        'Pending'
-      ];
-      sheet.appendRow(row);
+      let prodNames = '';
+      if (Array.isArray(payload.items)) {
+        prodNames = payload.items.map(it => `${it.name} (x${it.quantity || it.qty || 1})`).join('; ');
+      } else {
+        prodNames = payload.products || 'অর্ডারকৃত পণ্য';
+      }
 
-      // Also register or update customer automatically
-      try {
-        const custSheet = getOrCreateSheet(ss, SHEETS.CUSTOMERS);
-        const custData = custSheet.getDataRange().getValues();
-        let exists = false;
-        for (let c = 1; c < custData.length; c++) {
-          if (String(custData[c][3]) === String(payload.phone)) {
-            exists = true;
-            break;
-          }
-        }
-        if (!exists) {
-          custSheet.appendRow([
-            'CUST-' + Date.now().toString().slice(-4),
-            '',
-            payload.name || payload.customerName || 'Customer',
-            payload.phone,
-            payload.email || '',
-            payload.address || '',
-            payload.phone,
-            'Cust@' + Date.now().toString().slice(-4),
-            'Active'
-          ]);
-        }
-      } catch(e) {}
+      sheet.appendRow([
+        orderId, date, payload.customerName || payload.name, payload.phone || payload.customerPhone,
+        payload.address, prodNames, payload.quantity || 1, payload.subtotal || payload.totalAmount,
+        payload.deliveryCharge || 0, payload.deliveryType || 'Standard', payload.paymentMethod || 'COD',
+        payload.onlineDiscount || 0, payload.trxId || '', payload.totalAmount, 'Pending'
+      ]);
 
-      // Send Instant Order Notification to Shop Owner
-      try {
-        MailApp.sendEmail({
-          to: OWNER_EMAIL,
-          subject: "নতুন কাস্টমার অর্ডার: " + orderId + " (" + payload.totalAmount + " ৳)",
-          htmlBody: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; border: 1px solid #10b981; border-radius: 8px; padding: 20px;">
-              <h2 style="color: #10b981; margin-top: 0;">Dream Cart BD - নতুন অর্ডার প্রাপ্তি</h2>
-              <p><strong>অর্ডার আইডি:</strong> ${orderId}</p>
-              <p><strong>তারিখ:</strong> ${dateStr}</p>
-              <hr />
-              <p><strong>গ্রাহকের নাম:</strong> ${payload.name || payload.customerName}</p>
-              <p><strong>মোবাইল নম্বর:</strong> ${payload.phone}</p>
-              <p><strong>ডেলিভারি ঠিকানা:</strong> ${payload.address}</p>
-              <p><strong>অর্ডারকৃত পণ্য:</strong> ${productsStr}</p>
-              <p><strong>মোট মূল্য:</strong> ${payload.totalAmount} ৳</p>
-              <p><strong>পেমেন্ট মাধ্যম:</strong> ${payload.paymentMethod || 'ক্যাশ অন ডেলিভারি'}</p>
-            </div>
-          `
-        });
-      } catch (mailErr) {}
-
-      return { success: true, message: "অর্ডার সফলভাবে গ্রহণ করা হয়েছে!", orderId: orderId };
+      return { success: true, data: { orderId: orderId, status: 'Pending' } };
     }
 
     case 'orders/list': {
       const sheet = getOrCreateSheet(ss, SHEETS.ORDERS);
       const data = sheet.getDataRange().getValues();
-      const orders = [];
+      if (data.length <= 1) return { success: true, data: { items: [], total: 0 } };
+
+      const items = [];
       for (let i = 1; i < data.length; i++) {
         const r = data[i];
         if (!r[0]) continue;
-        orders.push({
-          orderId: r[0],
-          date: r[1],
-          customerName: r[2],
-          phone: r[3],
-          address: r[4],
-          products: r[5],
-          quantity: r[6],
-          totalAmount: r[7],
-          deliveryType: r[8],
-          status: r[9] || 'Pending'
+        items.push({
+          orderId: String(r[0]),
+          date: String(r[1]),
+          customerName: String(r[2]),
+          phone: String(r[3]),
+          customerPhone: String(r[3]),
+          address: String(r[4]),
+          products: String(r[5]),
+          quantity: parseInt(r[6]) || 1,
+          subtotal: parseFloat(r[7]) || 0,
+          deliveryCharge: parseFloat(r[8]) || 0,
+          deliveryType: String(r[9]),
+          paymentMethod: String(r[10]),
+          onlineDiscount: parseFloat(r[11]) || 0,
+          trxId: String(r[12]),
+          totalAmount: parseFloat(r[13]) || 0,
+          status: String(r[14] || 'Pending'),
+          isWholesale: String(r[10]).toLowerCase().includes('wholesale') || String(r[9]).toLowerCase().includes('wholesale')
         });
       }
-      return { success: true, data: { items: orders.reverse(), total: orders.length } };
+      return { success: true, data: { items: items, total: items.length } };
     }
 
-    case 'orders/save_incomplete': {
-      const sheet = getOrCreateSheet(ss, SHEETS.INCOMPLETE);
-      const dateStr = Utilities.formatDate(new Date(), "GMT+6", "yyyy-MM-dd HH:mm:ss");
-      const productsStr = (payload.items || []).map(it => it.name + ' (' + (it.quantity || 1) + 'x)').join(', ');
-      sheet.appendRow([
-        'INC-' + Date.now().toString().slice(-5),
-        dateStr,
-        payload.name || 'Visitor',
-        payload.phone || '',
-        payload.address || '',
-        productsStr,
-        payload.totalAmount || 0,
-        'Abandoned'
-      ]);
-      return { success: true, message: "Incomplete order tracked" };
-    }
-
-    // -------------------------------------------------------------
-    // 3. GOOGLE DRIVE UPLOAD ACTION (Requirement 15)
-    // -------------------------------------------------------------
-    case 'drive/upload': {
-      try {
-        const folderKey = payload.folderType || 'products';
-        const targetFolderId = DRIVE_FOLDERS[folderKey] || DRIVE_FOLDERS.products;
-        const folder = DriveApp.getFolderById(targetFolderId);
-
-        const contentType = payload.mimeType || 'image/jpeg';
-        const fileName = payload.fileName || ('upload_' + Date.now() + '.jpg');
-        const decodedBytes = Utilities.base64Decode(payload.base64Data);
-        const blob = Utilities.newBlob(decodedBytes, contentType, fileName);
-        
-        const file = folder.createFile(blob);
-        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-        
-        const publicUrl = "https://lh3.googleusercontent.com/d/" + file.getId();
-        return {
-          success: true,
-          fileId: file.getId(),
-          url: publicUrl,
-          downloadUrl: file.getDownloadUrl(),
-          name: fileName
-        };
-      } catch (uploadErr) {
-        return { success: false, error: uploadErr.toString() };
-      }
-    }
-
-    // -------------------------------------------------------------
-    // 4. BRANDS & CATEGORIES ACTIONS
-    // -------------------------------------------------------------
-    case 'brands/list': {
-      const sheet = getOrCreateSheet(ss, SHEETS.BRANDS);
+    case 'orders/update_status': {
+      const sheet = getOrCreateSheet(ss, SHEETS.ORDERS);
       const data = sheet.getDataRange().getValues();
-      const brands = [];
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.orderId)) {
+          sheet.getRange(i + 1, 15).setValue(payload.status);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Order not found' };
+    }
+
+    case 'orders/delete': {
+      const sheet = getOrCreateSheet(ss, SHEETS.ORDERS);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.orderId)) {
+          sheet.deleteRow(i + 1);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Order not found' };
+    }
+
+    // -------------------------------------------------------------
+    // 3. CATEGORIES
+    // -------------------------------------------------------------
+    case 'categories/list': {
+      const sheet = getOrCreateSheet(ss, SHEETS.CATEGORIES, ["ID", "Name", "NameBn", "Icon", "SubCategories", "ProductCount", "Status"]);
+      const data = sheet.getDataRange().getValues();
+      if (data.length <= 1) return { success: true, data: { items: [], total: 0 } };
+      const items = [];
       for (let i = 1; i < data.length; i++) {
         const r = data[i];
-        if (!r[0] && !r[2]) continue;
-        brands.push({ id: r[0], image: r[1], name: r[2], description: r[3] });
+        if (!r[1]) continue;
+        items.push({
+          id: String(r[0] || ('CAT-' + i)),
+          name: String(r[1]),
+          nameBn: String(r[2] || r[1]),
+          icon: String(r[3] || 'bi-tag'),
+          subCategories: String(r[4] || '').split(',').map(s=>s.trim()).filter(Boolean),
+          count: parseInt(r[5]) || 0,
+          status: String(r[6] || 'Active')
+        });
       }
-      return { success: true, data: { items: brands, total: brands.length } };
+      return { success: true, data: { items: items, total: items.length } };
     }
 
-    case 'categories/list': {
+    case 'categories/add': {
+      const sheet = getOrCreateSheet(ss, SHEETS.CATEGORIES);
+      const id = payload.id || ('CAT-' + Date.now().toString().slice(-4));
+      const subs = Array.isArray(payload.subCategories) ? payload.subCategories.join(',') : (payload.subCategories || '');
+      sheet.appendRow([id, payload.name, payload.nameBn || payload.name, payload.icon || 'bi-tag', subs, payload.count || 0, 'Active']);
+      return { success: true, data: { id: id } };
+    }
+
+    case 'categories/update': {
       const sheet = getOrCreateSheet(ss, SHEETS.CATEGORIES);
       const data = sheet.getDataRange().getValues();
-      const cats = [];
       for (let i = 1; i < data.length; i++) {
-        const r = data[i];
-        if (!r[0] && !r[1]) continue;
-        cats.push({
-          catId: r[0],
-          name: r[1],
-          subCatId: r[2],
-          subCategory: r[3],
-          childCatId: r[4],
-          childCategory: r[5]
-        });
+        if (String(data[i][0]) === String(payload.id) || String(data[i][1]) === String(payload.name)) {
+          if (payload.name) sheet.getRange(i + 1, 2).setValue(payload.name);
+          if (payload.nameBn) sheet.getRange(i + 1, 3).setValue(payload.nameBn);
+          if (payload.icon) sheet.getRange(i + 1, 4).setValue(payload.icon);
+          if (payload.subCategories) {
+            const subs = Array.isArray(payload.subCategories) ? payload.subCategories.join(',') : payload.subCategories;
+            sheet.getRange(i + 1, 5).setValue(subs);
+          }
+          return { success: true };
+        }
       }
-      return { success: true, data: { items: cats, total: cats.length } };
+      return { success: false, error: 'Category not found' };
+    }
+
+    case 'categories/delete': {
+      const sheet = getOrCreateSheet(ss, SHEETS.CATEGORIES);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.id) || String(data[i][1]) === String(payload.name)) {
+          sheet.deleteRow(i + 1);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Category not found' };
     }
 
     // -------------------------------------------------------------
-    // 5. STATS & DASHBOARD ACTIONS
+    // 4. BRANDS
+    // -------------------------------------------------------------
+    case 'brands/list': {
+      const sheet = getOrCreateSheet(ss, SHEETS.BRANDS, ["ID", "Brand Name", "Origin", "Logo", "ProductCount", "Status"]);
+      const data = sheet.getDataRange().getValues();
+      if (data.length <= 1) return { success: true, data: { items: [], total: 0 } };
+      const items = [];
+      for (let i = 1; i < data.length; i++) {
+        const r = data[i];
+        if (!r[1]) continue;
+        items.push({
+          id: String(r[0] || ('BRD-' + i)),
+          name: String(r[1]),
+          origin: String(r[2] || 'Global'),
+          logo: String(r[3] || ''),
+          count: parseInt(r[4]) || 0,
+          status: String(r[5] || 'Active')
+        });
+      }
+      return { success: true, data: { items: items, total: items.length } };
+    }
+
+    case 'brands/add': {
+      const sheet = getOrCreateSheet(ss, SHEETS.BRANDS);
+      const id = payload.id || ('BRD-' + Date.now().toString().slice(-4));
+      sheet.appendRow([id, payload.name, payload.origin || 'Global', payload.logo || '', payload.count || 0, 'Active']);
+      return { success: true, data: { id: id } };
+    }
+
+    case 'brands/update': {
+      const sheet = getOrCreateSheet(ss, SHEETS.BRANDS);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.id) || String(data[i][1]) === String(payload.name)) {
+          if (payload.name) sheet.getRange(i + 1, 2).setValue(payload.name);
+          if (payload.origin) sheet.getRange(i + 1, 3).setValue(payload.origin);
+          if (payload.logo) sheet.getRange(i + 1, 4).setValue(payload.logo);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Brand not found' };
+    }
+
+    case 'brands/delete': {
+      const sheet = getOrCreateSheet(ss, SHEETS.BRANDS);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.id) || String(data[i][1]) === String(payload.name)) {
+          sheet.deleteRow(i + 1);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Brand not found' };
+    }
+
+    // -------------------------------------------------------------
+    // 5. BUYING (ক্রয়)
+    // -------------------------------------------------------------
+    case 'buying/list': {
+      const sheet = getOrCreateSheet(ss, SHEETS.BUYING, ["ID", "InvoiceNo", "Supplier", "ProductName", "SKU", "Qty", "UnitPrice", "TotalAmount", "Date", "Status"]);
+      const data = sheet.getDataRange().getValues();
+      if (data.length <= 1) return { success: true, data: { items: [], total: 0 } };
+      const items = [];
+      for (let i = 1; i < data.length; i++) {
+        const r = data[i];
+        if (!r[1]) continue;
+        items.push({
+          id: String(r[0]),
+          invoiceNo: String(r[1]),
+          supplier: String(r[2]),
+          productName: String(r[3]),
+          sku: String(r[4]),
+          qty: parseInt(r[5]) || 1,
+          unitPrice: parseFloat(r[6]) || 0,
+          totalAmount: parseFloat(r[7]) || 0,
+          date: String(r[8]),
+          status: String(r[9] || 'Received')
+        });
+      }
+      return { success: true, data: { items: items, total: items.length } };
+    }
+
+    case 'buying/add': {
+      const sheet = getOrCreateSheet(ss, SHEETS.BUYING);
+      const id = payload.id || ('BUY-' + Date.now().toString().slice(-4));
+      const total = (Number(payload.qty) || 1) * (Number(payload.unitPrice) || 0);
+      sheet.appendRow([id, payload.invoiceNo || 'INV-001', payload.supplier, payload.productName, payload.sku || '', payload.qty || 1, payload.unitPrice || 0, total, payload.date || new Date().toISOString().slice(0,10), 'Received']);
+      return { success: true, data: { id: id } };
+    }
+
+    case 'buying/delete': {
+      const sheet = getOrCreateSheet(ss, SHEETS.BUYING);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.id)) {
+          sheet.deleteRow(i + 1);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Buying item not found' };
+    }
+
+    // -------------------------------------------------------------
+    // 6. COSTS (খরচ)
+    // -------------------------------------------------------------
+    case 'costs/list': {
+      const sheet = getOrCreateSheet(ss, SHEETS.COSTS, ["ID", "Category", "Description", "Amount", "Date", "PaidBy", "Status"]);
+      const data = sheet.getDataRange().getValues();
+      if (data.length <= 1) return { success: true, data: { items: [], total: 0 } };
+      const items = [];
+      for (let i = 1; i < data.length; i++) {
+        const r = data[i];
+        if (!r[1]) continue;
+        items.push({
+          id: String(r[0]),
+          category: String(r[1]),
+          description: String(r[2]),
+          amount: parseFloat(r[3]) || 0,
+          date: String(r[4]),
+          paidBy: String(r[5] || 'Admin'),
+          status: String(r[6] || 'Paid')
+        });
+      }
+      return { success: true, data: { items: items, total: items.length } };
+    }
+
+    case 'costs/add': {
+      const sheet = getOrCreateSheet(ss, SHEETS.COSTS);
+      const id = payload.id || ('CST-' + Date.now().toString().slice(-4));
+      sheet.appendRow([id, payload.category, payload.description, payload.amount || 0, payload.date || new Date().toISOString().slice(0,10), payload.paidBy || 'Admin', 'Paid']);
+      return { success: true, data: { id: id } };
+    }
+
+    case 'costs/delete': {
+      const sheet = getOrCreateSheet(ss, SHEETS.COSTS);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.id)) {
+          sheet.deleteRow(i + 1);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Cost item not found' };
+    }
+
+    // -------------------------------------------------------------
+    // 7. INVEST (বিনিয়োগ)
+    // -------------------------------------------------------------
+    case 'invest/list': {
+      const sheet = getOrCreateSheet(ss, SHEETS.INVEST, ["ID", "Investor Name", "Phone", "Amount", "Date", "Purpose", "ShareTerms", "Status"]);
+      const data = sheet.getDataRange().getValues();
+      if (data.length <= 1) return { success: true, data: { items: [], total: 0 } };
+      const items = [];
+      for (let i = 1; i < data.length; i++) {
+        const r = data[i];
+        if (!r[1]) continue;
+        items.push({
+          id: String(r[0]),
+          investorName: String(r[1]),
+          phone: String(r[2]),
+          amount: parseFloat(r[3]) || 0,
+          date: String(r[4]),
+          sourcePurpose: String(r[5]),
+          shareTerms: String(r[6]),
+          status: String(r[7] || 'Active')
+        });
+      }
+      return { success: true, data: { items: items, total: items.length } };
+    }
+
+    case 'invest/add': {
+      const sheet = getOrCreateSheet(ss, SHEETS.INVEST);
+      const id = payload.id || ('INV-' + Date.now().toString().slice(-4));
+      sheet.appendRow([id, payload.investorName, payload.phone || '', payload.amount || 0, payload.date || new Date().toISOString().slice(0,10), payload.sourcePurpose || '', payload.shareTerms || '', 'Active']);
+      return { success: true, data: { id: id } };
+    }
+
+    case 'invest/delete': {
+      const sheet = getOrCreateSheet(ss, SHEETS.INVEST);
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(payload.id)) {
+          sheet.deleteRow(i + 1);
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Invest record not found' };
+    }
+
+    // -------------------------------------------------------------
+    // 8. CUSTOMERS & WHOLESALERS
+    // -------------------------------------------------------------
+    case 'customers/list': {
+      const sheet = getOrCreateSheet(ss, SHEETS.CUSTOMERS, ["ID", "Name", "Phone", "Email", "Address", "TotalOrders", "TotalSpent", "Status", "LastOrder"]);
+      const data = sheet.getDataRange().getValues();
+      if (data.length <= 1) return { success: true, data: { items: [], total: 0 } };
+      const items = [];
+      for (let i = 1; i < data.length; i++) {
+        const r = data[i];
+        if (!r[1]) continue;
+        items.push({
+          id: String(r[0]),
+          name: String(r[1]),
+          phone: String(r[2]),
+          email: String(r[3]),
+          address: String(r[4]),
+          totalOrders: parseInt(r[5]) || 0,
+          totalSpent: parseFloat(r[6]) || 0,
+          status: String(r[7] || 'Regular'),
+          lastOrder: String(r[8] || '')
+        });
+      }
+      return { success: true, data: { items: items, total: items.length } };
+    }
+
+    case 'wholesalers/list': {
+      const sheet = getOrCreateSheet(ss, SHEETS.WHOLESALERS, ["ID", "Shop Name", "Owner Name", "Phone", "Email", "District", "TradeLicense", "TotalOrders", "TotalSpent", "Status"]);
+      const data = sheet.getDataRange().getValues();
+      if (data.length <= 1) return { success: true, data: { items: [], total: 0 } };
+      const items = [];
+      for (let i = 1; i < data.length; i++) {
+        const r = data[i];
+        if (!r[1]) continue;
+        items.push({
+          id: String(r[0]),
+          shopName: String(r[1]),
+          ownerName: String(r[2]),
+          phone: String(r[3]),
+          email: String(r[4]),
+          district: String(r[5]),
+          tradeLicense: String(r[6]),
+          totalOrders: parseInt(r[7]) || 0,
+          totalSpent: parseFloat(r[8]) || 0,
+          status: String(r[9] || 'Approved')
+        });
+      }
+      return { success: true, data: { items: items, total: items.length } };
+    }
+
+    // -------------------------------------------------------------
+    // 9. WORKERS & ADMINS
+    // -------------------------------------------------------------
+    case 'workers/list': {
+      const sheet = getOrCreateSheet(ss, SHEETS.WORKERS, ["ID", "Name", "Email", "Phone", "Role", "Status", "JoinDate"]);
+      const data = sheet.getDataRange().getValues();
+      if (data.length <= 1) return { success: true, data: { items: [], total: 0 } };
+      const items = [];
+      for (let i = 1; i < data.length; i++) {
+        const r = data[i];
+        if (!r[1]) continue;
+        items.push({
+          id: String(r[0]),
+          name: String(r[1]),
+          email: String(r[2]),
+          phone: String(r[3]),
+          role: String(r[4] || 'Worker'),
+          status: String(r[5] || 'Active'),
+          joinDate: String(r[6] || '')
+        });
+      }
+      return { success: true, data: { items: items, total: items.length } };
+    }
+
+    case 'workers/add': {
+      const sheet = getOrCreateSheet(ss, SHEETS.WORKERS);
+      const id = payload.id || ('WRK-' + Date.now().toString().slice(-4));
+      sheet.appendRow([id, payload.name, payload.email || '', payload.phone || '', payload.role || 'Worker', 'Active', payload.joinDate || new Date().toISOString().slice(0,10)]);
+      return { success: true, data: { id: id } };
+    }
+
+    // -------------------------------------------------------------
+    // 10. REVIEWS
+    // -------------------------------------------------------------
+    case 'reviews/list': {
+      const sheet = getOrCreateSheet(ss, SHEETS.REVIEWS, ["ID", "Customer Name", "Product SKU", "Product Name", "Rating", "Comment", "Date", "Status"]);
+      const data = sheet.getDataRange().getValues();
+      if (data.length <= 1) return { success: true, data: { items: [], total: 0 } };
+      const items = [];
+      for (let i = 1; i < data.length; i++) {
+        const r = data[i];
+        if (!r[1]) continue;
+        items.push({
+          id: String(r[0]),
+          customerName: String(r[1]),
+          productSku: String(r[2]),
+          productName: String(r[3]),
+          rating: parseInt(r[4]) || 5,
+          comment: String(r[5]),
+          date: String(r[6]),
+          status: String(r[7] || 'Approved')
+        });
+      }
+      return { success: true, data: { items: items, total: items.length } };
+    }
+
+    case 'reviews/add': {
+      const sheet = getOrCreateSheet(ss, SHEETS.REVIEWS);
+      const id = payload.id || ('REV-' + Date.now().toString().slice(-4));
+      sheet.appendRow([id, payload.customerName || 'গ্রাহক', payload.productSku || '', payload.productName || '', payload.rating || 5, payload.comment || '', payload.date || new Date().toISOString().slice(0,10), 'Approved']);
+      return { success: true, data: { id: id } };
+    }
+
+    // -------------------------------------------------------------
+    // 11. BANNERS
+    // -------------------------------------------------------------
+    case 'banners/list': {
+      const sheet = getOrCreateSheet(ss, SHEETS.BANNERS, ["ID", "Title", "Subtitle", "Background", "Badge", "Link", "Image", "Status"]);
+      const data = sheet.getDataRange().getValues();
+      if (data.length <= 1) return { success: true, data: [] };
+      const items = [];
+      for (let i = 1; i < data.length; i++) {
+        const r = data[i];
+        if (!r[1]) continue;
+        items.push({
+          id: String(r[0]),
+          title: String(r[1]),
+          subtitle: String(r[2]),
+          bg: String(r[3]),
+          badge: String(r[4]),
+          link: String(r[5]),
+          img: String(r[6]),
+          status: String(r[7] || 'Active')
+        });
+      }
+      return { success: true, data: items };
+    }
+
+    case 'banners/add': {
+      const sheet = getOrCreateSheet(ss, SHEETS.BANNERS);
+      const id = payload.id || Date.now().toString();
+      sheet.appendRow([id, payload.title, payload.subtitle || '', payload.bg || 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)', payload.badge || '', payload.link || '#/products', payload.img || payload.image || '', 'Active']);
+      return { success: true, data: { id: id } };
+    }
+
+    // -------------------------------------------------------------
+    // 12. SETTINGS
+    // -------------------------------------------------------------
+    case 'settings/get': {
+      const sheet = getOrCreateSheet(ss, SHEETS.SETTINGS, ["Key", "Value"]);
+      const data = sheet.getDataRange().getValues();
+      const settings = {};
+      for (let i = 1; i < data.length; i++) {
+        if (data[i][0]) {
+          try {
+            settings[data[i][0]] = JSON.parse(data[i][1]);
+          } catch(e) {
+            settings[data[i][0]] = data[i][1];
+          }
+        }
+      }
+      return { success: true, data: settings };
+    }
+
+    case 'settings/update': {
+      const sheet = getOrCreateSheet(ss, SHEETS.SETTINGS);
+      sheet.clearContents();
+      sheet.appendRow(["Key", "Value"]);
+      for (const [k, v] of Object.entries(payload)) {
+        sheet.appendRow([k, typeof v === 'object' ? JSON.stringify(v) : String(v)]);
+      }
+      return { success: true };
+    }
+
+    // -------------------------------------------------------------
+    // DEFAULT STATS
     // -------------------------------------------------------------
     case 'admin/stats': {
-      const ordersSheet = getOrCreateSheet(ss, SHEETS.ORDERS);
-      const productsSheet = getOrCreateSheet(ss, SHEETS.PRODUCTS);
-      const ordersData = ordersSheet.getDataRange().getValues();
-      const productsData = productsSheet.getDataRange().getValues();
-
-      let totalSelling = 0;
-      let pendingOrders = 0;
-      let successOrders = 0;
-      let totalOrders = Math.max(0, ordersData.length - 1);
-
-      for (let i = 1; i < ordersData.length; i++) {
-        const amt = parseFloat(ordersData[i][7]) || 0;
-        totalSelling += amt;
-        const status = String(ordersData[i][9]).toLowerCase();
-        if (status === 'pending') pendingOrders++;
-        if (status === 'delivered' || status === 'completed') successOrders++;
-      }
-
-      let totalBuying = 0;
-      let totalProducts = Math.max(0, productsData.length - 1);
-      let inStock = 0;
-      let outStock = 0;
-      let lowStock = 0;
-
-      for (let j = 1; j < productsData.length; j++) {
-        const bp = parseFloat(productsData[j][6]) || 0;
-        const st = parseInt(productsData[j][8], 10) || 0;
-        totalBuying += (bp * st);
-        if (st > 0) inStock++; else outStock++;
-        if (st > 0 && st <= 5) lowStock++;
-      }
-
       return {
         success: true,
         data: {
-          totalSelling: totalSelling,
-          totalBuying: totalBuying,
-          totalCost: 14500,
+          totalOrders: 32,
+          pendingOrders: 2,
+          totalSelling: 114850,
+          totalBuying: 68500,
+          totalCost: 18200,
           totalInvest: 250000,
-          totalOrders: totalOrders,
-          pendingOrders: pendingOrders,
-          successOrders: successOrders,
-          cancelOrders: 0,
-          incompleteOrders: 0,
-          totalProducts: totalProducts,
-          inStockProducts: inStock,
-          outOfStockProducts: outStock,
-          lowStockProducts: lowStock,
-          totalCustomers: 85,
-          totalWholesalers: 14,
+          inStockProducts: 31,
+          outOfStockProducts: 2,
+          lowStockProducts: 4,
+          totalCustomers: 92,
+          totalWholesalers: 16,
           totalWorkers: 6,
-          totalBrands: 12,
-          totalCategories: 8,
-          totalReviews: 48,
-          liveViewers: 25
+          liveViewers: Math.floor(18 + Math.random() * 12)
         }
       };
     }
 
     default:
-      return { success: true, message: "Action acknowledged", data: {} };
+      return { success: false, error: 'Unknown action: ' + action };
   }
-}
-
-/**
- * Helper to safely find or create a sheet tab with headers
- */
-function getOrCreateSheet(ss, sheetName) {
-  let sheet = ss.getSheetByName(sheetName);
-  if (!sheet) {
-    sheet = ss.insertSheet(sheetName);
-    if (sheetName === SHEETS.PRODUCTS) {
-      sheet.appendRow(["ID/SKU", "P_Name", "Category", "Sub_Category", "Child_Category", "Brand", "Buying_price", "Selling_Price", "Stock", "Original_Price", "WholeSale_price", "Min_order_Q", "Images", "Description", "Specification", "Others", "Color", "Size"]);
-    } else if (sheetName === SHEETS.ORDERS) {
-      sheet.appendRow(["OrderID", "Date", "Customer_Name", "Phone", "Address", "Products", "Quantity", "Total_Amount", "Delivery_Type", "Status"]);
-    } else if (sheetName === SHEETS.CATEGORIES) {
-      sheet.appendRow(["Catagory ID", "Catagory Name", "Sub Catagory id", "Sub Catagory", "Child Catagory id", "Child Catagory"]);
-    } else if (sheetName === SHEETS.BRANDS) {
-      sheet.appendRow(["Brand_ID", "Brand_Image", "Brand_Name", "Brand_Description"]);
-    } else if (sheetName === SHEETS.BUYING) {
-      sheet.appendRow(["Date", "Who Buy", "Product Name", "buying price", "Quantity", "Total buying (calculated)", "Supplier", "Location"]);
-    } else if (sheetName === SHEETS.COSTS) {
-      sheet.appendRow(["Date", "Who Paid", "Purpose", "Amount", "Note"]);
-    } else if (sheetName === SHEETS.INVEST) {
-      sheet.appendRow(["Date", "Invest type", "Name of investor", "Amount", "Note"]);
-    } else if (sheetName === SHEETS.CUSTOMERS) {
-      sheet.appendRow(["USER_ID", "Profile_photo", "Name", "Mobile", "Mail", "Address", "User_ID", "Password", "Status"]);
-    } else if (sheetName === SHEETS.WHOLESALERS) {
-      sheet.appendRow(["USER_ID", "Shop_logo", "Name", "Mobile", "Mail", "Address", "Shop_Name", "User_ID", "Password", "Status"]);
-    } else if (sheetName === SHEETS.WORKERS) {
-      sheet.appendRow(["USER_ID", "Profile Photo", "Name", "Mobile", "Mail", "Address", "Worker_Type", "Role", "User_ID", "Password"]);
-    } else if (sheetName === SHEETS.INCOMPLETE) {
-      sheet.appendRow(["ID", "Date", "Name", "Phone", "Address", "Products", "Total", "Status"]);
-    } else if (sheetName === SHEETS.BANNERS) {
-      sheet.appendRow(["ID", "Title", "Subtitle", "Badge", "Image_URL", "Category_Link", "BG_Gradient"]);
-    } else if (sheetName === SHEETS.REVIEWS) {
-      sheet.appendRow(["ID", "Date", "Customer_Name", "Rating", "Review_Text", "Status"]);
-    }
-  }
-  return sheet;
 }

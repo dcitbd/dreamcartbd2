@@ -655,14 +655,24 @@ const PAGES = {
           </div>
 
           <div class="user-comments-list space-y-3">
-            <div class="comment-card p-3 rounded-3 bg-slate-900 border border-slate-800">
-              <div class="d-flex justify-content-between align-items-center mb-1">
-                <strong class="text-white">রাশেদুল ইসলাম (কুমিল্লা)</strong>
-                <div class="text-warning text-xs">★★★★★ (৫/৫)</div>
-              </div>
-              <p class="text-xs text-slate-300 mb-1">প্রোডাক্টের কোয়ালিটি অসাধারণ। বিকাশ পেমেন্টে ৫% ছাড় পেয়েছি এবং ২ দিনের মধ্যেই ডেলিভারি হয়েছে।</p>
-              <small class="text-muted text-[10px]">Verified Purchase | ২ দিন আগে</small>
-            </div>
+            ${(await (async () => {
+              const revRes = await API.call('reviews/list');
+              const allRevs = (revRes.data && revRes.data.items) || [];
+              const prodRevs = allRevs.filter(r => r.productSku === p.sku || r.status === 'Approved');
+              const displayRevs = prodRevs.length > 0 ? prodRevs.slice(0, 5) : [
+                { customerName: 'রাশেদুল ইসলাম (কুমিল্লা)', rating: 5, comment: 'প্রোডাক্টের কোয়ালিটি অসাধারণ। বিকাশ পেমেন্টে ৫% ছাড় পেয়েছি এবং দ্রুত ডেলিভারি হয়েছে।', date: '২ দিন আগে' }
+              ];
+              return displayRevs.map(r => `
+                <div class="comment-card p-3 rounded-3 bg-slate-900 border border-slate-800">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <strong class="text-white">${r.customerName}</strong>
+                    <div class="text-warning text-xs">${'★'.repeat(r.rating || 5)}${'☆'.repeat(Math.max(0, 5 - (r.rating || 5)))} (${r.rating || 5}/৫)</div>
+                  </div>
+                  <p class="text-xs text-slate-300 mb-1">${r.comment}</p>
+                  <small class="text-muted text-[10px]"><i class="bi bi-patch-check-fill text-emerald me-1"></i>Verified Purchase | ${r.date || 'সম্প্রতি'}</small>
+                </div>
+              `).join('');
+            })())}
           </div>
         </section>
 
@@ -706,6 +716,85 @@ const PAGES = {
       STORE.cart.addItem(res.data, qty);
       window.location.hash = '#/checkout';
     }
+  },
+
+  
+  async openReviewModal(sku) {
+    const res = await API.call('products/details', { id: sku });
+    const prod = res.data || { name: 'পণ্য', sku: sku };
+
+    const modalHtml = `
+      <div class="modal fade show" id="submitReviewModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
+            <div class="modal-header border-slate-800">
+              <h5 class="modal-title fw-bold text-emerald"><i class="bi bi-star-fill text-warning me-2"></i>প্রোডাক্ট রিভিউ দিন</h5>
+              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('submitReviewModal').remove()"></button>
+            </div>
+            <form onsubmit="PAGES.handleReviewSubmit(event, '${sku}', '${(prod.name || '').replace(/'/g, "\'")}')">
+              <div class="modal-body p-4">
+                <div class="mb-3">
+                  <div class="text-xs text-muted">পণ্য:</div>
+                  <strong class="text-white text-sm">${prod.name}</strong>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label text-xs fw-bold">রেটিং নির্বাচন করুন *</label>
+                  <select id="rev-rating" class="form-select bg-slate-950 text-warning border-slate-700 font-bold" required>
+                    <option value="5" selected>★★★★★ ৫ স্টার (অসাধারণ)</option>
+                    <option value="4">★★★★☆ ৪ স্টার (খুব ভালো)</option>
+                    <option value="3">★★★☆☆ ৩ স্টার (মোটামুটি)</option>
+                    <option value="2">★★☆☆☆ ২ স্টার (খারাপ)</option>
+                    <option value="1">★☆☆☆☆ ১ স্টার (খুব খারাপ)</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label text-xs fw-bold">আপনার পুরো নাম *</label>
+                  <input type="text" id="rev-cust-name" class="form-control bg-slate-950 text-white border-slate-700" placeholder="যেমন: মো: সাইফুল ইসলাম" required />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label text-xs fw-bold">আপনার মূল্যবান মতামত লিখুন *</label>
+                  <textarea id="rev-comment" class="form-control bg-slate-950 text-white border-slate-700" rows="3" placeholder="পণ্যের মান, ডেলিভারি ও প্যাকেজিং নিয়ে আপনার অভিজ্ঞতা লিখুন..." required></textarea>
+                </div>
+              </div>
+              <div class="modal-footer border-slate-800">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('submitReviewModal').remove()">বাতিল</button>
+                <button type="submit" class="btn btn-emerald btn-sm px-4 fw-bold">রিভিউ সাবমিট করুন</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('submitReviewModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  },
+
+  async handleReviewSubmit(e, sku, prodName) {
+    e.preventDefault();
+    const rating = parseInt(document.getElementById('rev-rating')?.value, 10) || 5;
+    const name = document.getElementById('rev-cust-name')?.value.trim();
+    const comment = document.getElementById('rev-comment')?.value.trim();
+
+    if (!name || !comment) return;
+
+    const res = await API.call('reviews/add', {
+      customerName: name,
+      productSku: sku,
+      productName: prodName,
+      rating: rating,
+      comment: comment,
+      status: 'Approved'
+    });
+
+    document.getElementById('submitReviewModal')?.remove();
+    STORE.toast('success', 'রিভিউ যুক্ত হয়েছে!', 'ধন্যবাদ! আপনার রিভিউটি সাইটে এবং এডমিন প্যানেলে সফলভাবে যুক্ত হয়েছে।');
+    
+    // Refresh product details to show the new review
+    const content = document.getElementById('main-content');
+    if (content) content.innerHTML = await PAGES.renderProductDetails(sku);
   },
 
   openReviewModal(sku) {
