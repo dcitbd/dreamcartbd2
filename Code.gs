@@ -902,3 +902,18 @@ function handleAction(action, payload) {
       return { success: false, error: 'Unknown action: ' + action };
   }
 }
+
+/**
+ * 1-Click Verification Test function in Apps Script
+ * Run this in Apps Script to verify that all 1600+ products are loading from your sheet
+ */
+function testProductsList() {
+  var res = handleAction('products/list', {});
+  Logger.log('=== DREAM CART BD 1600+ PRODUCTS TEST ===');
+  Logger.log('Success: ' + res.success);
+  Logger.log('Total products loaded: ' + (res.data ? res.data.total : 0));
+  if (res.data && res.data.items && res.data.items.length > 0) {
+    Logger.log('1st Product: ' + res.data.items[0].sku + ' - ' + res.data.items[0].name);
+    Logger.log('Last Product: ' + res.data.items[res.data.items.length - 1].sku + ' - ' + res.data.items[res.data.items.length - 1].name);
+  }
+}
