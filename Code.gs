@@ -245,7 +245,7 @@ function handleAction(action, payload) {
             }
           }
         }
-        const primaryImage = imageList.length > 0 ? imageList[0] : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=80';
+        const primaryImage = imageList.length > 0 ? imageList[0] : '';
 
         // Categorization & normalization
         let rawCat = String(row[2] || 'General').trim();

@@ -127,10 +127,13 @@ const PAGES = {
 
         <!-- Live Google Sheet Status Banner -->
         <div class="alert bg-slate-900 border border-emerald/40 text-white rounded-3 p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
-          <div class="d-flex align-items-center gap-2">
+          <div class="d-flex align-items-center flex-wrap gap-2">
             <span class="spinner-grow spinner-grow-sm text-emerald" role="status"></span>
-            <span class="fw-bold text-sm">গুগল সীট থেকে লাইভ ডেটাবেজ সংযুক্ত</span>
+            <span class="fw-bold text-sm">গুগল সীট ডেটাবেজ:</span>
             <span class="badge bg-emerald text-dark fw-bold">${allProducts.length} টি পণ্য সক্রিয়</span>
+            <button class="btn btn-xs btn-outline-warning text-xs fw-bold px-2 py-1 ms-md-2" onclick="PAGES.openSheetSyncModal()">
+              <i class="bi bi-cloud-arrow-down-fill me-1"></i>১৬০০+ প্রোডাক্ট সিঙ্ক / CSV ইমপোর্ট
+            </button>
           </div>
           <a href="#/products" class="btn btn-xs btn-outline-emerald text-xs fw-bold">সব প্রোডাক্ট দেখুন →</a>
         </div>
@@ -2671,6 +2674,130 @@ const PAGES = {
       </div>
     `;
   },
+
+
+// Open Google Sheet Sync & CSV Import Modal
+  openSheetSyncModal() {
+    const modalHtml = `
+      <div class="modal fade show" id="sheetSyncModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
+            <div class="modal-header border-slate-800">
+              <h5 class="modal-title fw-bold text-emerald">
+                <i class="bi bi-cloud-arrow-down-fill text-warning me-2"></i>গুগল সীট থেকে ১৬০০+ প্রোডাক্ট সিঙ্ক ও ইমপোর্ট
+              </h5>
+              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('sheetSyncModal').remove()"></button>
+            </div>
+            <div class="modal-body p-4 space-y-4">
+              
+              <!-- Option 1: 1-Click CSV Upload (Guaranteed & Fastest) -->
+              <div class="p-3 rounded-3 bg-slate-950 border border-slate-800">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="badge bg-emerald text-dark fw-bold">পদ্ধতি ১ (সবচেয়ে সহজ ও দ্রুত)</span>
+                  <strong class="text-white text-sm">গুগল সীটের CSV ফাইল আপলোড করুন</strong>
+                </div>
+                <p class="text-xs text-slate-300 mb-2">
+                  আপনার গুগল শিটে গিয়ে <strong>File > Download > Comma Separated Values (.csv)</strong> এ ক্লিক করে ডাউনলোড করা CSV ফাইলটি এখানে সিলেক্ট করুন। সাথে সাথে আপনার ১৬০০+ প্রোডাক্ট সাইটে লোড হয়ে যাবে:
+                </p>
+                <input type="file" id="sheet-csv-file-picker" accept=".csv" class="form-control form-control-sm bg-slate-900 text-white border-slate-700 mb-2" onchange="PAGES.handleCSVFileSelected(event)" />
+                <div id="csv-upload-status" class="text-xs text-muted"></div>
+              </div>
+
+              <!-- Option 2: Live Google Sheet GViz Sync -->
+              <div class="p-3 rounded-3 bg-slate-950 border border-slate-800">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="badge bg-info text-dark fw-bold">পদ্ধতি ২ (অটো সিঙ্ক)</span>
+                  <strong class="text-white text-sm">সরাসরি গুগল শিট থেকে লাইভ সিঙ্ক</strong>
+                </div>
+                <p class="text-xs text-slate-300 mb-2">
+                  গুগল শিটের <strong>Share</strong> বাটনে গিয়ে <strong>General Access: Anyone with the link (Viewer)</strong> করে নিচের বাটনে ক্লিক করুন:
+                </p>
+                <button type="button" class="btn btn-sm btn-outline-info fw-bold" onclick="PAGES.triggerLiveSheetSync()">
+                  <i class="bi bi-arrow-repeat me-1"></i> গুগল শিট থেকে লাইভ রিফ্রেশ করুন
+                </button>
+                <div id="live-sync-status" class="text-xs text-muted mt-2"></div>
+              </div>
+
+              <!-- Option 3: Apps Script Web App URL -->
+              <div class="p-3 rounded-3 bg-slate-950 border border-slate-800">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="badge bg-secondary text-white fw-bold">পদ্ধতি ৩</span>
+                  <strong class="text-white text-sm">Apps Script Web App URL আপডেট</strong>
+                </div>
+                <div class="input-group input-group-sm mb-2">
+                  <input type="url" id="sync-gas-url" class="form-control bg-slate-900 text-white border-slate-700" value="${CONFIG.apiBaseUrl || ''}" placeholder="https://script.google.com/macros/s/.../exec" />
+                  <button class="btn btn-outline-emerald fw-bold" type="button" onclick="PAGES.updateGasUrlAndSync()">
+                    কানেক্ট ও সিঙ্ক
+                  </button>
+                </div>
+              </div>
+
+            </div>
+            <div class="modal-footer border-slate-800">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('sheetSyncModal').remove()">বন্ধ করুন</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('sheetSyncModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  },
+
+  handleCSVFileSelected(e) {
+    const file = e.target.files && e.target.files[0];
+    const statusEl = document.getElementById('csv-upload-status');
+    if (!file) return;
+
+    if (statusEl) statusEl.innerHTML = '<span class="text-warning"><i class="bi bi-hourglass-split"></i> CSV পার্স করা হচ্ছে...</span>';
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const text = evt.target.result;
+        const res = API.importProductsFromCSV(text);
+        if (res.success) {
+          if (statusEl) statusEl.innerHTML = `<span class="text-emerald fw-bold"><i class="bi bi-check-circle-fill"></i> সফল! ${res.count} টি প্রোডাক্ট গুগল শিট থেকে লোড হয়েছে।</span>`;
+          STORE.toast('success', '১৬০০+ প্রোডাক্ট লোড হয়েছে!', `গুগল শিট থেকে মোট ${res.count} টি পণ্য সফলভাবে ডেটাবেজে যুক্ত হয়েছে।`);
+          setTimeout(() => {
+            document.getElementById('sheetSyncModal')?.remove();
+            if (typeof APP !== 'undefined' && APP.route) APP.route();
+          }, 1200);
+        } else {
+          if (statusEl) statusEl.innerHTML = `<span class="text-danger"><i class="bi bi-x-circle-fill"></i> ${res.message}</span>`;
+        }
+      } catch (err) {
+        if (statusEl) statusEl.innerHTML = `<span class="text-danger">ত্রুটি: ${err.message}</span>`;
+      }
+    };
+    reader.readAsText(file, 'utf-8');
+  },
+
+  async triggerLiveSheetSync() {
+    const statusEl = document.getElementById('live-sync-status');
+    if (statusEl) statusEl.innerHTML = '<span class="text-warning"><i class="bi bi-arrow-repeat spin"></i> গুগল শিট থেকে তথ্য আনা হচ্ছে...</span>';
+    
+    const ok = await API.fetchLiveSheetData(true);
+    const count = API.getStorage(API.STORAGE_KEYS.PRODUCTS, []).length;
+    if (ok) {
+      if (statusEl) statusEl.innerHTML = `<span class="text-emerald fw-bold"><i class="bi bi-check-circle-fill"></i> সফল! ${count} টি প্রোডাক্ট লাইভ সিঙ্ক হয়েছে।</span>`;
+      STORE.toast('success', 'লাইভ সিঙ্ক সফল!', `${count} টি পণ্য গুগল শিট থেকে আপডেট হয়েছে।`);
+      setTimeout(() => {
+        document.getElementById('sheetSyncModal')?.remove();
+        if (typeof APP !== 'undefined' && APP.route) APP.route();
+      }, 1200);
+    } else {
+      if (statusEl) statusEl.innerHTML = `<span class="text-warning"><i class="bi bi-exclamation-triangle"></i> গুগল শিটের অ্যাক্সেস "Anyone with the link (Viewer)" করা আছে কি না যাচাই করুন, অথবা উপরের পদ্ধতি ১ ব্যবহার করে CSV ফাইল দিন।</span>`;
+    }
+  },
+
+  async updateGasUrlAndSync() {
+    const input = document.getElementById('sync-gas-url');
+    if (!input || !input.value.trim()) return;
+    CONFIG.apiBaseUrl = input.value.trim();
+    localStorage.setItem('dcbd_custom_gas_url', CONFIG.apiBaseUrl);
+    await this.triggerLiveSheetSync();
+  },
 };
 
-window.PAGES = PAGES; 
+window.PAGES = PAGES;

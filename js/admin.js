@@ -455,7 +455,7 @@ const ADMIN = {
           <div class="d-flex gap-2">
             <button class="btn btn-sm btn-outline-light" onclick="ADMIN.exportCSV('product-table')"><i class="bi bi-file-earmark-spreadsheet me-1"></i> CSV</button>
             <button class="btn btn-sm btn-outline-light" onclick="window.print()"><i class="bi bi-printer me-1"></i> Print</button>
-            <button class="btn btn-sm btn-outline-emerald fw-bold me-2" onclick="ADMIN.refreshFromSheet()"><i class="bi bi-arrow-repeat me-1"></i> গুগল সীট সিঙ্ক</button>
+            <button class="btn btn-sm btn-outline-warning fw-bold me-2" onclick="PAGES.openSheetSyncModal()"><i class="bi bi-cloud-arrow-down-fill me-1"></i> ১৬০০+ প্রোডাক্ট CSV ইমপোর্ট / সিঙ্ক</button><button class="btn btn-sm btn-outline-emerald fw-bold me-2" onclick="ADMIN.refreshFromSheet()"><i class="bi bi-arrow-repeat me-1"></i> গুগল সীট সিঙ্ক</button>
             <button class="btn btn-sm btn-primary fw-bold" onclick="ADMIN.openAddProductModal()"><i class="bi bi-plus-lg me-1"></i> এড প্রোডাক্ট (A-R)</button>
           </div>
         </div>
