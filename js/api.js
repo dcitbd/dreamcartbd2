@@ -1,3 +1,17 @@
+// Prevent 'google is not defined' error if GViz library or JSONP sets response
+if (typeof window !== 'undefined') {
+  window.google = window.google || {};
+  window.google.visualization = window.google.visualization || {};
+  window.google.visualization.Query = window.google.visualization.Query || {};
+  if (!window.google.visualization.Query.setResponse) {
+    window.google.visualization.Query.setResponse = function(response) {
+      if (typeof window._onGvizQueryResponse === 'function') {
+        window._onGvizQueryResponse(response);
+      }
+    };
+  }
+}
+
 /**
  * DREAM CART BD — BULLETPROOF DATA & API ENGINE
  * Features:
@@ -7,7 +21,12 @@
  */
 
 const API = {
-    STORAGE_KEYS: {
+  _memory: {},
+  _initialized: false,
+  _sheetLoaded: false,
+  _syncPromise: null,
+
+  STORAGE_KEYS: {
     PRODUCTS: 'dcbd_products_cache',
     CATEGORIES: 'dcbd_categories_cache',
     ORDERS: 'dcbd_orders_cache',
@@ -991,6 +1010,7 @@ const API = {
   _syncPromise: null,
 
   getStorage(key, fallback = []) {
+    if (!this._memory) this._memory = {};
     if (this._memory[key] && Array.isArray(this._memory[key]) && this._memory[key].length > 0) {
       return this._memory[key];
     }
@@ -1012,6 +1032,7 @@ const API = {
 
   // Safe Storage Setter (Guaranteed never to throw QuotaExceededError)
   setStorage(key, data) {
+    if (!this._memory) this._memory = {};
     this._memory[key] = data;
     try {
       localStorage.setItem(key, JSON.stringify(data));
@@ -1088,18 +1109,25 @@ const API = {
     if (this._syncPromise && !force) return this._syncPromise;
 
     this._syncPromise = (async () => {
-      console.log('[Google Sheet Sync] Starting live products fetch from Sheet & Apps Script...');
+      console.log('[Google Sheet Sync] Checking live products from Google Sheet & Apps Script...');
 
-      // Method 1: Google Sheet Direct GViz Query (Fastest, real-time)
+      // Method 1: Google Sheet Direct GViz Query with manual redirect protection
       const sheetGvizUrl = CONFIG.sheetGvizUrl;
+      let isSheetPrivate = false;
+
       if (sheetGvizUrl) {
-        // 1A: Fetch GViz JSON
         try {
+          // Use redirect: 'manual' to catch Google Account Login redirect without throwing CORS error
           const res = await Promise.race([
-            fetch(sheetGvizUrl),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+            fetch(sheetGvizUrl, { redirect: 'manual' }),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000))
           ]);
-          if (res.ok) {
+
+          // If redirected to login, sheet is private (Restricted)
+          if (res.type === 'opaqueredirect' || res.status === 0 || (res.status >= 300 && res.status < 400)) {
+            isSheetPrivate = true;
+            console.warn('[Google Sheet Notice] Google Sheet is currently Restricted/Private. Falling back to Google Apps Script Web App...');
+          } else if (res.ok && res.status === 200) {
             const text = await res.text();
             const match = text.match(/google\.visualization\.Query\.setResponse\((.+)\);/s);
             if (match && match[1]) {
@@ -1117,7 +1145,7 @@ const API = {
                 if (sheetProducts.length > 0) {
                   this.setStorage(this.STORAGE_KEYS.PRODUCTS, sheetProducts);
                   this._sheetLoaded = true;
-                  console.log(`[Google Sheet GViz] Loaded ${sheetProducts.length} products directly from Sheet.`);
+                  console.log(`[Google Sheet GViz] Successfully loaded ${sheetProducts.length} products directly from Sheet.`);
                   window.dispatchEvent(new CustomEvent('dcbd_products_synced', { detail: sheetProducts }));
                   return true;
                 }
@@ -1125,72 +1153,24 @@ const API = {
             }
           }
         } catch (e) {
-          console.warn('[Google Sheet GViz Fetch Notice]:', e.message);
-        }
-
-        // 1B: JSONP GViz Script Tag (Zero CORS restriction)
-        try {
-          const jsonpRes = await new Promise((resolve, reject) => {
-            const cbName = 'gviz_jsonp_' + Date.now();
-            const timer = setTimeout(() => {
-              delete window[cbName];
-              script.remove();
-              reject(new Error('JSONP Timeout'));
-            }, 5000);
-
-            const script = document.createElement('script');
-            window[cbName] = (json) => {
-              clearTimeout(timer);
-              delete window[cbName];
-              script.remove();
-              resolve(json);
-            };
-            script.onerror = (err) => {
-              clearTimeout(timer);
-              delete window[cbName];
-              script.remove();
-              reject(err);
-            };
-            script.src = `${sheetGvizUrl.replace('out:json', 'out:jsonp')}&tqx=responseHandler:${cbName}`;
-            document.head.appendChild(script);
-          });
-
-          if (jsonpRes && jsonpRes.table && jsonpRes.table.rows && jsonpRes.table.rows.length > 0) {
-            const sheetProducts = [];
-            jsonpRes.table.rows.forEach((r, idx) => {
-              const rawCells = (r.c || []).map(cell => (cell ? (cell.v !== null && cell.v !== undefined ? cell.v : '') : ''));
-              const p = this.rowToProduct(rawCells, idx);
-              if (p && p.name && p.name.trim() !== '') {
-                sheetProducts.push(p);
-              }
-            });
-            if (sheetProducts.length > 0) {
-              this.setStorage(this.STORAGE_KEYS.PRODUCTS, sheetProducts);
-              this._sheetLoaded = true;
-              console.log(`[Google Sheet GViz JSONP] Loaded ${sheetProducts.length} products directly from Sheet.`);
-              window.dispatchEvent(new CustomEvent('dcbd_products_synced', { detail: sheetProducts }));
-              return true;
-            }
-          }
-        } catch (e) {
-          console.warn('[Google Sheet GViz JSONP Notice]:', e.message);
+          console.warn('[Google Sheet GViz Notice]:', e.message);
         }
       }
 
-      // Method 2: Google Apps Script Web App API (Runs as Owner, reads private sheets)
+      // Method 2: Google Apps Script Web App API (Runs as Owner, can read private sheets)
       if (CONFIG.apiBaseUrl) {
         // 2A: Direct fetch to Apps Script
         try {
           const apiRes = await Promise.race([
             fetch(`${CONFIG.apiBaseUrl}?action=products/list`),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 7000))
+            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 8000))
           ]);
           if (apiRes.ok) {
             const result = await apiRes.json();
             if (result && result.success && result.data && Array.isArray(result.data.items) && result.data.items.length > 0) {
               this.setStorage(this.STORAGE_KEYS.PRODUCTS, result.data.items);
               this._sheetLoaded = true;
-              console.log(`[Apps Script Live] Loaded ${result.data.items.length} products via Web App.`);
+              console.log(`[Apps Script Live] Successfully loaded ${result.data.items.length} products via Web App.`);
               window.dispatchEvent(new CustomEvent('dcbd_products_synced', { detail: result.data.items }));
               return true;
             }
@@ -1198,47 +1178,10 @@ const API = {
         } catch (e) {
           console.warn('[Apps Script Fetch Notice]:', e.message);
         }
-
-        // 2B: Apps Script JSONP
-        try {
-          const asJsonpRes = await new Promise((resolve, reject) => {
-            const cbName = 'as_jsonp_' + Date.now();
-            const timer = setTimeout(() => {
-              delete window[cbName];
-              script.remove();
-              reject(new Error('AppsScript JSONP Timeout'));
-            }, 7000);
-
-            const script = document.createElement('script');
-            window[cbName] = (json) => {
-              clearTimeout(timer);
-              delete window[cbName];
-              script.remove();
-              resolve(json);
-            };
-            script.onerror = (err) => {
-              clearTimeout(timer);
-              delete window[cbName];
-              script.remove();
-              reject(err);
-            };
-            script.src = `${CONFIG.apiBaseUrl}?action=products/list&callback=${cbName}`;
-            document.head.appendChild(script);
-          });
-
-          if (asJsonpRes && asJsonpRes.success && asJsonpRes.data && Array.isArray(asJsonpRes.data.items) && asJsonpRes.data.items.length > 0) {
-            this.setStorage(this.STORAGE_KEYS.PRODUCTS, asJsonpRes.data.items);
-            this._sheetLoaded = true;
-            console.log(`[Apps Script JSONP] Loaded ${asJsonpRes.data.items.length} products via JSONP.`);
-            window.dispatchEvent(new CustomEvent('dcbd_products_synced', { detail: asJsonpRes.data.items }));
-            return true;
-          }
-        } catch (e) {
-          console.warn('[Apps Script JSONP Notice]:', e.message);
-        }
       }
 
-      console.log(`[Products Fallback] Operating with ${this.SEED_PRODUCTS.length} cached sheet products.`);
+      // Method 3: Safe Operating Fallback from cached sheet products
+      console.log(`[Products Fallback] Operating safely with ${this.SEED_PRODUCTS.length} cached sheet products.`);
       return false;
     })();
 
@@ -1255,6 +1198,7 @@ const API = {
 
   // Initialize seed catalog safely (Only runs once, Quota Safe)
   initSeedData() {
+    if (!this._memory) this._memory = {};
     if (this._initialized) return;
     this._initialized = true;
 

@@ -8,6 +8,87 @@ const ADMIN = {
   _posItems: [],
   _currentProductImage: '',
 
+    // Admin Login Screen
+  renderLogin() {
+    return `
+      <div class="auth-container max-w-md mx-auto py-5" style="max-width: 440px; margin: 0 auto;">
+        <div class="card bg-slate-900 border-slate-800 rounded-4 p-4 shadow-2xl text-white">
+          <div class="text-center mb-4">
+            <img src="${CONFIG.logoUrl}" width="64" height="64" class="rounded-circle mb-2 shadow border-2 border-emerald" onerror="this.src='${CONFIG.fallbackLogoUrl}';" />
+            <h3 class="fw-bold text-white mb-0">${CONFIG.appName}</h3>
+            <p class="text-emerald text-xs fw-bold mt-1 mb-2">${CONFIG.slogan}</p>
+            <span class="badge bg-slate-800 text-slate-300 px-3 py-1">অ্যাডমিন ও কর্মী পোর্টাল</span>
+          </div>
+
+          <form onsubmit="ADMIN.handleLogin(event)">
+            <div class="mb-3">
+              <label class="form-label text-xs fw-bold text-slate-300">অ্যাডমিন ইমেইল / ইউজার আইডি</label>
+              <input type="text" id="admin-user-id" class="form-control bg-slate-950 border-slate-700 text-white" 
+                     placeholder="jainal.dcitbd@gmail.com" value="${CONFIG.adminDefaultUser}" required />
+            </div>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between">
+                <label class="form-label text-xs fw-bold text-slate-300">মাস্টার পাসওয়ার্ড</label>
+                <span class="text-xs text-muted">ডিফল্ট: <code>Dcbd@2026</code></span>
+              </div>
+              <div class="input-group">
+                <input type="password" id="admin-user-pwd" class="form-control bg-slate-950 border-slate-700 text-white" 
+                       placeholder="পাসওয়ার্ড দিন" value="Dcbd@2026" required />
+                <button type="button" class="btn btn-outline-secondary border-slate-700 text-slate-400" onclick="ADMIN.togglePasswordVisibility('admin-user-pwd')">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-xs fw-bold text-slate-300">অ্যাক্সেস রোল</label>
+              <select id="admin-role-select" class="form-select bg-slate-950 border-slate-700 text-white">
+                <option value="Super Admin">Super Admin (সম্পূর্ণ নিয়ন্ত্রণ)</option>
+                <option value="Manager">Manager (অর্ডার ও প্রোডাক্ট)</option>
+                <option value="Worker">Worker / Staff (অর্ডার প্রসেসিং)</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-lg mt-2">
+              লগইন করুন →
+            </button>
+          </form>
+
+          <div class="text-center mt-3 border-top border-slate-800 pt-3">
+            <a href="#/" class="text-muted text-xs text-decoration-none">← মূল শপ পেজে ফিরে যান</a>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  togglePasswordVisibility(inputId) {
+    const el = document.getElementById(inputId);
+    if (el) {
+      el.type = el.type === 'password' ? 'text' : 'password';
+    }
+  },
+
+  handleLogin(e) {
+    e.preventDefault();
+    const id = document.getElementById('admin-user-id').value.trim();
+    const pwd = document.getElementById('admin-user-pwd').value.trim();
+    const role = document.getElementById('admin-role-select').value;
+
+    if (pwd !== CONFIG.adminMasterPassword) {
+      STORE.toast('error', 'লগইন ব্যর্থ', 'ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিন (Dcbd@2026)');
+      return;
+    }
+
+    STORE.auth.loginAdmin({
+      userId: id,
+      name: id.includes('jainal') ? 'Jainal Abedin (Sagor)' : 'Authorized Admin',
+      role: role,
+      permissions: role === 'Super Admin' ? ['ALL'] : (role === 'Manager' ? ['ORDERS', 'PRODUCTS', 'CUSTOMERS'] : ['ORDERS'])
+    });
+
+    STORE.toast('success', 'অ্যাডমিন লগইন সফল!', `স্বাগতম, ${role}`);
+    window.location.hash = '#/admin/dashboard';
+  },
+
   async renderPortal() {
     const admin = (typeof STORE !== 'undefined' && STORE.auth) ? STORE.auth.admin : null;
     if (!admin) {
