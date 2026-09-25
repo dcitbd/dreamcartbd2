@@ -1336,7 +1336,7 @@ const API = {
               reject(new Error('GViz Script Load Error'));
             };
 
-            script.src = 'https://docs.google.com/spreadsheets/d/' + sheetId + '/gviz/tq?tqx=responseHandler:' + cbName + '&sheet=Products&_t=' + Date.now();
+            script.src = 'https://docs.google.com/spreadsheets/d/' + sheetId + '/gviz/tq?tqx=responseHandler:' + cbName + '&gid=2106627979&sheet=Products&_t=' + Date.now();
             document.head.appendChild(script);
           });
 
@@ -1398,6 +1398,30 @@ const API = {
           }
         } catch (e) {
           console.warn('[Google Sheet GViz Direct Fetch Notice]:', e.message);
+        }
+      }
+
+
+      // -------------------------------------------------------------
+      // Channel 5: Google Sheet Direct CSV Export (gid=2106627979)
+      // -------------------------------------------------------------
+      if (sheetId) {
+        try {
+          const csvExportUrl = 'https://docs.google.com/spreadsheets/d/' + sheetId + '/export?format=csv&gid=2106627979&_t=' + Date.now();
+          const csvRes = await Promise.race([
+            fetch(csvExportUrl),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('CSV Export Fetch Timeout')), 5000))
+          ]);
+          if (csvRes.ok) {
+            const csvText = await csvRes.text();
+            const res = this.importProductsFromCSV(csvText);
+            if (res.success && res.count > 0) {
+              console.log('[Google Sheet CSV Export] Successfully loaded ' + res.count + ' products directly via CSV export.');
+              return true;
+            }
+          }
+        } catch (e) {
+          console.warn('[Google Sheet CSV Export Notice]:', e.message);
         }
       }
 

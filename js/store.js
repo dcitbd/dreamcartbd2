@@ -76,7 +76,9 @@ const STORE = {
       const originalPrice = Number(product.originalPrice || (price > 0 ? price * 1.2 : 0)) || price;
       const quantity = Math.max(1, Number(qty) || 1);
 
-      const existing = this.items.find(i => i.sku === sku);
+      const selColor = product.selectedColor || product.color || 'Default';
+      const selSize = product.selectedSize || product.size || 'Standard';
+      const existing = this.items.find(i => i.sku === sku && i.selectedColor === selColor && i.selectedSize === selSize);
       if (existing) {
         existing.quantity += quantity;
         if (price > 0) existing.price = price;
@@ -92,8 +94,8 @@ const STORE = {
           quantity: quantity,
           isWholesale: !!isWholesale,
           minOrderQ: product.minOrderQ || 1,
-          selectedColor: product.selectedColor || 'Default',
-          selectedSize: product.selectedSize || 'Standard'
+          selectedColor: selColor,
+          selectedSize: selSize
         });
       }
       this.save();

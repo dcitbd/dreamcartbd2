@@ -499,7 +499,15 @@ const COMPONENTS = {
                 <tbody>
                   ${items.map(it => `
                     <tr>
-                      <td>${it.name || it.productName || 'Product'}</td>
+                      <td>
+                        <strong>${it.name || it.productName || 'Product'}</strong>
+                        ${(it.selectedColor && it.selectedColor !== 'Default') || (it.selectedSize && it.selectedSize !== 'Standard' && it.selectedSize !== 'Free Size') ? `
+                          <div class="text-muted text-[11px]">
+                            ${it.selectedColor && it.selectedColor !== 'Default' ? `রং: ${it.selectedColor} ` : ''}
+                            ${it.selectedSize && it.selectedSize !== 'Standard' && it.selectedSize !== 'Free Size' ? `| সাইজ: ${it.selectedSize}` : ''}
+                          </div>
+                        ` : ''}
+                      </td>
                       <td class="text-center">${it.quantity || 1}</td>
                       <td class="text-end">৳${(it.price || 0).toLocaleString()}</td>
                       <td class="text-end">৳${((it.price || 0) * (it.quantity || 1)).toLocaleString()}</td>

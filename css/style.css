@@ -1074,3 +1074,28 @@ input[type="number"], input[type="email"], select {
     color: #000000 !important;
   }
 }
+
+
+/* Product Variant Selector Buttons */
+.btn-variant-opt {
+  background: #0f172a;
+  color: #cbd5e1;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-weight: 600;
+  font-size: 0.82rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.btn-variant-opt:hover {
+  background: #1e293b;
+  color: #fff;
+  border-color: #10b981;
+}
+.btn-variant-opt.active {
+  background: rgba(16, 185, 129, 0.18) !important;
+  color: #10b981 !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.35);
+}

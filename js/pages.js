@@ -498,7 +498,10 @@ const PAGES = {
     }
   },
 
-  // 3. PRODUCT DETAILS PAGE (Full Info, Gallery, Variant, Wholesale, Others, Reviews)
+  // 3. PRODUCT DETAILS PAGE (Full Info, Gallery, Color & Size Variant Selectors, Wholesale, Others, Reviews)
+  currentSelectedColor: 'Default',
+  currentSelectedSize: 'Standard',
+
   async renderProductDetails(sku) {
     const rawSku = String(sku || '').trim();
     const decodedSku = decodeURIComponent(rawSku).trim();
@@ -506,7 +509,7 @@ const PAGES = {
     if (!res.success || !res.data) {
       return `
         <div class="container py-5 text-center">
-          <div class="p-5 rounded-4 bg-slate-900 border border-slate-800 max-w-lg mx-auto">
+          <div class="p-5 rounded-4 bg-slate-900 border border-slate-800 max-w-lg mx-auto shadow-2xl">
             <i class="bi bi-exclamation-circle text-warning fs-1 mb-3"></i>
             <h4 class="text-white fw-bold">প্রোডাক্টটি খুঁজে পাওয়া যায়নি</h4>
             <p class="text-muted text-sm mb-4">SKU: <span class="font-monospace text-slate-300">${decodedSku}</span></p>
@@ -521,15 +524,29 @@ const PAGES = {
     const relRes = await API.call('products/list', { category: p.category });
     const related = (relRes.data && relRes.data.items || []).filter(item => item.sku !== p.sku).slice(0, 6);
 
-    // Clean images
+    // Clean image gallery
     let rawImgs = [];
     if (Array.isArray(p.images) && p.images.length > 0) {
       rawImgs = p.images;
     } else if (p.primaryImage) {
       rawImgs = [p.primaryImage];
     }
-    const cleanImgs = rawImgs.map(img => (API.cleanImageUrl ? API.cleanImageUrl(img) : String(img).replace(/\\_/g, '_').replace(/\_/g, '_'))).filter(Boolean);
-    const mainImgUrl = cleanImgs[0] || (CONFIG && CONFIG.fallbackLogoUrl);
+    const cleanImgs = rawImgs.map(img => (API.cleanImageUrl ? API.cleanImageUrl(img) : String(img))).filter(Boolean);
+    const mainImgUrl = cleanImgs[0] || '';
+
+    // Parse Color (Column Q) & Size (Column R) options strictly from sheet
+    const parseOpts = (val, def) => {
+      if (!val || String(val).trim() === '' || String(val).toLowerCase() === 'default') return [def];
+      const arr = String(val).split(/[,/|]+/).map(s => s.trim()).filter(Boolean);
+      return arr.length > 0 ? arr : [def];
+    };
+    const colorOpts = parseOpts(p.color, 'Default');
+    const sizeOpts = parseOpts(p.size, 'Free Size');
+
+    this.currentSelectedColor = colorOpts[0];
+    this.currentSelectedSize = sizeOpts[0];
+
+    const waInitialMsg = `Hello Dream Cart BD, I want to order ${p.name} (SKU: ${p.sku}) | Color: ${this.currentSelectedColor} | Size: ${this.currentSelectedSize} | Quantity: 1`;
 
     return `
       <div class="product-details-container" data-sku="${p.sku}">
@@ -551,18 +568,27 @@ const PAGES = {
           <div class="col-12 col-md-6">
             <div class="product-gallery-box p-3 rounded-4 bg-slate-900 border border-slate-800 text-center">
               <div class="main-image-wrap mb-3 position-relative">
-                <img id="detail-main-img" src="${mainImgUrl}" alt="${p.name}" class="img-fluid rounded-3" 
-                     style="max-height: 420px; width: 100%; object-fit: contain; background: #030712;" 
-                     onerror="this.onerror=null; this.src='${CONFIG.fallbackLogoUrl}';" />
+                ${mainImgUrl ? `
+                  <img id="detail-main-img" src="${mainImgUrl}" alt="${p.name}" class="img-fluid rounded-3" 
+                       style="max-height: 420px; width: 100%; object-fit: contain; background: #030712;" 
+                       onerror="this.onerror=null; this.src='${CONFIG.logoUrl}';" />
+                ` : `
+                  <div class="d-flex flex-column align-items-center justify-content-center rounded-3 bg-slate-950 text-slate-500 py-5" style="height: 350px;">
+                    <i class="bi bi-box-seam fs-1 text-slate-600 mb-2"></i>
+                    <span class="text-sm text-slate-400 font-monospace">SKU: ${p.sku}</span>
+                  </div>
+                `}
               </div>
-              <div class="thumbnail-strip d-flex gap-2 justify-content-center overflow-auto pb-2">
-                ${cleanImgs.map((img, i) => `
-                  <img src="${img}" class="thumb-img ${i === 0 ? 'active' : ''}" 
-                       style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid ${i === 0 ? '#10b981' : '#334155'};"
-                       onerror="this.onerror=null; this.src='${CONFIG.fallbackLogoUrl}';"
-                       onclick="document.getElementById('detail-main-img').src='${img}'; document.querySelectorAll('.thumb-img').forEach(t=>t.style.borderColor='#334155'); this.style.borderColor='#10b981';" />
-                `).join('')}
-              </div>
+              ${cleanImgs.length > 1 ? `
+                <div class="thumbnail-strip d-flex gap-2 justify-content-center overflow-auto pb-2">
+                  ${cleanImgs.map((img, i) => `
+                    <img src="${img}" class="thumb-img ${i === 0 ? 'active' : ''}" 
+                         style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid ${i === 0 ? '#10b981' : '#334155'};"
+                         onerror="this.onerror=null; this.src='${CONFIG.logoUrl}';"
+                         onclick="document.getElementById('detail-main-img').src='${img}'; document.querySelectorAll('.thumb-img').forEach(t=>t.style.borderColor='#334155'); this.style.borderColor='#10b981';" />
+                  `).join('')}
+                </div>
+              ` : ''}
             </div>
           </div>
 
@@ -606,13 +632,53 @@ const PAGES = {
                 </div>
               </div>
 
-              <!-- Stock & Variations -->
-              <div class="mb-3 p-3 rounded-3 bg-slate-900/40 border border-slate-800">
-                <div class="row g-2 text-xs">
-                  <div class="col-4"><strong>স্টক:</strong> <span class="${p.stock > 0 ? 'text-success fw-bold' : 'text-danger fw-bold'}">${p.stock > 0 ? `${p.stock} পিস স্টকে আছে` : 'স্টক আউট'}</span></div>
-                  <div class="col-4"><strong>রং (Color):</strong> <span class="text-slate-200">${p.color || 'Default'}</span></div>
-                  <div class="col-4"><strong>সাইজ (Size):</strong> <span class="text-slate-200">${p.size || 'Standard'}</span></div>
+              <!-- Interactive Color & Size Selectors -->
+              <div class="variants-box p-3 rounded-3 mb-3 bg-slate-900/60 border border-slate-800 space-y-3">
+                
+                <!-- Stock status -->
+                <div class="d-flex justify-content-between align-items-center text-xs pb-2 border-bottom border-slate-800">
+                  <span class="text-muted">ইনভেন্টরি স্ট্যাটাস:</span>
+                  <span class="${p.stock > 0 ? 'text-emerald fw-bold' : 'text-danger fw-bold'}">
+                    <i class="bi bi-box-seam me-1"></i>${p.stock > 0 ? `${p.stock} পিস স্টকে বিদ্যমান` : 'স্টক আউট'}
+                  </span>
                 </div>
+
+                <!-- Color Selection (Column Q) -->
+                <div>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="form-label text-xs fw-bold text-white mb-0">
+                      <i class="bi bi-palette-fill me-1 text-info"></i>রং নির্বাচন করুন (Select Color):
+                    </label>
+                    <span id="selected-color-badge" class="badge bg-slate-800 text-info border border-slate-700">${colorOpts[0]}</span>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2" id="color-options-wrap">
+                    ${colorOpts.map((c, i) => `
+                      <button type="button" class="btn btn-sm btn-variant-opt color-opt-btn ${i === 0 ? 'active' : ''}" 
+                              data-val="${c}" onclick="PAGES.selectProductColor('${c}', this)">
+                        ${c}
+                      </button>
+                    `).join('')}
+                  </div>
+                </div>
+
+                <!-- Size Selection (Column R) -->
+                <div>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="form-label text-xs fw-bold text-white mb-0">
+                      <i class="bi bi-rulers me-1 text-warning"></i>সাইজ নির্বাচন করুন (Select Size):
+                    </label>
+                    <span id="selected-size-badge" class="badge bg-slate-800 text-warning border border-slate-700">${sizeOpts[0]}</span>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2" id="size-options-wrap">
+                    ${sizeOpts.map((s, i) => `
+                      <button type="button" class="btn btn-sm btn-variant-opt size-opt-btn ${i === 0 ? 'active' : ''}" 
+                              data-val="${s}" onclick="PAGES.selectProductSize('${s}', this)">
+                        ${s}
+                      </button>
+                    `).join('')}
+                  </div>
+                </div>
+
               </div>
 
               <!-- Quantity Selector -->
@@ -638,19 +704,19 @@ const PAGES = {
                 </button>
 
                 <!-- WhatsApp 1 -->
-                <a href="${CONFIG.whatsappUrl1}?text=${encodeURIComponent('Hello Dream Cart BD, I want to order ' + p.name + ' (SKU: ' + p.sku + ')')}" 
+                <a id="detail-wa-1" href="${CONFIG.whatsappUrl1}?text=${encodeURIComponent(waInitialMsg)}" 
                    target="_blank" class="btn btn-success px-3" title="হোয়াটসঅ্যাপ ১ এ সরাসরি অর্ডার">
                   <i class="bi bi-whatsapp"></i> ১
                 </a>
 
                 <!-- WhatsApp 2 -->
-                <a href="${CONFIG.whatsappUrl2}?text=${encodeURIComponent('Hello Dream Cart BD, I want to order ' + p.name + ' (SKU: ' + p.sku + ')')}" 
+                <a id="detail-wa-2" href="${CONFIG.whatsappUrl2}?text=${encodeURIComponent(waInitialMsg)}" 
                    target="_blank" class="btn btn-success px-3" title="হোয়াটসঅ্যাপ ২ এ সরাসরি অর্ডার">
                   <i class="bi bi-whatsapp"></i> ২
                 </a>
 
                 <button class="btn btn-outline-danger px-3 ${isLoved ? 'active text-danger' : ''}" 
-                        onclick="STORE.wishlist.toggle('${p.sku}'); this.classList.toggle('active'); this.classList.toggle('text-danger');" 
+                        onclick="STORE.wishlist.toggle('${p.sku}', { selectedColor: PAGES.currentSelectedColor, selectedSize: PAGES.currentSelectedSize }); this.classList.toggle('active'); this.classList.toggle('text-danger');" 
                         title="ফেভরিট">
                   <i class="bi ${isLoved ? 'bi-heart-fill' : 'bi-heart'}"></i>
                 </button>
@@ -755,12 +821,46 @@ const PAGES = {
     `;
   },
 
+  selectProductColor(color, btn) {
+    this.currentSelectedColor = color;
+    const badge = document.getElementById('selected-color-badge');
+    if (badge) badge.textContent = color;
+    document.querySelectorAll('.color-opt-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    this.updateDetailWhatsAppLinks();
+  },
+
+  selectProductSize(size, btn) {
+    this.currentSelectedSize = size;
+    const badge = document.getElementById('selected-size-badge');
+    if (badge) badge.textContent = size;
+    document.querySelectorAll('.size-opt-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    this.updateDetailWhatsAppLinks();
+  },
+
+  updateDetailWhatsAppLinks() {
+    const qEl = document.getElementById('detail-qty-val');
+    const qty = parseInt(qEl ? qEl.textContent : '1', 10) || 1;
+    const cont = document.querySelector('.product-details-container');
+    const sku = cont ? cont.getAttribute('data-sku') : '';
+    const nameEl = cont ? cont.querySelector('h1') : null;
+    const name = nameEl ? nameEl.textContent : 'পণ্য';
+    const msg = `Hello Dream Cart BD, I want to order ${name} (SKU: ${sku}) | Color: ${this.currentSelectedColor || 'Default'} | Size: ${this.currentSelectedSize || 'Standard'} | Quantity: ${qty}`;
+    
+    const wa1 = document.getElementById('detail-wa-1');
+    if (wa1) wa1.href = `${CONFIG.whatsappUrl1}?text=${encodeURIComponent(msg)}`;
+    const wa2 = document.getElementById('detail-wa-2');
+    if (wa2) wa2.href = `${CONFIG.whatsappUrl2}?text=${encodeURIComponent(msg)}`;
+  },
+
   changeDetailQty(delta) {
     const el = document.getElementById('detail-qty-val');
     if (el) {
       let q = parseInt(el.textContent, 10) || 1;
       q = Math.max(1, q + delta);
       el.textContent = q;
+      this.updateDetailWhatsAppLinks();
     }
   },
 
@@ -769,7 +869,12 @@ const PAGES = {
     if (res.data) {
       const qEl = document.getElementById('detail-qty-val');
       const qty = parseInt(qEl ? qEl.textContent : '1', 10) || 1;
-      STORE.cart.addItem(res.data, qty);
+      const itemToAdd = {
+        ...res.data,
+        selectedColor: this.currentSelectedColor || res.data.color || 'Default',
+        selectedSize: this.currentSelectedSize || res.data.size || 'Standard'
+      };
+      STORE.cart.addItem(itemToAdd, qty);
     }
   },
 
@@ -778,89 +883,15 @@ const PAGES = {
     if (res.data) {
       const qEl = document.getElementById('detail-qty-val');
       const qty = parseInt(qEl ? qEl.textContent : '1', 10) || 1;
-      STORE.cart.addItem(res.data, qty);
+      const itemToAdd = {
+        ...res.data,
+        selectedColor: this.currentSelectedColor || res.data.color || 'Default',
+        selectedSize: this.currentSelectedSize || res.data.size || 'Standard'
+      };
+      STORE.cart.addItem(itemToAdd, qty);
       window.location.hash = '#/checkout';
     }
   },
-
-  async openReviewModal(sku) {
-    const res = await API.call('products/details', { id: sku });
-    const prod = res.data || { name: 'পণ্য', sku: sku };
-
-    const modalHtml = `
-      <div class="modal fade show" id="submitReviewModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content bg-slate-900 text-white border-slate-700 shadow-2xl rounded-4">
-            <div class="modal-header border-slate-800">
-              <h5 class="modal-title fw-bold text-emerald"><i class="bi bi-star-fill text-warning me-2"></i>প্রোডাক্ট রিভিউ দিন</h5>
-              <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('submitReviewModal').remove()"></button>
-            </div>
-            <form onsubmit="PAGES.handleReviewSubmit(event, '${sku}', '${(prod.name || '').replace(/'/g, "\'")}')">
-              <div class="modal-body p-4">
-                <div class="mb-3">
-                  <div class="text-xs text-muted">পণ্য:</div>
-                  <strong class="text-white text-sm">${prod.name}</strong>
-                </div>
-                
-                <div class="mb-3">
-                  <label class="form-label text-xs fw-bold">রেটিং নির্বাচন করুন *</label>
-                  <select id="rev-rating" class="form-select bg-slate-950 text-warning border-slate-700 font-bold" required>
-                    <option value="5" selected>★★★★★ ৫ স্টার (অসাধারণ)</option>
-                    <option value="4">★★★★☆ ৪ স্টার (খুব ভালো)</option>
-                    <option value="3">★★★☆☆ ৩ স্টার (মোটামুটি)</option>
-                    <option value="2">★★☆☆☆ ২ স্টার (খারাপ)</option>
-                    <option value="1">★☆☆☆☆ ১ স্টার (খুব খারাপ)</option>
-                  </select>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label text-xs fw-bold">আপনার পুরো নাম *</label>
-                  <input type="text" id="rev-cust-name" class="form-control bg-slate-950 text-white border-slate-700" placeholder="যেমন: মো: সাইফুল ইসলাম" required />
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label text-xs fw-bold">আপনার মূল্যবান মতামত লিখুন *</label>
-                  <textarea id="rev-comment" class="form-control bg-slate-950 text-white border-slate-700" rows="3" placeholder="পণ্যের মান, ডেলিভারি ও প্যাকেজিং নিয়ে আপনার অভিজ্ঞতা লিখুন..." required></textarea>
-                </div>
-              </div>
-              <div class="modal-footer border-slate-800">
-                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('submitReviewModal').remove()">বাতিল</button>
-                <button type="submit" class="btn btn-emerald btn-sm px-4 fw-bold">রিভিউ সাবমিট করুন</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    `;
-    document.getElementById('submitReviewModal')?.remove();
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-  },
-
-  async handleReviewSubmit(e, sku, prodName) {
-    e.preventDefault();
-    const rating = parseInt(document.getElementById('rev-rating')?.value, 10) || 5;
-    const name = document.getElementById('rev-cust-name')?.value.trim();
-    const comment = document.getElementById('rev-comment')?.value.trim();
-
-    if (!name || !comment) return;
-
-    await API.call('reviews/add', {
-      customerName: name,
-      productSku: sku,
-      productName: prodName,
-      rating: rating,
-      comment: comment,
-      status: 'Approved'
-    });
-
-    document.getElementById('submitReviewModal')?.remove();
-    STORE.toast('success', 'রিভিউ যুক্ত হয়েছে!', 'ধন্যবাদ! আপনার রিভিউটি সাইটে এবং এডমিন প্যানেলে সফলভাবে যুক্ত হয়েছে।');
-    
-    // Refresh product details to show the new review
-    const content = document.getElementById('main-content');
-    if (content) content.innerHTML = await PAGES.renderProductDetails(sku);
-  },
-
   // 4. ORDER TRACKING PAGE
   async renderTracking() {
     return `
@@ -1055,7 +1086,11 @@ const PAGES = {
                               <img src="${it.image}" class="rounded-2" width="50" height="50" style="object-fit: cover;" />
                               <div>
                                 <a href="#/product/${it.sku}" class="text-white text-decoration-none fw-bold text-sm text-truncate-1">${it.name}</a>
-                                <div class="text-xs text-muted">${it.sku}</div>
+                                <div class="text-xs text-muted d-flex flex-wrap gap-2 align-items-center mt-1">
+                                  <span class="font-monospace">${it.sku}</span>
+                                  ${it.selectedColor && it.selectedColor !== 'Default' ? `<span class="badge bg-slate-800 text-info border border-slate-700">রং: ${it.selectedColor}</span>` : ''}
+                                  ${it.selectedSize && it.selectedSize !== 'Standard' && it.selectedSize !== 'Free Size' ? `<span class="badge bg-slate-800 text-warning border border-slate-700">সাইজ: ${it.selectedSize}</span>` : ''}
+                                </div>
                               </div>
                             </div>
                           </td>
