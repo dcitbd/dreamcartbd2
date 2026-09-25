@@ -103,8 +103,10 @@ function getOrCreateSheet(ss, sheetName, headers) {
   let sheet = ss.getSheetByName(sheetName);
   if (!sheet) {
     var allSheets = ss.getSheets();
+    var cleanTarget = sheetName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
     for (var i = 0; i < allSheets.length; i++) {
-      if (allSheets[i].getName().trim().toLowerCase() === sheetName.trim().toLowerCase()) {
+      var sName = allSheets[i].getName().trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (sName === cleanTarget || sName.indexOf(cleanTarget) !== -1 || cleanTarget.indexOf(sName) !== -1) {
         sheet = allSheets[i];
         break;
       }
