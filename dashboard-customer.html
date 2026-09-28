@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>কাস্টমার ড্যাশবোর্ড | Dream Cart BD</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- Top Notice Bar -->
+  <div class="top-notice-bar">
+    <span><i class="fas fa-bullhorn"></i> অনলাইন পেমেন্টে (বিকাশ/নগদ/রকেট/ব্যাংক) ৫% বিশেষ নগদ ছাড়!</span>
+    <span><i class="fas fa-truck"></i> ২০০০ টাকার বেশি অর্ডারে সারা দেশে ফ্রি ডেলিভারি!</span>
+    <span><i class="fas fa-phone-alt"></i> হটলাইন: 01581 703 822</span>
+  </div>
+
+  <!-- Main Navigation Bar -->
+  <nav class="navbar-custom">
+    <div class="home-page-container">
+      <div class="nav-inner">
+        <!-- Brand -->
+        <a href="index.html" class="shop-brand">
+          <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=100&auto=format&fit=crop&q=80" alt="Dream Cart BD Logo">
+          <div class="brand-text">
+            <h1>Dream Cart BD</h1>
+            <small>YOU MAKE.</small>
+          </div>
+        </a>
+
+        <!-- Search Bar -->
+        <div class="nav-search-bar d-none d-md-block">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" id="global-search-input" placeholder="ক্যামেরা, লেন্স, অফিস ইকুইপমেন্ট খুঁজুন..." 
+                 onkeypress="if(event.key === 'Enter') window.location.href='products.html?q=' + encodeURIComponent(this.value)">
+        </div>
+
+        <!-- Links & Actions -->
+        <div class="nav-links">
+          <a href="products.html" class="nav-item-btn"><i class="fas fa-th-large"></i> প্রোডাক্টস</a>
+          <a href="track.html" class="nav-item-btn"><i class="fas fa-shipping-fast"></i> ট্র্যাকিং</a>
+          <a href="favorites.html" class="nav-item-btn"><i class="fas fa-heart text-danger"></i> ফেভারিট</a>
+          
+          <a href="cart.html" class="nav-item-btn cart-badge-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge-count">0</span>
+          </a>
+
+          <!-- Dark/Light Mode Switcher -->
+          <button class="nav-item-btn" onclick="App.toggleTheme()" title="থিম পরিবর্তন করুন">
+            <i class="fas fa-moon"></i>
+          </button>
+
+          <!-- Login Links -->
+          <a href="login.html" class="nav-item-btn btn-primary"><i class="fas fa-user"></i> লগইন</a>
+          <a href="login.html?tab=wholesaler" class="nav-item-btn" style="border:1px solid var(--accent-secondary); color:var(--accent-secondary);">হোলসেলার</a>
+          
+          <!-- Admin Direct Icon Link -->
+          <a href="admin.html" class="nav-item-btn" title="এডমিন প্যানেল" style="color:var(--accent-warning);">
+            <i class="fas fa-user-shield"></i>
+          </a>
+
+          <!-- Others Market Dropdown -->
+          <div style="position:relative; display:inline-block;">
+            <button class="nav-item-btn" onclick="document.getElementById('market-dropdown').classList.toggle('d-none')">
+              মার্কেটস <i class="fas fa-chevron-down" style="font-size:0.75rem;"></i>
+            </button>
+            <div id="market-dropdown" class="d-none" style="position:absolute; right:0; top:100%; background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px; padding:0.5rem; min-width:180px; box-shadow:var(--shadow-lg); z-index:1000;">
+              <a href="https://wa.me/c/8801581703822" target="_blank" class="dropdown-item py-1 text-white d-block"><i class="fab fa-whatsapp text-success"></i> WhatsApp Shop</a>
+              <a href="https://www.facebook.com/dreamcartbd1" target="_blank" class="dropdown-item py-1 text-white d-block"><i class="fab fa-facebook text-primary"></i> Facebook Shop</a>
+              <a href="https://www.daraz.com.bd/shop/m8svmjyg" target="_blank" class="dropdown-item py-1 text-white d-block"><i class="fas fa-shopping-bag text-warning"></i> Daraz BD</a>
+              <a href="https://bikroy.com/shop/dreamcartbd" target="_blank" class="dropdown-item py-1 text-white d-block"><i class="fas fa-store text-info"></i> Bikroy.com</a>
+              <a href="https://tinyurl.com/Dream-Cart-BD" target="_blank" class="dropdown-item py-1 text-white d-block"><i class="fas fa-external-link-alt text-success"></i> ভিজিট মেইন শপ</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <main class="home-page-container my-4">
+    
+  <div class="row g-4">
+    <div class="col-lg-3">
+      <div class="p-3" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px;">
+        <div class="text-center mb-3">
+          <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width:70px; height:70px; font-size:1.8rem;">
+            <i class="fas fa-user"></i>
+          </div>
+          <h5 class="mt-2 mb-0" id="dash-cust-name">কাস্টমার প্রোফাইল</h5>
+          <small class="text-muted" id="dash-cust-phone">01XXXXXXXXX</small>
+        </div>
+        <hr style="border-color:var(--border-color);">
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="#" class="text-white"><i class="fas fa-box me-2 text-primary"></i> আমার অর্ডারসমূহ</a></li>
+          <li class="mb-2"><a href="favorites.html" class="text-white"><i class="fas fa-heart me-2 text-danger"></i> ফেভারিট তালিকা</a></li>
+          <li class="mb-2"><a href="cart.html" class="text-white"><i class="fas fa-shopping-cart me-2 text-warning"></i> কার্ট দেখুন</a></li>
+          <li class="mb-2"><a href="track.html" class="text-white"><i class="fas fa-truck me-2 text-info"></i> অর্ডার ট্র্যাক করুন</a></li>
+          <li><a href="#" onclick="logoutCustomer()" class="text-danger"><i class="fas fa-sign-out-alt me-2"></i> লগআউট</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-lg-9">
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="stat-card">
+            <div class="stat-card-info">
+              <h3 id="cust-total-orders">0</h3>
+              <p>মোট অর্ডার</p>
+            </div>
+            <div class="stat-card-icon icon-blue"><i class="fas fa-box"></i></div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <div class="stat-card-info">
+              <h3 id="cust-fav-count">0</h3>
+              <p>পছন্দের প্রোডাক্ট</p>
+            </div>
+            <div class="stat-card-icon icon-red"><i class="fas fa-heart"></i></div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <div class="stat-card-info">
+              <h3 id="cust-cart-count">0</h3>
+              <p>কার্টে আছে</p>
+            </div>
+            <div class="stat-card-icon icon-yellow"><i class="fas fa-shopping-cart"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-table-card">
+        <div class="table-header-bar">
+          <h5 class="mb-0"><i class="fas fa-history"></i> আমার সাম্প্রতিক অর্ডার ইতিহাস</h5>
+        </div>
+        <div class="table-responsive">
+          <table class="table-custom">
+            <thead>
+              <tr>
+                <th>অর্ডার আইডি</th>
+                <th>তারিখ</th>
+                <th>পণ্যসমূহ</th>
+                <th>মোট টাকা</th>
+                <th>পেমেন্ট</th>
+                <th>স্ট্যাটাস</th>
+                <th>ইনভয়েস</th>
+              </tr>
+            </thead>
+            <tbody id="cust-orders-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </main>
+<!-- Developer Credits Bar -->
+  <div class="home-page-container mt-4">
+    <div class="developer-card-bar">
+      <div class="dev-info">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Jainal Abedin" class="dev-avatar">
+        <div class="dev-text">
+          <h5>ডেভেলপার: <a href="https://dcitbd.github.io/Jainal-Abedin/" target="_blank" style="text-decoration:underline;">Jainal Abedin</a></h5>
+          <small>CEO, <a href="https://dcitbd.github.io/dcitbd/" target="_blank" style="color:#60a5fa;">Dream Career IT BD</a> | প্রফেশনাল ই-কমার্স সফটওয়্যার আর্কিটেক্ট</small>
+        </div>
+      </div>
+      <div>
+        <a href="https://dcitbd.github.io/dcitbd/" target="_blank" class="btn btn-sm btn-outline-primary">কোম্পানি প্রোফাইল</a>
+        <a href="https://tinyurl.com/Dream-Cart-BD" target="_blank" class="btn btn-sm btn-success ms-2">ভিজিট মেইন শপ</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="home-page-container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="shop-brand mb-3">
+            <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=100&auto=format&fit=crop&q=80" alt="Logo">
+            <div class="brand-text">
+              <h2 style="font-size:1.3rem;">Dream Cart BD</h2>
+              <small>YOU MAKE.</small>
+            </div>
+          </div>
+          <p style="font-size:0.9rem; line-height:1.7; color:#94a3b8;">
+            দুবাই, হংকং ও রাশিয়া থেকে সরাসরি আমদানিকৃত ক্যামেরা, লেন্স, অফিস ইকুইপমেন্ট ও ডিজিটাল গ্যাজেটের নির্ভরযোগ্য পাইকারি ও খুচরা প্রতিষ্ঠান।
+          </p>
+          <div class="other-markets-chips mt-3">
+            <a href="https://wa.me/c/8801581703822" target="_blank" class="market-chip"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+            <a href="https://www.facebook.com/dreamcartbd1" target="_blank" class="market-chip"><i class="fab fa-facebook"></i> Facebook</a>
+            <a href="https://www.daraz.com.bd/shop/m8svmjyg" target="_blank" class="market-chip">Daraz</a>
+            <a href="https://othoba.com/dream-cart-bd" target="_blank" class="market-chip">Othoba</a>
+            <a href="https://bikroy.com/shop/dreamcartbd" target="_blank" class="market-chip">Bikroy</a>
+            <a href="https://pykari.com/shop/dream-cart-bd" target="_blank" class="market-chip">Pykari</a>
+            <a href="https://packly.com/shop/dream-cart-bd" target="_blank" class="market-chip">Packly</a>
+            <a href="https://ditchit.com/advertiser/jainal-abedin-59224946" target="_blank" class="market-chip">DitchIt</a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>কুইক লিংকস</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">হোম পেজ</a></li>
+            <li><a href="products.html">সকল প্রোডাক্টস</a></li>
+            <li><a href="track.html">অর্ডার ট্র্যাকিং</a></li>
+            <li><a href="favorites.html">ফেভারিট আইটেমস</a></li>
+            <li><a href="login.html?tab=reseller">এস এ রিসেলার</a></li>
+            <li><a href="login.html?tab=wholesaler">এস এ হোলসেলার</a></li>
+            <li><a href="admin.html">এডমিন লগইন</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>পলিসি ও গাইডলাইন</h4>
+          <ul class="footer-links">
+            <li><a href="terms.html">ব্যবহারের শর্তাবলী</a></li>
+            <li><a href="privacy.html">গোপনীয়তা নীতি</a></li>
+            <li><a href="checkout.html">ডেলিভারি ও পেমেন্ট</a></li>
+            <li><a href="terms.html#refund">রিটার্ন ও রিফান্ড পলিসি</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>যোগাযোগ ও ঠিকানা</h4>
+          <p style="font-size:0.88rem; margin-bottom:0.5rem;">
+            <i class="fas fa-map-marker-alt text-danger me-2"></i> চৌধুরী প্লাজা, নিচ তলা, কক্ষ-০৩, পদুয়ার বাজার, বিশ্ব রোড, সদর দক্ষিণ, কুমিল্লা।
+          </p>
+          <p style="font-size:0.88rem; margin-bottom:0.5rem;">
+            <i class="fas fa-phone text-primary me-2"></i> 01581 703 822, 0181 827 3838
+          </p>
+          <p style="font-size:0.88rem; margin-bottom:0.5rem;">
+            <i class="fas fa-envelope text-warning me-2"></i> jainal.dcitbd@gmail.com, saiful05333@gmail.com
+          </p>
+          <p style="font-size:0.88rem;">
+            <i class="fas fa-clock text-success me-2"></i> সকাল ১০:০০ টা - রাত ৯:০০ টা
+          </p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 Dream Cart BD. সর্বস্বত্ব সংরক্ষিত | Design & Developed with pride by Jainal Abedin, Dream Career IT BD.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Preloader Component -->
+  <div id="page-preloader">
+    <div class="loader-logo-ring">
+      <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=100&auto=format&fit=crop&q=80" alt="Logo" class="loader-logo-img">
+    </div>
+    <div style="font-size:1.1rem; font-weight:600; color:var(--text-main); letter-spacing:1px;">
+      Dream Cart BD লোড হচ্ছে...
+    </div>
+  </div>
+
+  <!-- A5 Print Area Container -->
+  <div id="voucher-print-area" class="d-none"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    let currentSlide = 0;
+    const banners = API.getBanners().filter(b => b.active);
+
+    function initBanners() {
+      const track = document.getElementById('slider-track');
+      const dotsContainer = document.getElementById('slider-dots');
+      if (!track || !banners.length) return;
+
+      track.innerHTML = banners.map(b => `
+        <div class="slide-item" style="background-image: url('${b.image}');">
+          <div class="slide-overlay">
+            <div class="slide-content">
+              <h2>${b.title}</h2>
+              <p>${b.subtitle}</p>
+              <a href="${b.link || 'products.html'}" class="btn btn-primary px-4 py-2" style="font-weight:600;">
+                <i class="fas fa-shopping-bag"></i> এখনই কিনুন
+              </a>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      dotsContainer.innerHTML = banners.map((_, i) => `
+        <div class="slider-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></div>
+      `).join('');
+
+      setInterval(nextSlide, 5000);
+    }
+
+    function updateSlider() {
+      const track = document.getElementById('slider-track');
+      if (track) track.style.transform = `translateX(-${currentSlide * 100}%)`;
+      document.querySelectorAll('.slider-dot').forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === currentSlide);
+      });
+    }
+
+    function nextSlide() {
+      if (!banners.length) return;
+      currentSlide = (currentSlide + 1) % banners.length;
+      updateSlider();
+    }
+
+    function prevSlide() {
+      if (!banners.length) return;
+      currentSlide = (currentSlide - 1 + banners.length) % banners.length;
+      updateSlider();
+    }
+
+    function goToSlide(i) {
+      currentSlide = i;
+      updateSlider();
+    }
+
+    function renderHomeCategoryRows() {
+      const container = document.getElementById('home-categories-container');
+      if (!container) return;
+
+      const categories = API.getCategories();
+      const allProducts = API.getProducts().filter(p => p.stock > 0);
+
+      container.innerHTML = categories.map(cat => {
+        const catProds = allProducts.filter(p => p.category === cat.name).slice(0, 12);
+        if (!catProds.length) return '';
+
+        return `
+          <div class="category-section mb-5">
+            <div class="section-header">
+              <h3><i class="fas fa-tags text-primary"></i> ${cat.name}</h3>
+              <a href="products.html?category=${encodeURIComponent(cat.name)}" class="see-all-link">
+                সকল প্রোডাক্ট দেখুন (${allProducts.filter(p => p.category === cat.name).length}) <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+            
+            <div class="category-row-wrapper">
+              <div class="product-grid-6">
+                ${catProds.map(p => `
+                  <div class="product-card">
+                    <div class="product-thumb-wrap">
+                      <img src="${Array.isArray(p.images) ? p.images[0] : p.images}" alt="${p.name}" loading="lazy">
+                      ${p.original_price > p.selling_price ? `
+                        <span class="badge-discount">-${Math.round((1 - p.selling_price / p.original_price) * 100)}%</span>
+                      ` : ''}
+                      <span class="badge-stock stock-in">ইন স্টক (${p.stock})</span>
+                      <button class="card-fav-btn ${App.isFavorite(p.id) ? 'active' : ''}" 
+                              onclick="App.toggleFavorite('${p.id}'); this.classList.toggle('active');">
+                        <i class="fas fa-heart"></i>
+                      </button>
+                    </div>
+                    <div class="product-card-body">
+                      <span class="product-category-tag">${p.category}</span>
+                      <a href="product-details.html?id=${p.id}" class="product-card-title">${p.name}</a>
+                      <div class="price-row">
+                        <span class="current-price">৳${App.getProductPrice(p).toLocaleString()}</span>
+                        ${p.original_price > p.selling_price ? `<span class="original-price">৳${p.original_price.toLocaleString()}</span>` : ''}
+                      </div>
+                      <div class="card-actions-row">
+                        <button class="btn-card-action btn-add-cart" onclick="App.addToCart('${p.id}', 1)">
+                          <i class="fas fa-cart-plus"></i> কার্ট
+                        </button>
+                        <a href="checkout.html?buyNow=${p.id}" class="btn-card-action btn-order-now">
+                          অর্ডার
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initBanners();
+      renderHomeCategoryRows();
+    });
+  </script>
+
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+  
+  <script>
+    function initCustomerDash() {
+      const user = JSON.parse(sessionStorage.getItem('dcbd_user') || 'null');
+      if (user) {
+        document.getElementById('dash-cust-name').textContent = user.name;
+        document.getElementById('dash-cust-phone').textContent = user.phone;
+      }
+
+      const orders = API.getOrders();
+      const myOrders = user ? orders.filter(o => o.phone === user.phone) : orders;
+
+      document.getElementById('cust-total-orders').textContent = myOrders.length;
+      document.getElementById('cust-fav-count').textContent = App.favorites.length;
+      document.getElementById('cust-cart-count').textContent = App.cart.reduce((s, i) => s + (i.quantity || 1), 0);
+
+      const tbody = document.getElementById('cust-orders-tbody');
+      if (!myOrders.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">আপনার কোন পূর্ববর্তী অর্ডার নেই।</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = myOrders.map(o => '<tr><td><code>' + o.orderId + '</code></td><td>' + (o.date || 'সম্প্রতি') + '</td><td>' + (o.items || []).map(i => i.name).join(', ') + '</td><td><strong>৳' + o.totalAmount + '</strong></td><td>' + o.paymentMethod + '</td><td><span class="badge bg-primary">' + o.status + '</span></td><td><button class="btn btn-sm btn-outline-info" onclick="Admin.printVoucher(\'' + o.orderId + '\')"><i class="fas fa-print"></i></button></td></tr>').join('');
+    }
+
+    function logoutCustomer() {
+      sessionStorage.removeItem('dcbd_user');
+      window.location.href = 'index.html';
+    }
+
+    window.addEventListener('DOMContentLoaded', initCustomerDash);
+  </script>
+
+</body>
+</html>
