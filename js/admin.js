@@ -672,8 +672,8 @@ const Admin = {
 
         <div class="form-group mb-3">
           <label>Google Apps Script Web App URL (ডাটা অটো ব্যাকআপ ও ইমেইলের জন্য)</label>
-          <input type="text" id="setting-gas-url" class="form-control" value="${gasUrl}" placeholder="https://script.google.com/macros/s/.../exec">
-          <small class="text-muted">আপনার গুগল সীটের সাথে সংযুক্ত করতে গুগল এপস স্ক্রিপ্ট ডেপ্লয় করে প্রাপ্ত URL এখানে দিন।</small>
+          <input type="text" id="setting-gas-url" class="form-control" value="${gasUrl}" placeholder="https://script.google.com/macros/s/AKfycbwWUgQaBgJEINAan1Pf-u0SfmDmFEO1MEhaasT-CcJxDrz4ViViBnpgJerrpxN87nXXyw/exec">
+          <small class="text-muted">https://script.google.com/macros/s/AKfycbwWUgQaBgJEINAan1Pf-u0SfmDmFEO1MEhaasT-CcJxDrz4ViViBnpgJerrpxN87nXXyw/exec</small>
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
