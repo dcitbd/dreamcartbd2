@@ -503,6 +503,7 @@
       grid.innerHTML = related.map(p => '<div class="product-card"><div class="product-thumb-wrap"><img src="' + (Array.isArray(p.images) ? p.images[0] : p.images) + '"></div><div class="product-card-body"><a href="product-details.html?id=' + p.id + '" class="product-card-title">' + p.name + '</a><div class="price-row"><span class="current-price">৳' + App.getProductPrice(p).toLocaleString() + '</span></div><button class="btn btn-sm btn-primary w-100" onclick="App.addToCart(\'' + p.id + '\', 1)">কার্টে যোগ</button></div></div>').join('');
     }
 
+    API.onDataChange(() => { loadProduct(); });
     window.addEventListener('DOMContentLoaded', loadProduct);
   </script>
 

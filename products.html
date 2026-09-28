@@ -14,7 +14,7 @@
   <div class="top-notice-bar">
     <span><i class="fas fa-bullhorn"></i> অনলাইন পেমেন্টে (বিকাশ/নগদ/রকেট/ব্যাংক) ৫% বিশেষ নগদ ছাড়!</span>
     <span><i class="fas fa-truck"></i> ২০০০ টাকার বেশি অর্ডারে সারা দেশে ফ্রি ডেলিভারি!</span>
-    <span><i class="fas fa-phone-alt"></i> হটলাইন: 01581 703 822</span>
+    <span><i class="fas fa-phone-alt"></i> হটলাইন: 01581 703 822</span> <button onclick="API.syncAllFromSheet(true)" class="btn btn-sm btn-outline-light py-0 px-2" style="font-size:0.72rem;"><i class="fas fa-sync-alt"></i> সীট সিঙ্ক: <span id="sheet-sync-status">লাইভ</span></button>
   </div>
 
   <!-- Main Navigation Bar -->
@@ -426,6 +426,7 @@
       }
     }
 
+    API.onDataChange(() => { initCategoryTree(); applyFilters(); });
     window.addEventListener('DOMContentLoaded', () => {
       initCategoryTree();
       const params = new URLSearchParams(window.location.search);

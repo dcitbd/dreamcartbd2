@@ -229,7 +229,7 @@ const Admin = {
           <small class="text-muted">ক্লিক করে সরাসরি যেকোনো দাম বা স্টক এডিট করতে পারবেন</small>
         </div>
         <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-          <button class="btn btn-sm btn-success" onclick="Admin.openAddProductModal()"><i class="fas fa-plus"></i> নতুন প্রোডাক্ট যোগ</button>
+          <button class="btn btn-sm btn-warning" onclick="API.syncAllFromSheet(true)"><i class="fas fa-sync-alt"></i> গুগল সীট থেকে সিঙ্ক</button> <button class="btn btn-sm btn-success" onclick="Admin.openAddProductModal()"><i class="fas fa-plus"></i> নতুন প্রোডাক্ট যোগ</button>
           <button class="btn btn-sm btn-outline-info" onclick="Admin.exportProductsCSV()"><i class="fas fa-file-csv"></i> CSV ডাউনলোড</button>
           <label class="btn btn-sm btn-outline-warning mb-0" style="cursor:pointer;">
             <i class="fas fa-file-upload"></i> বাল্ক আপলোড
@@ -672,8 +672,8 @@ const Admin = {
 
         <div class="form-group mb-3">
           <label>Google Apps Script Web App URL (ডাটা অটো ব্যাকআপ ও ইমেইলের জন্য)</label>
-          <input type="text" id="setting-gas-url" class="form-control" value="${gasUrl}" placeholder="https://script.google.com/macros/s/AKfycbwWUgQaBgJEINAan1Pf-u0SfmDmFEO1MEhaasT-CcJxDrz4ViViBnpgJerrpxN87nXXyw/exec">
-          <small class="text-muted">https://script.google.com/macros/s/AKfycbwWUgQaBgJEINAan1Pf-u0SfmDmFEO1MEhaasT-CcJxDrz4ViViBnpgJerrpxN87nXXyw/exec</small>
+          <input type="text" id="setting-gas-url" class="form-control" value="${gasUrl}" placeholder="https://script.google.com/macros/s/.../exec">
+          <small class="text-muted">আপনার গুগল সীটের সাথে সংযুক্ত করতে গুগল এপস স্ক্রিপ্ট ডেপ্লয় করে প্রাপ্ত URL এখানে দিন।</small>
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
@@ -720,3 +720,5 @@ const Admin = {
 window.addEventListener('DOMContentLoaded', () => {
   Admin.init();
 });
+
+API.onDataChange(() => { if (Admin && Admin.adminSession) Admin.renderCurrentView(); });
