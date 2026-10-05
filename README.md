@@ -1,76 +1,49 @@
-# Dream Cart BD - E-Commerce Web Application & ERP Platform
-**Slogan:** *You make.*  
-**Founder & Developer:** [Jainal Abedin](https://dcitbd.github.io/Jainal-Abedin/), CEO, [Dream Career IT BD](https://dcitbd.github.io/dcitbd/)  
-**Location:** চৌধুরী প্লাজা, নিচ তলা, কক্ষ-০৩, পদুয়ার বাজার, বিশ্ব রোড, সদর দক্ষিণ, কুমিল্লা।  
-**Hotline:** 01581 703 822, 0181 827 3838  
+# 🛒 Dream Cart BD — Smart Digital Commerce Platform
+> **Enterprise-Grade Headless E-Commerce OS with Real-Time Two-Way Google Sheets Sync**
+
+[![Live API](https://img.shields.io/badge/Google_Apps_Script-Live_API-0F9D58?style=for-the-badge&logo=google)](https://script.google.com/macros/s/AKfycbyuyANFCLHnE-GGbGnx_1yr2Z_BOPWv-qBqh-1zQg4knzmMXnL15ERsbeOCfBNBZwys/exec)
+[![Database](https://img.shields.io/badge/Database-Google_Sheets_(30+_Tables)-34A853?style=for-the-badge&logo=googlesheets)](https://docs.google.com/spreadsheets/d/19tz5stOSkfR0pLbRRVBIbM-qdOMbUTk0QD8Xf4Of1Pc/edit)
+[![Frontend](https://img.shields.io/badge/Frontend-Vite_+_Tailwind_CSS-06B6D4?style=for-the-badge&logo=vite)](https://vitejs.dev/)
+[![License](https://img.shields.io/badge/License-Proprietary_DCBD-0284C7?style=for-the-badge)](LICENSE)
 
 ---
 
-## 🌟 ফিচার ওভারভিউ (Features Overview)
-১. **হোমপেজ ও ক্যাটালগ:**
-   - ডানে-বামে ১০% মার্জিন কন্টেইনার (`width: 80%; margin: 0 10%;`)
-   - প্রিমিয়াম ডার্ক মোড ডিফল্ট, সাথে লাইট মোড টগল
-   - লোগো স্পিনিং প্রি-লোডার
-   - ১০+ স্লাইডের ডায়নামিক হিরো ব্যানার
-   - ক্যাটাগরিভিত্তিক স্লাইডার ও গ্রিড ৬ প্রোডাক্ট ভিউ (শুধু ইন-স্টক প্রোডাক্ট প্রদর্শিত)
-   - ফিক্সড বটম-রাইট ফ্লোটিং বাটন: WhatsApp চ্যাট, সরাসরি কল এবং লাইভ কার্ট ব্যাজ
+## 🌟 এক্সিকিউটিভ ওভারভিউ (Executive Overview)
 
-২. **প্রোডাক্টস ও ফিল্টারিং:**
-   - ১২০টি প্রোডাক্ট প্রতি পেজে পেজিনেশন সহ
-   - ৩-লেয়ার ক্যাটাগরি ট্রি সাইডবার: Category > Subcategory > Child category
-   - ব্র্যান্ড, মূল্য পরিসীমা (Price Range Slider) ও স্টক অনুযায়ী ফিল্টার
-
-৩. **প্রোডাক্ট ডিটেইলস ও সোশ্যাল শপিং:**
-   - মাল্টিপল ইমেজ গ্যালারি থাম্বনেইল প্রিভিউ সহ
-   - কালার ও সাইজ ভ্যারিয়েন্ট সিলেকশন
-   - সরাসরি WhatsApp অর্ডার বাটন (`wa.me`)
-   - লাইভ রিভিউ ও রেটিং সিস্টেম
-   - রিলেটেড প্রোডাক্ট রিকমেন্ডেশন
-
-৪. **চেকআউট ও অটো এআই ডেলিভারি ক্যালকুলেশন:**
-   - ঠিকানা লেখার সাথে সাথে অটোমেটিক ডেলিভারি এরিয়া ডিটেকশন:
-     - কুমিল্লা: ৯০ টাকা
-     - ঢাকা: ১১০ টাকা
-     - ঢাকার বাইরে: ১৩৫ টাকা
-   - ২০০০ টাকার বেশি শপিংয়ে অটোমেটিক ডেলিভারি চার্জ ০ (ফ্রি ডেলিভারি)!
-   - অনলাইন পেমেন্টে (বিকাশ, নগদ, রকেট, ব্যাংক) ৫% তাৎক্ষণিক নগদ ছাড়
-   - পেমেন্ট একাউন্ট নম্বর: বিকাশ মার্চেন্ট `01581703822`, নগদ `01879653143`, রকেট `01581703822`, ইসলামী ব্যাংক `20508070200030208` (জৈনাল আবেদীন)
-   - ইনকমপ্লিট অর্ডার ট্র্যাকিং: কেউ ফর্ম লিখে অর্ডার না করলে তা অটো এডমিন প্যানেলে জমা হয়।
-   - অর্ডার সম্পন্ন হওয়ার সাথে সাথে **A5 সাইজের প্রিমিয়াম ইনভয়েস ভাউচার** প্রিন্ট ও ডাউনলোড সুবিধা।
-
-৫. **মাল্টি-টায়ার রোলস (Role-Based Access):**
-   - **রেগুলার কাস্টমার:** সেলিং প্রাইস ও পার্সোনাল অর্ডার হিস্ট্রি।
-   - **রিসেলার পোর্টাল:** রিসেলিং প্রাইস, কমিশন ক্যালকুলেটর (Selling Price - Reseller Price), ৩% উইথড্রয়াল ফি সহ পেআউট রিকোয়েস্ট।
-   - **হোলসেলার পোর্টাল:** পাইকারি মূল্যতালিকা ও ন্যূনতম অর্ডার লিমিট (MOQ) বাধ্যবাধকতা।
-   - **এডমিন/ওয়ার্কার ERP:** ট্যাব ক্লোজ করলেই অটো লগআউট (`sessionStorage`), ডেভেলপার-থিম লগইন, ক্যাপচা সিকিউরিটি।
-
-৬. **এডমিন ERP প্যানেল (`admin.html`):**
-   - ডিফল্ট লগইন: `jainal.dcitbd@gmail.com` / পাসওয়ার্ড: `Dcbd@2026`
-   - লাইভ ভিজিটর কাউন্টার ও লো-স্টক এলার্ট
-   - প্রোডাক্ট টেবিলে সরাসরি ক্লিক করে দাম ও স্টক এডিট (Inline Editing)
-   - বাল্ক প্রোডাক্ট CSV আপলোড ও এক্সপোর্ট
-   - অর্ডার স্ট্যাটাস চেঞ্জ (Pending, Processing, Shipped, Delivered, Cancelled, Returned)
-   - গুগল ড্রাইভ ও গুগল সীট ব্যাকএন্ড ইন্টিগ্রেশন।
+**Dream Cart BD** একটি আল্ট্রা-ফাস্ট, স্কেলেবল এবং আধুনিক ডিজিটাল কমার্স প্ল্যাটফর্ম। কোনো ব্যয়বহুল ডেডিকেটেড ডাটাবেজ সার্ভার ছাড়াই এটি **Google Sheets**-কে রিলেশনাল ডাটাবেজ হিসেবে ব্যবহার করে এবং **Google Apps Script Web App API Gateway** ও **Google Drive Storage**-এর মাধ্যমে স্বয়ংক্রিয় **Two-Way Real-time Sync** বজায় রাখে।
 
 ---
 
-## 🚀 GitHub Pages এ হোস্ট করার নিয়ম (How to Deploy on GitHub Pages)
-১. আপনার GitHub অ্যাকাউন্টে যান এবং একটি নতুন রিপোজিটরি তৈরি করুন (যেমন: `dream-cart-bd`)।
-২. এই জিপ ফাইলটি আনজিপ করে সকল ফাইল রিপোজিটরির রুট ডিরেক্টরিতে আপলোড (Push/Upload) করুন।
-৩. GitHub Repository এর **Settings > Pages** এ যান।
-৪. **Branch** হিসেবে `main` বা `master` সিলেক্ট করে **Save** দিন।
-৫. ১-২ মিনিটের মধ্যে আপনার ওয়েবসাইট লাইভ হয়ে যাবে: `https://yourusername.github.io/dream-cart-bd/`
+## 🏗️ সিস্টেম আর্কিটেকচার (System Architecture)
 
----
-
-## 📊 Google Sheets ও Google Apps Script সংযুক্ত করার নিয়ম
-১. আপনার Google Drive এ একটি নতুন Google Sheet খুলুন।
-২. মেন্যু থেকে **Extensions > Apps Script** এ যান।
-৩. `google-apps-script/Code.gs` ফাইলের সম্পূর্ণ কোড কপি করে পেস্ট করুন।
-৪. **Deploy > New Deployment** এ ক্লিক করুন:
-   - Type: **Web App**
-   - Execute as: **Me**
-   - Who has access: **Anyone**
-৫. ডেপ্লয় সম্পন্ন হলে একটি Web App URL পাবেন (যেমন: `https://script.google.com/macros/s/.../exec`)।
-৬. আপনার ওয়েবসাইটের এডমিন প্যানেল (`admin.html`) এ লগইন করে **সেটিংস** ট্যাবে যান এবং URL-টি পেস্ট করে সংরক্ষণ করুন।
-৭. এখন থেকে সকল নতুন অর্ডার, কাস্টমার তথ্য এবং ইনকমপ্লিট অর্ডার সরাসরি আপনার গুগল সীটে রিয়েল-টাইম ব্যাকআপ হবে এবং নতুন অর্ডার আসলে জিমেইলে অটো ইমেইল চলে যাবে!
+```text
+ ┌────────────────────────────────────────────────────────────────────────┐
+ │                      DREAM CART BD ARCHITECTURE                        │
+ └────────────────────────────────────────────────────────────────────────┘
+                                    │
+    ┌───────────────────────────────┴───────────────────────────────┐
+    ▼                                                               ▼
+┌──────────────────────────────┐              ┌──────────────────────────────┐
+│       CUSTOMER STOREFRONT    │              │    ADMIN & PARTNER SUITE     │
+│   • 1-Page Express Checkout  │              │   • Inline Price/Stock Editor│
+│   • 10-Image Gallery / Specs │              │   • Fraud Prevention Engine  │
+│   • Real-Time Order Tracking │              │   • Multi-Courier Automation │
+└──────────────┬───────────────┘              └──────────────┬───────────────┘
+               │                                             │
+               └──────────────────────┬──────────────────────┘
+                                      │ (REST JSON via SWR Client)
+                                      ▼
+             ┌──────────────────────────────────────────────────┐
+             │       GOOGLE APPS SCRIPT API GATEWAY (V8)        │
+             │   • Atomic Locks (LockService)                   │
+             │   • In-Memory Cache (CacheService)               │
+             │   • JWT Auth & Multi-Tier RBAC Engine            │
+             └────────────────────────┬─────────────────────────┘
+                                      │
+              ┌───────────────────────┴───────────────────────┐
+              ▼                                               ▼
+┌──────────────────────────────┐              ┌──────────────────────────────┐
+│  GOOGLE SHEETS (DATABASE)    │              │     GOOGLE DRIVE STORAGE     │
+│   • 30+ Relational Tables    │              │   • Product Images & CDN     │
+│   • onEdit Two-Way Triggers  │              │   • Encrypted JSON Backups   │
+└──────────────────────────────┘              └──────────────────────────────┘

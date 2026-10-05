@@ -1,0 +1,90 @@
+/**
+ * ============================================================================
+ * DREAM CART BD — GLOBAL TOAST NOTIFIER (Toast.js)
+ * ============================================================================
+ */
+
+export const Toast = {
+  show: (message, type = "success", duration = 3500) => {
+    if (typeof document === "undefined" || !document.body) return;
+
+    let container = document.getElementById("toast-container");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "toast-container";
+      container.className = "fixed bottom-5 right-5 z-50 flex flex-col space-y-3 pointer-events-none font-bengali";
+      document.body.appendChild(container);
+    }
+
+    const toast = document.createElement("div");
+    const styles = {
+      success: { bg: "bg-emerald-600", text: "text-white", icon: "check-circle-2" },
+      danger: { bg: "bg-rose-600", text: "text-white", icon: "alert-circle" },
+      warning: { bg: "bg-amber-500", text: "text-slate-950", icon: "alert-triangle" },
+      info: { bg: "bg-brand-600", text: "text-white", icon: "info" }
+    };
+
+    const conf = styles[type] || styles.info;
+
+    toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl font-medium text-sm transition-all duration-300 transform translate-y-3 opacity-0 ${conf.bg} ${conf.text}`;
+    toast.innerHTML = `
+      <i data-lucide="${conf.icon}" class="w-5 h-5 shrink-0"></i>
+      <span class="flex-1">${message}</span>
+      <button type="button" class="toast-close p-1 hover:opacity-80 transition-opacity cursor-pointer">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    `;
+
+    container.appendChild(toast);
+
+    // Lucide Icons রেন্ডার করা
+    if (typeof window !== "undefined" && window.lucide && typeof window.lucide.createIcons === "function") {
+      window.lucide.createIcons();
+    }
+
+    // Fade In
+    const triggerFadeIn = () => {
+      toast.classList.remove("translate-y-3", "opacity-0");
+    };
+
+    if (typeof requestAnimationFrame !== "undefined") {
+      requestAnimationFrame(triggerFadeIn);
+    } else {
+      setTimeout(triggerFadeIn, 10);
+    }
+
+    let isClosed = false;
+    let timer = null;
+
+    const closeToast = () => {
+      if (isClosed) return;
+      isClosed = true;
+      if (timer) clearTimeout(timer);
+
+      toast.classList.add("opacity-0", "translate-y-3");
+      setTimeout(() => {
+        if (toast && toast.parentElement) {
+          toast.remove();
+        }
+        // কন্টেইনার খালি হলে সেটিও রিমুভ করে দেওয়া ভালো
+        if (container && container.children.length === 0) {
+          container.remove();
+        }
+      }, 300);
+    };
+
+    const closeBtn = toast.querySelector(".toast-close");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", closeToast);
+    }
+
+    timer = setTimeout(closeToast, duration);
+  }
+};
+
+// গ্লোবাল উইন্ডোতে সেট করা
+if (typeof window !== "undefined") {
+  window.Toast = Toast;
+}
+
+export default Toast;

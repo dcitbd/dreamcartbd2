@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================================
+ * DREAM CART BD — CORE DESIGN SYSTEM TOKENS (main.css)
+ * ============================================================================
+ */
+
+:root {
+  --primary: #0f172a;
+  --primary-accent: #0284c7;
+  --secondary-accent: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --bg-main: #f8fafc;
+  --card-bg: rgba(255, 255, 255, 0.9);
+  --border-color: #e2e8f0;
+}
+
+.dark {
+  --bg-main: #0b0f19;
+  --card-bg: rgba(15, 23, 42, 0.85);
+  --border-color: #334155;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif;
+  overflow-x: hidden;
+  background-color: var(--bg-main);
+}
+
+/* Glassmorphism Panels */
+.glass-panel {
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+}
+
+/* Table Design */
+.table-modern {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+.table-modern th {
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  background-color: rgba(248, 250, 252, 0.8);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.dark .table-modern th {
+  color: #94a3b8;
+  background-color: rgba(15, 23, 42, 0.8);
+  border-bottom: 1px solid #1e293b;
+}
+
+.table-modern td {
+  padding: 12px 16px;
+  font-size: 13px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.dark .table-modern td {
+  border-bottom: 1px solid #1e293b;
+}
+
+.table-modern tbody tr:hover {
+  background-color: rgba(241, 245, 249, 0.6);
+}
+
+.dark .table-modern tbody tr:hover {
+  background-color: rgba(30, 41, 59, 0.4);
+}
+
+/* Custom Badges */
+.badge-success {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.badge-warning {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.badge-danger {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  background-color: #ffe4e6;
+  color: #9f1239;
+}
+
+.badge-info {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+/* Custom Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(to right, #0284c7, #0ea5e9);
+  box-shadow: 0 4px 14px 0 rgba(2, 132, 199, 0.3);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(to right, #0369a1, #0284c7);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #334155;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease-in-out;
+}
+
+.dark .btn-secondary {
+  color: #e2e8f0;
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.btn-secondary:hover {
+  background-color: #e2e8f0;
+}
+
+.dark .btn-secondary:hover {
+  background-color: #334155;
+}
